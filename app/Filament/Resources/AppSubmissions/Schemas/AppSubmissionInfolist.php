@@ -1,0 +1,40 @@
+<?php
+
+namespace App\Filament\Resources\AppSubmissions\Schemas;
+
+use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Schema;
+
+class AppSubmissionInfolist
+{
+    public static function configure(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                TextEntry::make('submitter_name'),
+                TextEntry::make('submitter_email'),
+                TextEntry::make('app_name'),
+                TextEntry::make('description')
+                    ->columnSpanFull(),
+                TextEntry::make('suggested_price')
+                    ->money()
+                    ->placeholder('-'),
+                TextEntry::make('platform'),
+                TextEntry::make('file_path'),
+                TextEntry::make('status')
+                    ->badge(),
+                TextEntry::make('reviewer.name')
+                    ->label('Reviewed by')
+                    ->placeholder('-'),
+                TextEntry::make('linkedAuthor.name')
+                    ->label('Linked author')
+                    ->placeholder('-'),
+                TextEntry::make('created_at')
+                    ->dateTime()
+                    ->placeholder('-'),
+                TextEntry::make('updated_at')
+                    ->dateTime()
+                    ->placeholder('-'),
+            ]);
+    }
+}

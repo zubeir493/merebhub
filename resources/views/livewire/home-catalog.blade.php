@@ -2,10 +2,10 @@
     <div class="border-b border-zinc-200 bg-white">
         <div class="mx-auto flex max-w-[1500px] gap-7 overflow-x-auto px-5 py-4 text-sm font-bold text-zinc-700 lg:px-8">
             @foreach ($categories as $item)
-                <button
+                <a
                     wire:key="category-{{ Str::slug($item) }}"
-                    wire:click="$set('category', '{{ $item }}')"
-                    class="flex shrink-0 items-center gap-2 hover:text-teal-700 {{ $category === $item ? 'text-teal-700' : '' }}"
+                    href="{{ route('store.index', ['q' => '', 'category' => $item]) }}"
+                    class="flex shrink-0 items-center gap-2 hover:text-teal-700 {{ request('category') === $item ? 'text-teal-700' : '' }}"
                 >
                     @switch($item)
                         @case('Developer tools') <x-heroicon-o-code-bracket class="size-5" /> @break
@@ -13,10 +13,13 @@
                         @case('Design') <x-heroicon-o-pencil-square class="size-5" /> @break
                         @case('Security') <x-heroicon-o-shield-check class="size-5" /> @break
                         @case('Games') <x-heroicon-o-puzzle-piece class="size-5" /> @break
+                        @case('Marketing') <x-heroicon-o-megaphone class="size-5" /> @break
+                        @case('Productivity') <x-heroicon-o-clock class="size-5" /> @break
+                        @case('Data & analytics') <x-heroicon-o-presentation-chart-bar class="size-5" /> @break
                         @default <x-heroicon-o-squares-2x2 class="size-5" />
                     @endswitch
                     {{ $item }}
-                </button>
+                </a>
             @endforeach
             <a href="{{ route('store.index') }}" class="ml-auto flex shrink-0 items-center gap-2 hover:text-teal-700">
                 <x-heroicon-o-view-columns class="size-5" />
@@ -99,19 +102,9 @@
         @endif
 
         <section id="catalog" class="mt-14 scroll-mt-28">
-            <div class="flex flex-col gap-5 border-b border-zinc-200 pb-5 lg:flex-row lg:items-end lg:justify-between">
+            <div class="flex flex-col gap-5 pb-5 lg:flex-row lg:items-end lg:justify-between">
                 <div>
-                    <p class="text-sm font-extrabold uppercase text-teal-700">The catalog</p>
                     <h2 class="mt-1 text-3xl font-extrabold text-zinc-950">Find your next essential tool</h2>
-                </div>
-                <div class="flex flex-wrap gap-2">
-                    @foreach ($platforms as $item)
-                        <button
-                            wire:key="platform-{{ $item->id }}"
-                            wire:click="$set('platform', '{{ $item->slug }}')"
-                            class="rounded-lg border px-3 py-2 text-xs font-bold {{ $platform === $item->slug ? 'border-teal-500 bg-teal-50 text-teal-800' : 'border-zinc-200 bg-white text-zinc-600 hover:border-zinc-400' }}"
-                        >{{ $item->name }}</button>
-                    @endforeach
                 </div>
             </div>
 
@@ -126,7 +119,6 @@
                     </div>
                 @endforelse
             </div>
-            <div class="mt-10">{{ $products->links() }}</div>
         </section>
     </div>
 </div>

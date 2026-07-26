@@ -13,7 +13,7 @@
 </head>
 <body class="min-h-screen bg-white font-sans text-zinc-900 antialiased">
     <header x-data="{ mobileOpen: false, accountOpen: false }" class="sticky top-0 z-40 border-b border-zinc-200 bg-white/95 backdrop-blur">
-        <div class="mx-auto flex h-18 max-w-[1500px] items-center gap-5 px-5 lg:px-8">
+        <div class="mx-auto flex h-18 max-w-[1500px] items-center justify-between gap-5 px-5 lg:px-8">
             <button @click="mobileOpen = ! mobileOpen" class="grid size-10 place-items-center lg:hidden" aria-label="Toggle menu">
                 <x-heroicon-o-bars-3 class="size-6" />
             </button>
@@ -21,13 +21,8 @@
                 <img src="/images/marketplace/logo.svg" alt="" width="32" height="32" class="h-8 w-8">
                 <span class="text-lg font-extrabold">MerebHub</span>
             </a>
-            <nav class="hidden items-center gap-6 text-sm font-bold lg:flex">
-                <a href="{{ route('home') }}" class="text-teal-700">Discover</a>
-                <a href="{{ route('store.index') }}" class="hover:text-teal-700">Store</a>
-                <a href="{{ route('store.newarrivals') }}" class="hover:text-teal-700">New Arrivals</a>
-            </nav>
-            <form action="{{ route('search') }}" role="search" class="relative ml-auto hidden max-w-md flex-1 md:block">
-                <button type="submit" class="absolute left-0 top-0 grid size-11 place-items-center text-zinc-400 transition-colors hover:text-teal-700" aria-label="Submit search">
+            <form action="{{ route('search') }}" role="search" class="relative ml-auto hidden max-w-sm flex-1 md:block">
+                <button type="submit" class="absolute left-0 top-0 grid size-10 place-items-center text-zinc-400 transition-colors hover:text-teal-700" aria-label="Submit search">
                     <x-heroicon-o-magnifying-glass class="size-5" />
                 </button>
                 <input
@@ -36,11 +31,11 @@
                     value="{{ request('q') }}"
                     aria-label="Search MerebHub"
                     placeholder="Search..."
-                    class="h-11 w-full rounded-lg border border-zinc-300 bg-zinc-50 pl-11 pr-12 text-sm outline-none transition focus:border-teal-500 focus:bg-white focus:ring-4 focus:ring-teal-500/10"
+                    class="h-10 w-full rounded-lg border border-zinc-300 bg-zinc-50 pl-11 pr-12 text-sm outline-none transition focus:border-teal-500 focus:bg-white focus:ring-4 focus:ring-teal-500/10"
                 >
-                <span id="search-shortcut-desktop" role="button" tabindex="0" aria-label="Focus search (shortcut)" style="position: absolute;right: 10px;" class="top-1/2 -translate-y-1/2 rounded-md bg-zinc-100 px-2 py-1 text-xs text-zinc-600 cursor-pointer select-none">Ctrl+K</span>
+                <span id="search-shortcut-desktop" role="button" tabindex="0" aria-label="Focus search (shortcut)" style="position: absolute;right: 10px;" class="top-1/2 -translate-y-1/2 rounded-sm bg-zinc-100 px-2 py-1 text-xs text-zinc-600 cursor-pointer select-none">Ctrl+K</span>
             </form>
-            <div class="flex shrink-0 items-center gap-1 ml-auto sm:gap-2">
+            <div class="flex shrink-0 items-center gap-1 sm:gap-2">
                 <a href="{{ route('wishlist.index') }}" class="relative grid size-10 place-items-center rounded-lg hover:bg-zinc-100" aria-label="Wishlist" title="Wishlist">
                     @if ($headerWishlistCount)
                         <x-heroicon-s-heart class="size-5" />
@@ -130,7 +125,7 @@
                     <img src="/images/marketplace/logo.svg" alt="" width="32" height="32" class="h-8 w-8">
                     <strong>MerebHub</strong>
                 </div>
-                <p class="mt-4 text-sm leading-6 text-zinc-400">Independent Ethiopian software, reviewed and ready to use.</p>
+                <p class="mt-4 text-sm leading-6 text-zinc-400">Independent Ethiopian digital products, reviewed and ready to use.</p>
             </div>
             <div><strong class="text-sm text-white">Marketplace</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('store.index') }}">Browse all</a><a href="{{ route('store.newarrivals') }}">New arrivals</a><a href="{{ route('store.deals') }}">Deals</a></div></div>
             <div><strong class="text-sm text-white">Developers</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('submissions.create') }}">Submit software</a><a href="{{ route('orders.lookup') }}">Order lookup</a></div></div>

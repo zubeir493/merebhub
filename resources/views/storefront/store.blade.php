@@ -39,53 +39,90 @@
     </div>
 
     <div class="mx-auto max-w-[1500px] px-5 py-8 lg:px-8 lg:py-10">
-        <form action="{{ route($routeName) }}" method="GET" class="rounded-2xl bg-zinc-50 p-4 ring-1 ring-zinc-950/5">
-            <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-[minmax(18rem,1.5fr)_1fr_1fr_1fr_auto]">
-                <label class="relative">
+        <form action="{{ route($routeName) }}" method="GET" x-data="{ openSort: false, openFilters: false }" @click.away="openSort = false; openFilters = false" class="relative rounded-2xl bg-zinc-50 p-4 ring-1 ring-zinc-950/5">
+            <div class="flex flex-col gap-3 lg:flex-row lg:items-center">
+                <label class="relative flex-1">
                     <span class="sr-only">Search software</span>
                     <x-heroicon-o-magnifying-glass class="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-zinc-400" />
-                    <input name="q" value="{{ $search }}" placeholder="Search apps, categories, or makers" class="form-input h-12 pl-11">
+                    <input name="q" value="{{ $search }}" placeholder="Search apps, categories, or makers" class="form-input h-12 w-full rounded-2xl pl-11 pr-4">
                 </label>
-                <label>
-                    <span class="sr-only">Category</span>
-                    <select name="category" class="form-input h-12">
-                        <option value="">All categories</option>
-                        @foreach ($categories as $item)
-                            <option value="{{ $item }}" @selected($category === $item)>{{ $item }}</option>
-                        @endforeach
-                    </select>
-                </label>
-                <label>
-                    <span class="sr-only">Platform</span>
-                    <select name="platform" class="form-input h-12">
-                        <option value="">All platforms</option>
-                        @foreach ($platforms as $item)
-                            <option value="{{ $item->slug }}" @selected($platform === $item->slug)>{{ $item->name }}</option>
-                        @endforeach
-                    </select>
-                </label>
-                <label>
-                    <span class="sr-only">Sort products</span>
-                    <select name="sort" class="form-input h-12">
-                        <option value="popular" @selected($sort === 'popular')>Most popular</option>
-                        <option value="newest" @selected($sort === 'newest')>Newest</option>
-                        <option value="rating" @selected($sort === 'rating')>Highest rated</option>
-                        <option value="price_asc" @selected($sort === 'price_asc')>Price: low to high</option>
-                        <option value="price_desc" @selected($sort === 'price_desc')>Price: high to low</option>
-                    </select>
-                </label>
-                <button class="btn-primary h-12 px-6">Apply</button>
+
+                <div class="flex items-center gap-2">
+                    <div class="relative">
+                        <button
+                            type="button"
+                            x-on:click="openSort = !openSort; openFilters = false"
+                            class="inline-flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 bg-white px-4 text-sm font-bold text-zinc-700 shadow-sm transition hover:border-zinc-300 hover:text-zinc-900"
+                        >
+                            <x-heroicon-o-arrows-up-down class="size-5" />
+                            Sort
+                        </button>
+
+                        <div x-cloak x-show="openSort" x-transition class="absolute right-0 z-20 mt-2 w-72 overflow-hidden rounded-3xl border border-zinc-200 bg-white p-4 shadow-xl">
+                            <p class="text-xs font-semibold uppercase tracking-[0.24em] text-zinc-500">Sort by</p>
+                            <select name="sort" class="form-input mt-3 w-full">
+                                <option value="popular" @selected($sort === 'popular')>Most popular</option>
+                                <option value="newest" @selected($sort === 'newest')>Newest</option>
+                                <option value="rating" @selected($sort === 'rating')>Highest rated</option>
+                                <option value="price_asc" @selected($sort === 'price_asc')>Price: low to high</option>
+                                <option value="price_desc" @selected($sort === 'price_desc')>Price: high to low</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="relative">
+                        <button
+                            type="button"
+                            x-on:click="openFilters = !openFilters; openSort = false"
+                            class="inline-flex h-12 items-center gap-2 rounded-2xl border border-zinc-200 bg-white px-4 text-sm font-bold text-zinc-700 shadow-sm transition hover:border-zinc-300 hover:text-zinc-900"
+                        >
+                            <x-heroicon-o-funnel class="size-5" />
+                            Filters
+                        </button>
+
+                        <div x-cloak x-show="openFilters" x-transition class="absolute right-0 z-20 mt-2 w-[28rem] overflow-hidden rounded-3xl border border-zinc-200 bg-white p-5 shadow-xl">
+                            <div class="grid gap-4 sm:grid-cols-2">
+                                <label class="block">
+                                    <span class="mb-2 block text-xs font-semibold uppercase tracking-[0.24em] text-zinc-500">Category</span>
+                                    <select name="category" class="form-input w-full">
+                                        <option value="">All categories</option>
+                                        @foreach ($categories as $item)
+                                            <option value="{{ $item }}" @selected($category === $item)>{{ $item }}</option>
+                                        @endforeach
+                                    </select>
+                                </label>
+
+                                <label class="block">
+                                    <span class="mb-2 block text-xs font-semibold uppercase tracking-[0.24em] text-zinc-500">Platform</span>
+                                    <select name="platform" class="form-input w-full">
+                                        <option value="">All platforms</option>
+                                        @foreach ($platforms as $item)
+                                            <option value="{{ $item->slug }}" @selected($platform === $item->slug)>{{ $item->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </label>
+                            </div>
+
+                            <div class="mt-5 flex flex-wrap items-center gap-3">
+                                <button type="submit" class="inline-flex min-w-[10rem] items-center justify-center rounded-2xl bg-teal-700 px-4 py-3 text-sm font-extrabold text-white transition hover:bg-teal-600">Apply filters</button>
+
+                                @if ($search !== '' || $category !== '' || $platform !== '' || $sort !== 'popular')
+                                    <a href="{{ route($routeName) }}" class="inline-flex min-w-[9rem] items-center justify-center rounded-2xl border border-zinc-200 bg-white px-4 py-3 text-sm font-bold text-zinc-700 hover:bg-zinc-50">Reset</a>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </form>
 
         <div class="mt-8 flex flex-wrap items-end justify-between gap-4 border-b border-zinc-200 pb-5">
             <div>
-                <p class="text-sm font-extrabold uppercase text-teal-700">The catalog</p>
                 <h2 class="mt-1 text-2xl font-extrabold text-zinc-950">
                     {{ number_format($products->total()) }} {{ Str::plural('product', $products->total()) }}
                 </h2>
             </div>
-            @if ($search !== '' || $category !== '' || $platform !== '')
+            @if ($search !== '' || $category !== '' || $platform !== '' || $sort !== 'popular')
                 <a href="{{ route($routeName) }}" class="inline-flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-bold text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950">
                     <x-heroicon-o-x-mark class="size-4" />
                     Clear filters

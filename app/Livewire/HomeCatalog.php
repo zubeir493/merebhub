@@ -7,12 +7,9 @@ use App\Models\Product;
 use Illuminate\Contracts\View\View;
 use Livewire\Attributes\Url;
 use Livewire\Component;
-use Livewire\WithPagination;
 
 class HomeCatalog extends Component
 {
-    use WithPagination;
-
     #[Url(as: 'q', history: true)]
     public string $search = '';
 
@@ -24,23 +21,22 @@ class HomeCatalog extends Component
 
     public function updatedSearch(): void
     {
-        $this->resetPage();
+        $this->reset(['page']);
     }
 
     public function updatedCategory(): void
     {
-        $this->resetPage();
+        $this->reset(['page']);
     }
 
     public function updatedPlatform(): void
     {
-        $this->resetPage();
+        $this->reset(['page']);
     }
 
     public function clearFilters(): void
     {
-        $this->reset(['search', 'category', 'platform']);
-        $this->resetPage();
+        $this->reset(['search', 'category', 'platform', 'page']);
     }
 
     public function render(): View
@@ -65,7 +61,7 @@ class HomeCatalog extends Component
             ));
 
         return view('livewire.home-catalog', [
-            'products' => (clone $base)->latest()->paginate(12),
+            'products' => (clone $base)->latest()->take(12)->get(),
             'featured' => Product::published()->with('author')->where('is_featured', true)->latest()->take(4)->get(),
             'deals' => Product::published()->with('author')->whereNotNull('compare_at_price')->latest()->take(5)->get(),
             'topProducts' => Product::published()->with(['author', 'platforms'])->orderByDesc('weekly_sales')->take(9)->get(),

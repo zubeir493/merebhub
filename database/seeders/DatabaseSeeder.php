@@ -40,7 +40,7 @@ class DatabaseSeeder extends Seeder
         );
 
         $platforms = collect(['Web', 'Windows', 'macOS', 'Linux', 'Android', 'iOS'])
-            ->mapWithKeys(fn (string $name) => [
+            ->mapWithKeys(fn(string $name) => [
                 str($name)->slug()->toString() => Platform::firstOrCreate(
                     ['slug' => str($name)->slug()],
                     ['name' => $name],
@@ -55,7 +55,7 @@ class DatabaseSeeder extends Seeder
             ['slug' => 'sentinel-systems', 'name' => 'Sentinel Systems', 'bio' => 'Practical security products for growing teams.'],
             ['slug' => 'rift-games', 'name' => 'Rift Games', 'bio' => 'Playful worlds and competitive games from East Africa.'],
             ['slug' => 'global-software', 'name' => 'Global Software Partners', 'bio' => 'Local reseller and marketplace partner for global productivity, design, and business tools.', 'is_verified' => true],
-        ])->mapWithKeys(fn (array $author) => [
+        ])->mapWithKeys(fn(array $author) => [
             $author['slug'] => Author::updateOrCreate(
                 ['slug' => $author['slug']],
                 $author + [
@@ -518,7 +518,7 @@ class DatabaseSeeder extends Seeder
                     'name' => $name,
                     'category' => $category,
                     'tagline' => $tagline,
-                    'description' => $tagline."\n\nBuilt for real teams, with a clear interface, dependable performance, and practical support. Purchase through Chapa and receive your personal license automatically.",
+                    'description' => $tagline . "\n\nBuilt for real teams, with a clear interface, dependable performance, and practical support. Purchase through Chapa and receive your personal license automatically.",
                     'price' => $price,
                     'compare_at_price' => $compareAt,
                     'cover_path' => $cover,
@@ -530,7 +530,7 @@ class DatabaseSeeder extends Seeder
                 ],
             );
 
-            $product->platforms()->sync(collect($productPlatforms)->map(fn (string $platform) => $platforms[$platform]->id));
+            $product->platforms()->sync(collect($productPlatforms)->map(fn(string $platform) => $platforms[$platform]->id));
             $plans = $productPlans[$slug] ?? [[
                 'slug' => 'personal',
                 'name' => 'Personal',

@@ -25,21 +25,22 @@
                 <a href="{{ route('home') }}" class="text-teal-700">Discover</a>
                 <a href="{{ route('store.index') }}" class="hover:text-teal-700">Store</a>
                 <a href="{{ route('store.newarrivals') }}" class="hover:text-teal-700">New Arrivals</a>
-                <a href="{{ route('submissions.create') }}" class="hover:text-teal-700">Sell software</a>
             </nav>
-            <form action="{{ route('search') }}" role="search" class="relative ml-auto hidden max-w-xl flex-1 md:block">
+            <form action="{{ route('search') }}" role="search" class="relative ml-auto hidden max-w-md flex-1 md:block">
                 <button type="submit" class="absolute left-0 top-0 grid size-11 place-items-center text-zinc-400 transition-colors hover:text-teal-700" aria-label="Submit search">
                     <x-heroicon-o-magnifying-glass class="size-5" />
                 </button>
                 <input
+                    id="search-input-desktop"
                     name="q"
                     value="{{ request('q') }}"
                     aria-label="Search MerebHub"
-                    placeholder="Search software, categories, or makers"
-                    class="h-11 w-full rounded-lg border border-zinc-300 bg-zinc-50 pl-11 pr-4 text-sm outline-none transition focus:border-teal-500 focus:bg-white focus:ring-4 focus:ring-teal-500/10"
+                    placeholder="Search..."
+                    class="h-11 w-full rounded-lg border border-zinc-300 bg-zinc-50 pl-11 pr-12 text-sm outline-none transition focus:border-teal-500 focus:bg-white focus:ring-4 focus:ring-teal-500/10"
                 >
+                <span id="search-shortcut-desktop" role="button" tabindex="0" aria-label="Focus search (shortcut)" style="position: absolute;right: 10px;" class="top-1/2 -translate-y-1/2 rounded-md bg-zinc-100 px-2 py-1 text-xs text-zinc-600 cursor-pointer select-none">Ctrl+K</span>
             </form>
-            <div class="flex shrink-0 items-center gap-1 sm:gap-2">
+            <div class="flex shrink-0 items-center gap-1 ml-auto sm:gap-2">
                 <a href="{{ route('wishlist.index') }}" class="relative grid size-10 place-items-center rounded-lg hover:bg-zinc-100" aria-label="Wishlist" title="Wishlist">
                     @if ($headerWishlistCount)
                         <x-heroicon-s-heart class="size-5" />
@@ -50,7 +51,7 @@
                 <a href="{{ route('cart.index') }}" class="relative grid size-10 place-items-center rounded-lg hover:bg-zinc-100" aria-label="Cart" title="Cart">
                     <x-heroicon-o-shopping-cart class="size-5" />
                     @if ($headerCartCount)
-                        <span class="absolute right-0 top-0 grid size-4 place-items-center rounded-full bg-teal-500 text-[9px] font-extrabold text-zinc-950" aria-label="{{ $headerCartCount }} {{ Str::plural('item type', $headerCartCount) }} in cart">{{ $headerCartCount }}</span>
+                        <span class="absolute right-0 top-0 grid size-4 place-items-center rounded-full bg-teal-500 text-[9px] text-zinc-950" aria-label="{{ $headerCartCount }} {{ Str::plural('item type', $headerCartCount) }} in cart">{{ $headerCartCount }}</span>
                     @endif
                 </a>
                 @auth
@@ -60,14 +61,15 @@
                             <span class="hidden text-sm font-bold sm:inline">My Account</span>
                             <x-heroicon-o-chevron-down class="hidden size-3.5 sm:block" />
                         </button>
-                        <div x-cloak x-show="accountOpen" x-transition.origin.top.right class="absolute right-0 mt-2 w-56 overflow-hidden rounded-lg border border-zinc-200 bg-white py-2 shadow-xl">
-                            <div class="border-b border-zinc-100 px-4 pb-3 pt-1">
+                        <div x-cloak x-show="accountOpen" x-transition.origin.top.right class="absolute right-0 mt-2 w-56 overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-xl">
+                            <div class="border-b border-zinc-100 px-4 py-3">
                                 <p class="truncate text-sm font-extrabold">{{ auth()->user()->name }}</p>
                                 <p class="truncate text-xs text-zinc-500">{{ auth()->user()->email }}</p>
                             </div>
                             <a href="{{ route('account.orders') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-receipt-percent class="size-4" /> Previous Orders</a>
                             <a href="{{ route('account.subscriptions') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-arrow-path-rounded-square class="size-4" /> Subscriptions</a>
                             <a href="{{ route('account.settings') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-cog-6-tooth class="size-4" /> Account settings</a>
+                            <a href="{{ route('submissions.create') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-shopping-bag class="size-4" /> Sell software</a>
                             @if (auth()->user()->is_admin)
                                 <a href="{{ url('/admin') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-adjustments-horizontal class="size-4" /> Submission admin</a>
                             @endif
@@ -90,7 +92,8 @@
                 <button type="submit" class="absolute left-0 top-0 grid size-11 place-items-center text-zinc-400 transition-colors hover:text-teal-700" aria-label="Submit search">
                     <x-heroicon-o-magnifying-glass class="size-5" />
                 </button>
-                <input name="q" value="{{ request('q') }}" aria-label="Search MerebHub" placeholder="Search software" class="h-11 w-full rounded-lg border border-zinc-300 pl-11 pr-4 text-sm">
+                <input id="search-input-mobile" name="q" value="{{ request('q') }}" aria-label="Search MerebHub" placeholder="Search software" class="h-11 w-full rounded-lg border border-zinc-300 pl-11 pr-12 text-sm">
+                <span id="search-shortcut-mobile" role="button" tabindex="0" aria-label="Focus search (shortcut)" style="position: absolute;right: 10px;" class="top-1/2 -translate-y-1/2 rounded-md bg-zinc-100 px-2 py-1 text-xs text-zinc-600 cursor-pointer select-none">Ctrl+K</span>
             </form>
             <nav class="grid gap-1 text-sm font-bold">
                 <a href="{{ route('home') }}" class="rounded-lg px-3 py-2 hover:bg-zinc-100">Discover</a>
@@ -129,12 +132,52 @@
                 </div>
                 <p class="mt-4 text-sm leading-6 text-zinc-400">Independent Ethiopian software, reviewed and ready to use.</p>
             </div>
-            <div><strong class="text-sm text-white">Marketplace</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('home') }}">Discover</a><a href="{{ route('store.index') }}">Browse all</a><a href="{{ route('store.newarrivals') }}">New arrivals</a><a href="{{ route('store.deals') }}">Deals</a></div></div>
+            <div><strong class="text-sm text-white">Marketplace</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('store.index') }}">Browse all</a><a href="{{ route('store.newarrivals') }}">New arrivals</a><a href="{{ route('store.deals') }}">Deals</a></div></div>
             <div><strong class="text-sm text-white">Developers</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('submissions.create') }}">Submit software</a><a href="{{ route('orders.lookup') }}">Order lookup</a></div></div>
             <div><strong class="text-sm text-white">Your account</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('account.orders') }}">Previous orders</a><a href="{{ route('wishlist.index') }}">Wishlist</a><a href="{{ route('cart.index') }}">Cart</a></div></div>
         </div>
     </footer>
 
+    <script>
+        (function () {
+            const isMac = (typeof navigator !== 'undefined') && (/Mac|iPhone|iPad|iPod/.test(navigator.platform) || navigator.userAgent.includes('Macintosh'));
+            const label = isMac ? '⌘+K' : 'Ctrl+K';
+
+            const pairs = [
+                { inputId: 'search-input-desktop', badgeId: 'search-shortcut-desktop' },
+                { inputId: 'search-input-mobile', badgeId: 'search-shortcut-mobile' }
+            ];
+
+            pairs.forEach(({ inputId, badgeId }) => {
+                const input = document.getElementById(inputId);
+                const badge = document.getElementById(badgeId);
+                if (!badge) return;
+                badge.textContent = label;
+                if (!input) return;
+                badge.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    input.focus();
+                });
+                badge.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        input.focus();
+                    }
+                });
+            });
+
+            document.addEventListener('keydown', function (e) {
+                const key = (e.key || '').toLowerCase();
+                if (key === 'k' && (isMac ? e.metaKey : e.ctrlKey)) {
+                    // prevent browser default "find" / search behaviors
+                    e.preventDefault();
+                    const desktop = document.getElementById('search-input-desktop');
+                    const mobile = document.getElementById('search-input-mobile');
+                    (desktop || mobile)?.focus();
+                }
+            });
+        })();
+    </script>
     @livewireScripts
 </body>
 </html>

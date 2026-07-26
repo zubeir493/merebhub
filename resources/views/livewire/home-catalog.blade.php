@@ -25,7 +25,7 @@
         </div>
     </div>
 
-    <section class="relative mx-auto h-[400px] w-full overflow-hidden bg-zinc-950 sm:h-[390px] lg:h-auto lg:min-h-[300px] lg:aspect-[4/1]">
+    <section class="relative mx-auto h-[400px] w-full overflow-hidden bg-zinc-950 sm:h-[390px] lg:h-auto lg:min-h-[300px]">
         <img src="{{ asset('images/marketplace/hero-built-here.webp') }}" alt="Ethiopian software marketplace" class="absolute inset-0 h-full w-full object-cover">
         <div class="absolute inset-0 bg-gradient-to-r from-zinc-950/90 via-zinc-950/50 to-transparent"></div>
         <div class="relative flex h-full max-w-[1500px] items-center px-5 py-12 lg:px-12">
@@ -34,7 +34,7 @@
                 <h1 class="text-4xl font-extrabold leading-tight sm:text-5xl">Ethiopia's home for remarkable software</h1>
                 <p class="mt-4 max-w-lg text-base leading-7 text-zinc-200">Curated apps, tools, and games from independent makers. Secure checkout and instant license delivery included.</p>
                 <a href="{{ route('store.index') }}" class="mt-7 inline-flex items-center gap-2 rounded-lg bg-teal-400 px-5 py-3 text-sm font-extrabold text-zinc-950 hover:bg-teal-300">
-                    Explore software
+                    Explore Now
                     <x-heroicon-o-arrow-right class="size-4" />
                 </a>
             </div>

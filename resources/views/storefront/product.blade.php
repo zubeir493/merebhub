@@ -81,11 +81,11 @@
                 <div class="mt-5 whitespace-pre-line text-base leading-8 text-zinc-600">{{ $product->description }}</div>
             </div>
             <aside class="border-l border-zinc-200 pl-7 text-sm">
-                <h3 class="font-extrabold">What you get</h3>
+                <h3 class="font-extrabold">Why MerebHub?</h3>
                 <ul class="mt-4 grid gap-3 text-zinc-600">
                     <li class="flex gap-2"><x-heroicon-o-check class="size-5 text-teal-600" /> Secure Chapa checkout</li>
                     <li class="flex gap-2"><x-heroicon-o-check class="size-5 text-teal-600" /> Immediate license key</li>
-                    <li class="flex gap-2"><x-heroicon-o-check class="size-5 text-teal-600" /> Latest build download</li>
+                    <li class="flex gap-2"><x-heroicon-o-check class="size-5 text-teal-600" /> Official Partner</li>
                 </ul>
             </aside>
         </section>

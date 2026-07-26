@@ -31,17 +31,21 @@
                 </section>
             @else
                 <div class="mt-8 grid gap-10 lg:grid-cols-[1fr_360px]">
-                    <div class="divide-y divide-zinc-200">
+                    <div class="divide-y divide-zinc-200 grid grid-column-2">
                         @foreach ($items as $item)
                             <article class="grid gap-5 py-6 sm:grid-cols-[112px_1fr_auto] sm:items-center">
                                 <a href="{{ route('products.show', $item->product) }}">
-                                    <img src="{{ $item->product->coverUrl() }}" alt="{{ $item->product->name }}" class="aspect-square w-28 rounded-lg bg-zinc-100 object-cover">
+                                    <img src="{{ $item->product->coverUrl() }}" alt="{{ $item->product->name }}" class="aspect-square w-full rounded-lg bg-zinc-100 object-cover">
                                 </a>
                                 <div class="min-w-0">
+                                    <a href="{{ route('products.show', $item->product) }}" class="mt-1 block text-lg font-extrabold hover:text-teal-700">{{ $item->product->name }} ({{ $item->productPlan?->name ?? 'Legacy plan' }})</a>
                                     <p class="text-xs font-bold text-zinc-500">{{ $item->product->author->name }}</p>
-                                    <a href="{{ route('products.show', $item->product) }}" class="mt-1 block text-lg font-extrabold hover:text-teal-700">{{ $item->product->name }}</a>
-                                    <p class="mt-1 text-sm text-zinc-500">{{ $item->productPlan?->name ?? 'Legacy plan' }}</p>
-                                    <p class="mt-2 text-sm font-semibold text-zinc-600 tabular-nums">{{ number_format(($item->productPlan?->price_minor ?? 0) / 100, 2) }} ETB each</p>
+                                    @php
+                                        $billingLabel = $item->productPlan?->billing_model === \App\Enums\BillingModel::ManualSubscription
+                                            ? $item->productPlan?->billing_interval?->label()
+                                            : ($item->productPlan?->billing_model === \App\Enums\BillingModel::OneTime ? 'One time' : $item->productPlan?->billing_model?->label());
+                                    @endphp
+                                    <p class="mt-2 text-sm font-semibold text-zinc-600 tabular-nums">{{ number_format(($item->productPlan?->price_minor ?? 0) / 100, 2) }}ETB - {{ $billingLabel }}</p>
                                     <form method="POST" action="{{ route('cart.destroy', $item) }}" class="mt-3">
                                         @csrf
                                         @method('DELETE')
@@ -51,7 +55,7 @@
                                         </button>
                                     </form>
                                 </div>
-                                <div class="flex items-center gap-1 rounded-xl bg-zinc-50 p-1 ring-1 ring-zinc-950/10" aria-label="Quantity for {{ $item->product->name }}">
+                                <div class="flex items-center gap-1 rounded-xl bg-zinc-50 p-1 ring-1 ring-zinc-950/10 w-fit" aria-label="Quantity for {{ $item->product->name }}">
                                     <form method="POST" action="{{ route('cart.update', $item) }}">
                                         @csrf
                                         @method('PATCH')
@@ -84,9 +88,9 @@
                         <div class="mt-5 flex items-end justify-between"><strong>Total</strong><strong class="text-md">{{ number_format($subtotalMinor / 100, 2) }} ETB</strong></div>
                         <form method="POST" action="{{ route('cart.checkout') }}" class="mt-6">
                             @csrf
-                            <button class="btn-primary w-full"><x-heroicon-o-lock-closed class="size-4" /> Continue to Chapa</button>
+                            <button class="btn-primary w-full"><x-heroicon-o-lock-closed class="size-4" /> Complete Order</button>
                         </form>
-                        <p class="mt-4 text-center text-xs leading-5 text-zinc-500">Prices and availability are revalidated by MerebHub before Chapa checkout.</p>
+                        <p class="mt-4 text-center text-xs leading-5 text-zinc-500">Payment information is handled and secured by Chapa.</p>
                     </aside>
                 </div>
             @endif

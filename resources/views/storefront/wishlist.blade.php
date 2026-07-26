@@ -12,7 +12,7 @@
                 <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-zinc-500">Save apps you are considering and return to them from any device.</p>
                 <div class="mt-6 flex flex-wrap justify-center gap-3">
                     <a href="{{ route('login') }}" class="btn-primary">Log in</a>
-                    <a href="{{ route('store.index') }}" class="btn-dark">Explore software</a>
+                    <a href="{{ route('store.index') }}" class="btn-dark">Explore</a>
                 </div>
             </section>
         @else
@@ -20,7 +20,7 @@
                 <section class="py-20 text-center">
                     <span class="mx-auto grid size-14 place-items-center rounded-full bg-zinc-100"><x-heroicon-o-heart class="size-7 text-zinc-500" /></span>
                     <h2 class="mt-5 text-xl font-extrabold">Nothing saved yet</h2>
-                    <a href="{{ route('store.index') }}" class="btn-primary mt-6">Explore software</a>
+                    <a href="{{ route('store.index') }}" class="btn-primary mt-6">Explore store</a>
                 </section>
             @else
                 <div class="mt-8 grid gap-x-5 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

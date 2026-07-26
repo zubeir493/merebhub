@@ -22,13 +22,13 @@
     role="{{ $isError ? 'alert' : 'status' }}"
     aria-live="{{ $isError ? 'assertive' : 'polite' }}"
     {{ $attributes->class([
-        'pointer-events-auto flex items-start gap-3 rounded-xl px-3 py-2.5 shadow-[0_1px_2px_oklch(0_0_0/0.08),0_12px_32px_oklch(0_0_0/0.14)] ring-1',
+        'pointer-events-auto flex items-center gap-3 rounded-xl px-3 py-2.5 shadow-[0_1px_2px_oklch(0_0_0/0.08),0_12px_32px_oklch(0_0_0/0.14)] ring-1',
         'bg-white text-teal-950 ring-teal-700/15' => ! $isError,
         'bg-white text-rose-950 ring-rose-700/15' => $isError,
     ]) }}
 >
     <span @class([
-        'mt-0.5 grid size-7 shrink-0 place-items-center rounded-lg',
+        'mt-0.5 grid size-10 shrink-0 place-items-center rounded-lg',
         'bg-teal-50 text-teal-700' => ! $isError,
         'bg-rose-50 text-rose-700' => $isError,
     ])>

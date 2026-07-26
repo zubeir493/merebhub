@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ isset($title) ? $title.' · ' : '' }}{{ config('app.name', 'MerebHub') }}</title>
-    <meta name="description" content="Curated Ethiopian software with secure checkout and automatic license delivery.">
+    <meta name="description" content="{{ $metaDescription ?? 'Curated Ethiopian software with secure checkout and automatic license delivery.' }}">
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=plus-jakarta-sans:400,500,600,700,800" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -24,6 +24,7 @@
             <nav class="hidden items-center gap-6 text-sm font-bold lg:flex">
                 <a href="{{ route('home') }}" class="text-teal-700">Discover</a>
                 <a href="{{ route('home') }}#catalog" class="hover:text-teal-700">Categories</a>
+                <a href="{{ route('vendors.index') }}" class="hover:text-teal-700">Developers</a>
                 <a href="{{ route('home', ['category' => 'Games']) }}" class="hover:text-teal-700">Games</a>
                 <a href="{{ route('submissions.create') }}" class="hover:text-teal-700">Sell software</a>
             </nav>
@@ -62,6 +63,7 @@
                                 <p class="truncate text-xs text-zinc-500">{{ auth()->user()->email }}</p>
                             </div>
                             <a href="{{ route('account.orders') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-receipt-percent class="size-4" /> Previous Orders</a>
+                            <a href="{{ route('account.subscriptions') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-arrow-path-rounded-square class="size-4" /> Subscriptions</a>
                             <a href="{{ route('account.settings') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-cog-6-tooth class="size-4" /> Account settings</a>
                             @if (auth()->user()->is_admin)
                                 <a href="{{ url('/admin') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-adjustments-horizontal class="size-4" /> Submission admin</a>
@@ -88,6 +90,7 @@
             <nav class="grid gap-1 text-sm font-bold">
                 <a href="{{ route('home') }}" class="rounded-lg px-3 py-2 hover:bg-zinc-100">Discover</a>
                 <a href="{{ route('home') }}#catalog" class="rounded-lg px-3 py-2 hover:bg-zinc-100">Categories</a>
+                <a href="{{ route('vendors.index') }}" class="rounded-lg px-3 py-2 hover:bg-zinc-100">Developers</a>
                 <a href="{{ route('submissions.create') }}" class="rounded-lg px-3 py-2 hover:bg-zinc-100">Sell software</a>
                 <a href="{{ route('wishlist.index') }}" class="rounded-lg px-3 py-2 hover:bg-zinc-100">Wishlist</a>
                 <a href="{{ route('cart.index') }}" class="rounded-lg px-3 py-2 hover:bg-zinc-100">Cart</a>
@@ -121,7 +124,7 @@
                 <div class="flex items-center gap-2 text-white"><span class="grid size-8 place-items-center rounded-lg bg-teal-400 font-extrabold text-zinc-950">M</span><strong>MerebHub</strong></div>
                 <p class="mt-4 text-sm leading-6 text-zinc-400">Independent Ethiopian software, reviewed and ready to use.</p>
             </div>
-            <div><strong class="text-sm text-white">Marketplace</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('home') }}">Discover</a><a href="{{ route('home') }}#catalog">Browse all</a></div></div>
+            <div><strong class="text-sm text-white">Marketplace</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('home') }}">Discover</a><a href="{{ route('home') }}#catalog">Browse all</a><a href="{{ route('vendors.index') }}">Developers</a></div></div>
             <div><strong class="text-sm text-white">Developers</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('submissions.create') }}">Submit software</a><a href="{{ route('orders.lookup') }}">Order lookup</a></div></div>
             <div><strong class="text-sm text-white">Your account</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('account.orders') }}">Previous orders</a><a href="{{ route('wishlist.index') }}">Wishlist</a><a href="{{ route('cart.index') }}">Cart</a></div></div>
         </div>

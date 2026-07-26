@@ -16,6 +16,9 @@ class AuthorsTable
         return $table->columns([
             ImageColumn::make('avatar_path')->label('')->disk('public')->circular(),
             TextColumn::make('name')->searchable()->sortable()->weight('bold'),
+            TextColumn::make('status')->badge()->sortable(),
+            IconColumn::make('is_verified')->label('Verified')->boolean(),
+            IconColumn::make('is_featured')->label('Featured')->boolean(),
             TextColumn::make('products_count')->counts('products')->label('Products')->sortable(),
             TextColumn::make('website_url')->label('Website')->limit(35)->url(fn ($state) => $state)->openUrlInNewTab(),
             IconColumn::make('is_public')->label('Public')->boolean(),

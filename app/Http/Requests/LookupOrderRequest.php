@@ -15,7 +15,7 @@ class LookupOrderRequest extends FormRequest
     {
         return [
             'buyer_email' => ['required', 'email', 'max:255'],
-            'wc_order_id' => ['required', 'integer', 'min:1'],
+            'order_reference' => ['required', 'uuid'],
         ];
     }
 }

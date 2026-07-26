@@ -22,7 +22,6 @@ class Product extends Model
     use HasFactory;
 
     protected $fillable = [
-        'wc_product_id',
         'author_id',
         'category',
         'name',
@@ -43,8 +42,6 @@ class Product extends Model
         'billing_interval',
         'trial_days',
         'app_url',
-        'wc_metadata',
-        'last_synced_at',
         'status',
     ];
 
@@ -71,8 +68,6 @@ class Product extends Model
             'billing_model' => BillingModel::class,
             'billing_interval' => BillingInterval::class,
             'trial_days' => 'integer',
-            'wc_metadata' => 'array',
-            'last_synced_at' => 'datetime',
             'status' => ProductStatus::class,
         ];
     }
@@ -104,6 +99,30 @@ class Product extends Model
         return $this->belongsTo(Author::class);
     }
 
+    public function authors(): BelongsToMany
+    {
+        return $this->belongsToMany(Author::class)
+            ->using(AuthorProduct::class)
+            ->withPivot([
+                'role',
+                'is_primary',
+                'is_publicly_displayed',
+                'can_manage_product',
+                'revenue_share_basis_points',
+                'sort_order',
+                'internal_notes',
+            ])
+            ->withTimestamps()
+            ->orderByPivot('sort_order');
+    }
+
+    public function publicContributors(): BelongsToMany
+    {
+        return $this->authors()
+            ->wherePivot('is_publicly_displayed', true)
+            ->where('authors.is_public', true);
+    }
+
     public function platforms(): BelongsToMany
     {
         return $this->belongsToMany(Platform::class)->withTimestamps();
@@ -112,6 +131,16 @@ class Product extends Model
     public function versions(): HasMany
     {
         return $this->hasMany(AppVersion::class);
+    }
+
+    public function plans(): HasMany
+    {
+        return $this->hasMany(ProductPlan::class)->orderBy('sort_order');
+    }
+
+    public function activePlans(): HasMany
+    {
+        return $this->plans()->where('is_active', true);
     }
 
     public function orders(): HasMany

@@ -15,7 +15,6 @@ class OrderFactory extends Factory
     public function definition(): array
     {
         return [
-            'wc_order_id' => fake()->unique()->numberBetween(1000, 999999),
             'buyer_email' => fake()->safeEmail(),
             'buyer_user_id' => null,
             'product_id' => Product::factory(),

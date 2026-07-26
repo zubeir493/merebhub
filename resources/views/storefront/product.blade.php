@@ -17,27 +17,37 @@
                 </div>
                 <h1 class="mt-3 text-4xl font-extrabold leading-tight text-zinc-950">{{ $product->name }}</h1>
                 <p class="mt-3 text-lg font-semibold leading-7 text-zinc-600">{{ $product->tagline }}</p>
-                <a href="{{ route('authors.show', $product->author) }}" class="mt-5 inline-flex items-center gap-2 text-sm font-extrabold text-teal-700">
-                    By {{ $product->author->name }}
-                    <x-heroicon-o-check-badge class="size-4" />
-                </a>
+                @if ($product->author->status === \App\Enums\AuthorStatus::Active && $product->author->is_public)
+                    <a href="{{ route('vendors.show', $product->author) }}" class="mt-5 inline-flex items-center gap-2 text-sm font-extrabold text-teal-700">
+                        By {{ $product->author->name }}
+                        @if ($product->author->is_verified)<x-heroicon-o-check-badge class="size-4" />@endif
+                    </a>
+                @else
+                    <p class="mt-5 text-sm font-extrabold text-zinc-600">By {{ $product->author->name }}</p>
+                @endif
                 <div class="mt-5 flex items-center gap-2 text-sm">
                     <x-heroicon-s-star class="size-5 text-amber-400" />
                     <strong>{{ number_format((float) $product->rating, 1) }}</strong>
                     <span class="text-zinc-500">{{ number_format($product->ratings_count) }} ratings</span>
                 </div>
                 <div class="mt-8 border-y border-zinc-200 py-6">
-                    <div class="flex items-end gap-3">
-                        <strong class="text-3xl text-zinc-950">{{ number_format((float) $product->price) }} ETB</strong>
-                        @if ($product->compare_at_price)
-                            <span class="pb-1 text-sm font-semibold text-zinc-400 line-through">{{ number_format((float) $product->compare_at_price) }} ETB</span>
-                        @endif
-                    </div>
-                    <div class="mt-5 flex gap-2">
+                    <div class="mt-5">
+                        @if ($product->activePlans->isNotEmpty())
                         <form method="POST" action="{{ route('cart.store', $product) }}" class="flex-1">
                             @csrf
-                            <button class="btn-primary w-full"><x-heroicon-o-shopping-cart class="size-5" /> Buy now</button>
+                            <label class="form-label" for="product-plan">Choose a plan</label>
+                            <select id="product-plan" name="product_plan_id" class="form-input">
+                                @foreach ($product->activePlans as $plan)
+                                    <option value="{{ $plan->id }}">{{ $plan->name }} — {{ number_format($plan->price_minor / 100, 2) }} ETB</option>
+                                @endforeach
+                            </select>
+                            <button class="btn-primary mt-4 w-full"><x-heroicon-o-shopping-cart class="size-5" /> Add to cart</button>
                         </form>
+                        @else
+                            <div class="rounded-lg bg-amber-50 px-4 py-3 text-sm font-bold text-amber-800">This product is not currently available for purchase.</div>
+                        @endif
+                    </div>
+                    <div class="mt-3 flex justify-end">
                         @auth
                             @php($wishlistItem = auth()->user()->wishlistItems()->where('product_id', $product->id)->first())
                             @if ($wishlistItem)

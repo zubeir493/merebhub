@@ -3,7 +3,7 @@
 @section('content')
     <div class="mx-auto max-w-2xl px-5 py-16">
         @if ($order)
-            <p class="text-sm font-extrabold uppercase text-teal-700">Order #{{ $order->wc_order_id }}</p>
+            <p class="text-sm font-extrabold uppercase text-teal-700">Order {{ $order->public_id }}</p>
             <h1 class="mt-2 text-3xl font-extrabold">Your purchase</h1>
             <article class="mt-7 rounded-lg border border-zinc-200 p-6">
                 <div class="flex gap-4">

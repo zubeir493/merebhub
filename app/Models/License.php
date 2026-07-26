@@ -16,13 +16,23 @@ class License extends Model
     protected $fillable = [
         'order_id',
         'order_item_id',
+        'marketplace_license_id',
+        'customer_id',
         'product_id',
+        'product_plan_id',
         'buyer_email',
+        'provider',
+        'provider_product_id',
+        'provider_policy_id',
+        'provider_license_id',
         'keygen_license_id',
         'license_key',
         'status',
         'activation_limit',
+        'activation_count',
+        'issued_at',
         'expires_at',
+        'suspended_at',
         'revoked_at',
     ];
 
@@ -30,8 +40,12 @@ class License extends Model
     {
         return [
             'status' => LicenseStatus::class,
+            'license_key' => 'encrypted',
             'activation_limit' => 'integer',
+            'activation_count' => 'integer',
+            'issued_at' => 'datetime',
             'expires_at' => 'datetime',
+            'suspended_at' => 'datetime',
             'revoked_at' => 'datetime',
         ];
     }
@@ -49,5 +63,15 @@ class License extends Model
     public function orderItem(): BelongsTo
     {
         return $this->belongsTo(OrderItem::class);
+    }
+
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'customer_id');
+    }
+
+    public function productPlan(): BelongsTo
+    {
+        return $this->belongsTo(ProductPlan::class);
     }
 }

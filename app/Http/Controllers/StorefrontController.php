@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AppSubmissionStatus;
+use App\Enums\AuthorStatus;
 use App\Enums\BillingInterval;
 use App\Enums\BillingModel;
 use App\Enums\FulfillmentType;
@@ -14,6 +15,7 @@ use App\Models\Author;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
@@ -31,7 +33,7 @@ class StorefrontController extends Controller
         abort_unless($product->status === ProductStatus::Published, 404);
 
         return view('storefront.product', [
-            'product' => $product->load(['author', 'platforms', 'versions']),
+            'product' => $product->load(['author', 'platforms', 'versions', 'publicContributors', 'activePlans']),
             'relatedProducts' => Product::published()
                 ->with('author')
                 ->where('category', $product->category)
@@ -41,12 +43,70 @@ class StorefrontController extends Controller
         ]);
     }
 
-    public function author(Author $author): View
+    public function vendors(Request $request): View
     {
-        abort_unless($author->is_public, 404);
+        $search = $request->string('q')->trim()->toString();
+        $sort = $request->string('sort', 'newest')->toString();
+        $vendors = Author::query()
+            ->publiclyVisible()
+            ->withCount(['products' => fn ($query) => $query->published()])
+            ->when($search !== '', fn ($query) => $query->where(
+                fn ($query) => $query
+                    ->where('name', 'like', "%{$search}%")
+                    ->orWhere('tagline', 'like', "%{$search}%"),
+            ))
+            ->when($request->boolean('verified'), fn ($query) => $query->where('is_verified', true))
+            ->when($request->boolean('featured'), fn ($query) => $query->where('is_featured', true))
+            ->when($sort === 'products', fn ($query) => $query->orderByDesc('products_count'))
+            ->when($sort === 'sales', fn ($query) => $query->orderByDesc('public_sales_count'))
+            ->when($sort === 'rating', fn ($query) => $query->orderByDesc('average_rating'))
+            ->when($sort === 'newest', fn ($query) => $query->latest())
+            ->paginate(12)
+            ->withQueryString();
+
+        return view('storefront.vendors', [
+            'vendors' => $vendors,
+            'search' => $search,
+            'sort' => $sort,
+            'title' => 'Ethiopian software vendors',
+        ]);
+    }
+
+    public function vendor(Request $request, Author $author): View
+    {
+        abort_unless($author->status === AuthorStatus::Active && $author->is_public, 404);
+
+        $search = $request->string('q')->trim()->toString();
+        $category = $request->string('category')->trim()->toString();
+        $sort = $request->string('sort', 'newest')->toString();
+        $vendorProducts = fn () => Product::query()
+            ->published()
+            ->where(fn ($query) => $query
+                ->whereBelongsTo($author, 'author')
+                ->orWhereHas('authors', fn ($query) => $query->whereKey($author->getKey())));
+        $products = $vendorProducts()
+            ->with(['author', 'platforms', 'publicContributors'])
+            ->when($search !== '', fn ($query) => $query->where(
+                fn ($query) => $query
+                    ->where('name', 'like', "%{$search}%")
+                    ->orWhere('tagline', 'like', "%{$search}%"),
+            ))
+            ->when($category !== '', fn ($query) => $query->where('category', $category))
+            ->when($sort === 'popular', fn ($query) => $query->orderByDesc('weekly_sales'))
+            ->when($sort === 'rating', fn ($query) => $query->orderByDesc('rating'))
+            ->when($sort === 'price', fn ($query) => $query->orderBy('price'))
+            ->when($sort === 'newest', fn ($query) => $query->latest())
+            ->paginate(12)
+            ->withQueryString();
 
         return view('storefront.author', [
-            'author' => $author->load(['products' => fn ($query) => $query->where('status', ProductStatus::Published)->with('platforms')]),
+            'author' => $author,
+            'products' => $products,
+            'categories' => $vendorProducts()->distinct()->orderBy('category')->pluck('category'),
+            'search' => $search,
+            'category' => $category,
+            'sort' => $sort,
+            'title' => $author->name,
         ]);
     }
 
@@ -117,7 +177,7 @@ class StorefrontController extends Controller
         $order = Order::query()
             ->with(['product.versions', 'license'])
             ->where('buyer_email', $request->string('buyer_email'))
-            ->where('wc_order_id', $request->integer('wc_order_id'))
+            ->where('public_id', $request->string('order_reference'))
             ->first();
         $version = $order?->product->versions->sortByDesc('created_at')->first();
 

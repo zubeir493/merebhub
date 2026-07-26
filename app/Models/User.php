@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\AuthorStatus;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
@@ -9,8 +10,9 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -60,8 +62,25 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         return $this->belongsToMany(Product::class, 'wishlist_items')->withTimestamps();
     }
 
+    public function authorProfile(): HasOne
+    {
+        return $this->hasOne(Author::class);
+    }
+
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(Subscription::class, 'customer_id');
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
-        return $panel->getId() === 'admin' && $this->is_admin;
+        return match ($panel->getId()) {
+            'admin' => $this->is_admin && $this->hasVerifiedEmail(),
+            'author' => $this->hasVerifiedEmail()
+                && $this->authorProfile()
+                    ->where('status', AuthorStatus::Active)
+                    ->exists(),
+            default => false,
+        };
     }
 }

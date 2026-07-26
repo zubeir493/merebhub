@@ -2,7 +2,6 @@
 
 namespace App\Filament\Widgets;
 
-use App\Services\WooCommerceService;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -14,7 +13,8 @@ class IntegrationHealth extends StatsOverviewWidget
 
     protected function getStats(): array
     {
-        $wooReady = app(WooCommerceService::class)->isConfigured();
+        $chapaReady = filled(config('services.chapa.secret_key'))
+            && filled(config('services.chapa.webhook_secret'));
         $keygenReady = filled(config('services.keygen.api_url'))
             && filled(config('services.keygen.api_token'))
             && filled(config('services.keygen.account_id'))
@@ -22,9 +22,9 @@ class IntegrationHealth extends StatsOverviewWidget
         $mailReady = config('mail.default') !== 'log';
 
         return [
-            Stat::make('WooCommerce', $wooReady ? 'Connected' : 'Needs configuration')
-                ->description('Catalog, checkout, and webhook')
-                ->color($wooReady ? 'success' : 'warning'),
+            Stat::make('Chapa', $chapaReady ? 'Connected' : 'Needs configuration')
+                ->description('Hosted checkout and payment verification')
+                ->color($chapaReady ? 'success' : 'warning'),
             Stat::make('Keygen', $keygenReady ? 'Connected' : 'Needs configuration')
                 ->description('License creation and revocation')
                 ->color($keygenReady ? 'success' : 'warning'),

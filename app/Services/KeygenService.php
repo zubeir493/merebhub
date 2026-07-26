@@ -2,34 +2,40 @@
 
 namespace App\Services;
 
-use App\Models\Order;
-use App\Models\Product;
+use App\Contracts\LicensingProvider;
+use App\Models\OrderItem;
+use DateTimeInterface;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
 
-class KeygenService
+class KeygenService implements LicensingProvider
 {
-    public function createLicense(Order $order, Product $product, int $activationLimit = 1): array
+    public function createLicense(OrderItem $orderItem): array
     {
-        $policyId = $product->keygen_policy_id ?: config('services.keygen.policy_id');
+        $orderItem->loadMissing(['order', 'product', 'productPlan']);
+        $policyId = $orderItem->license_configuration['keygen_policy_id']
+            ?? $orderItem->productPlan?->keygen_policy_id
+            ?? $orderItem->product->keygen_policy_id
+            ?? config('services.keygen.policy_id');
 
         if (blank($policyId)) {
             throw new RuntimeException('KEYGEN_POLICY_ID is not configured.');
         }
 
-        return $this->request()
+        $response = $this->request()
             ->post($this->endpoint('licenses'), [
                 'data' => [
                     'type' => 'licenses',
                     'attributes' => [
-                        'name' => "{$product->name} - {$order->buyer_email}",
+                        'name' => "{$orderItem->product_name} - {$orderItem->order->buyer_email}",
                         'metadata' => [
-                            'merebhubOrderId' => $order->id,
-                            'wooCommerceOrderId' => $order->wc_order_id,
-                            'buyerEmail' => $order->buyer_email,
-                            'activationLimit' => $activationLimit,
+                            'merebhubOrderId' => $orderItem->order_id,
+                            'merebhubOrderItemId' => $orderItem->id,
+                            'merebhubOrderReference' => $orderItem->order->public_id,
+                            'buyerEmail' => $orderItem->order->buyer_email,
+                            'activationLimit' => $orderItem->license_configuration['activation_limit'] ?? 1,
                         ],
                     ],
                     'relationships' => [
@@ -44,6 +50,8 @@ class KeygenService
             ])
             ->throw()
             ->json();
+
+        return $this->licenseData($response);
     }
 
     public function validate(string $licenseKey): array
@@ -56,10 +64,37 @@ class KeygenService
             ->json();
     }
 
-    public function revoke(string $licenseId): void
+    public function suspendLicense(string $providerLicenseId): void
     {
         $this->request()
-            ->delete($this->endpoint("licenses/{$licenseId}/actions/revoke"))
+            ->post($this->endpoint("licenses/{$providerLicenseId}/actions/suspend"))
+            ->throw();
+    }
+
+    public function reinstateLicense(string $providerLicenseId): void
+    {
+        $this->request()
+            ->post($this->endpoint("licenses/{$providerLicenseId}/actions/reinstate"))
+            ->throw();
+    }
+
+    public function revokeLicense(string $providerLicenseId): void
+    {
+        $this->request()
+            ->delete($this->endpoint("licenses/{$providerLicenseId}/actions/revoke"))
+            ->throw();
+    }
+
+    public function extendLicense(string $providerLicenseId, DateTimeInterface $expiresAt): void
+    {
+        $this->request()
+            ->patch($this->endpoint("licenses/{$providerLicenseId}"), [
+                'data' => [
+                    'type' => 'licenses',
+                    'id' => $providerLicenseId,
+                    'attributes' => ['expiry' => $expiresAt->format(DATE_ATOM)],
+                ],
+            ])
             ->throw();
     }
 

@@ -8,7 +8,13 @@ use Filament\Support\Contracts\HasLabel;
 enum ProductStatus: string implements HasColor, HasLabel
 {
     case Draft = 'draft';
+    case Submitted = 'submitted';
+    case UnderReview = 'under_review';
+    case ChangesRequested = 'changes_requested';
+    case Approved = 'approved';
     case Published = 'published';
+    case Suspended = 'suspended';
+    case Archived = 'archived';
 
     public function getLabel(): string
     {
@@ -18,7 +24,10 @@ enum ProductStatus: string implements HasColor, HasLabel
     public function getColor(): string
     {
         return match ($this) {
-            self::Draft => 'gray',
+            self::Draft, self::Archived => 'gray',
+            self::Submitted, self::UnderReview => 'warning',
+            self::ChangesRequested, self::Suspended => 'danger',
+            self::Approved => 'info',
             self::Published => 'success',
         };
     }

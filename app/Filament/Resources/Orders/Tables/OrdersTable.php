@@ -9,7 +9,6 @@ use Filament\Actions\Action;
 use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Support\Icons\Heroicon;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -21,12 +20,15 @@ class OrdersTable
         return $table
             ->defaultSort('created_at', 'desc')
             ->columns([
-                TextColumn::make('wc_order_id')->label('Order')->prefix('#')->searchable()->sortable()->weight('bold'),
-                TextColumn::make('product.name')->searchable()->sortable(),
+                TextColumn::make('public_id')->label('Order')->searchable()->sortable()->weight('bold')->limit(14),
+                TextColumn::make('items_count')->counts('items')->label('Items')->sortable(),
                 TextColumn::make('buyer_email')->searchable(),
-                TextColumn::make('amount')->money(fn (Order $record) => $record->currency)->sortable(),
+                TextColumn::make('total_minor')
+                    ->label('Total')
+                    ->formatStateUsing(fn (int $state, Order $record): string => number_format($state / 100, 2).' '.$record->currency)
+                    ->sortable(),
                 TextColumn::make('status')->badge()->sortable(),
-                IconColumn::make('license.id')->label('Licensed')->boolean(),
+                TextColumn::make('licenses_count')->counts('licenses')->label('Licenses')->numeric(),
                 TextColumn::make('paid_at')->label('Paid')->dateTime()->placeholder('—')->sortable(),
                 TextColumn::make('fulfillment_error')->label('Issue')->limit(40)->color('danger')->toggleable(),
             ])
@@ -37,7 +39,7 @@ class OrdersTable
                 Action::make('retryFulfillment')
                     ->label('Retry license')
                     ->icon(Heroicon::ArrowPath)
-                    ->visible(fn (Order $record): bool => $record->status === OrderStatus::Paid && ! $record->license)
+                    ->visible(fn (Order $record): bool => $record->status === OrderStatus::Paid && $record->licenses()->count() < $record->items()->count())
                     ->action(function (Order $record): void {
                         ProvisionOrderLicenseJob::dispatch($record->id);
                         Notification::make()->title('License delivery queued')->success()->send();

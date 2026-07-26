@@ -27,7 +27,7 @@ class LicensesTable
                 TextColumn::make('status')->badge()->sortable(),
                 TextColumn::make('activation_limit')->label('Activations')->numeric(),
                 TextColumn::make('expires_at')->dateTime()->placeholder('Never')->sortable(),
-                TextColumn::make('order.wc_order_id')->label('Order')->prefix('#')->searchable(),
+                TextColumn::make('order.public_id')->label('Order')->searchable()->limit(14),
             ])
             ->filters([
                 SelectFilter::make('status')->options(LicenseStatus::class),

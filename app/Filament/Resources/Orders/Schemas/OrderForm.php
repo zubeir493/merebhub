@@ -14,20 +14,14 @@ class OrderForm
     {
         return $schema
             ->components([
-                TextInput::make('wc_order_id')
-                    ->required()
-                    ->numeric(),
+                TextInput::make('public_id')->disabled(),
+                TextInput::make('transaction_reference')->disabled(),
                 TextInput::make('buyer_email')
                     ->email()
                     ->required(),
                 TextInput::make('buyer_user_id')
                     ->numeric(),
-                Select::make('product_id')
-                    ->relationship('product', 'name')
-                    ->required(),
-                TextInput::make('amount')
-                    ->required()
-                    ->numeric(),
+                TextInput::make('total_minor')->label('Total (minor units)')->disabled(),
                 TextInput::make('currency')
                     ->required()
                     ->default('ETB'),

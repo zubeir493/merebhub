@@ -2,6 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Enums\AuthorRole;
+use App\Enums\AuthorStatus;
+use App\Enums\BillingModel;
+use App\Enums\FulfillmentType;
 use App\Enums\ProductStatus;
 use App\Models\Author;
 use App\Models\Platform;
@@ -43,8 +47,8 @@ class DatabaseSeeder extends Seeder
             ]);
 
         $authors = collect([
-            ['slug' => 'soko-labs', 'name' => 'Soko Labs', 'bio' => 'Retail software designed for the way Ethiopian shops actually work.'],
-            ['slug' => 'brightbooks', 'name' => 'Brightbooks', 'bio' => 'Clear financial tools for ambitious small businesses.'],
+            ['slug' => 'soko-labs', 'name' => 'Soko Labs', 'bio' => 'Retail software designed for the way Ethiopian shops actually work.', 'is_verified' => true, 'is_featured' => true],
+            ['slug' => 'brightbooks', 'name' => 'Brightbooks', 'bio' => 'Clear financial tools for ambitious small businesses.', 'is_verified' => true],
             ['slug' => 'shipmate', 'name' => 'Shipmate', 'bio' => 'Developer infrastructure built in Addis Ababa.'],
             ['slug' => 'netsa-works', 'name' => 'Netsa Works', 'bio' => 'Creative tools for independent studios and designers.'],
             ['slug' => 'sentinel-systems', 'name' => 'Sentinel Systems', 'bio' => 'Practical security products for growing teams.'],
@@ -52,9 +56,35 @@ class DatabaseSeeder extends Seeder
         ])->mapWithKeys(fn (array $author) => [
             $author['slug'] => Author::updateOrCreate(
                 ['slug' => $author['slug']],
-                $author + ['is_public' => true],
+                $author + [
+                    'tagline' => $author['bio'],
+                    'status' => AuthorStatus::Active,
+                    'member_since' => now()->subYears(2),
+                    'is_public' => true,
+                    'average_rating' => 4.7,
+                ],
             ),
         ]);
+
+        Author::updateOrCreate(
+            ['slug' => 'pending-studio'],
+            [
+                'name' => 'Pending Studio',
+                'bio' => 'A profile awaiting marketplace approval.',
+                'status' => AuthorStatus::PendingApproval,
+                'is_public' => false,
+            ],
+        );
+
+        Author::updateOrCreate(
+            ['slug' => 'new-maker'],
+            [
+                'name' => 'New Maker',
+                'bio' => 'An active developer preparing a first release.',
+                'status' => AuthorStatus::Active,
+                'is_public' => true,
+            ],
+        );
 
         $products = [
             ['Soko Inventory', 'soko-inventory', 'soko-labs', 'Business', 'Inventory that stays accurate from shelf to sale.', 3490, 4490, 'images/marketplace/soko-inventory.webp', 4.8, 1240, 386, true, ['web', 'windows']],
@@ -92,6 +122,44 @@ class DatabaseSeeder extends Seeder
             );
 
             $product->platforms()->sync(collect($productPlatforms)->map(fn (string $platform) => $platforms[$platform]->id));
+            $product->plans()->updateOrCreate(
+                ['slug' => 'personal'],
+                [
+                    'name' => 'Personal',
+                    'description' => 'A single-user license with updates and support.',
+                    'price_minor' => $price * 100,
+                    'currency' => 'ETB',
+                    'billing_model' => BillingModel::OneTime,
+                    'license_type' => 'perpetual',
+                    'activation_limit' => 1,
+                    'support_duration_days' => 365,
+                    'update_duration_days' => 365,
+                    'fulfillment_type' => FulfillmentType::LicenseKey,
+                    'is_active' => true,
+                ],
+            );
+            $product->authors()->syncWithoutDetaching([
+                $authors[$author]->id => [
+                    'role' => AuthorRole::PrimaryDeveloper->value,
+                    'is_primary' => true,
+                    'is_publicly_displayed' => true,
+                    'can_manage_product' => true,
+                    'revenue_share_basis_points' => 7000,
+                    'sort_order' => 0,
+                ],
+            ]);
         }
+
+        $productsBySlug = Product::whereIn('slug', ['netsa-studio'])->get()->keyBy('slug');
+        $productsBySlug['netsa-studio']?->authors()->syncWithoutDetaching([
+            $authors['brightbooks']->id => [
+                'role' => AuthorRole::Contributor->value,
+                'is_primary' => false,
+                'is_publicly_displayed' => true,
+                'can_manage_product' => false,
+                'revenue_share_basis_points' => 0,
+                'sort_order' => 1,
+            ],
+        ]);
     }
 }

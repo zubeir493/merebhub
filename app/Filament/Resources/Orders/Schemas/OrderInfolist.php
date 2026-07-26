@@ -11,16 +11,16 @@ class OrderInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('wc_order_id')
-                    ->numeric(),
+                TextEntry::make('public_id')->label('Order'),
+                TextEntry::make('transaction_reference')->label('Chapa reference'),
                 TextEntry::make('buyer_email'),
                 TextEntry::make('buyer_user_id')
                     ->numeric()
                     ->placeholder('-'),
-                TextEntry::make('product.name')
-                    ->label('Product'),
-                TextEntry::make('amount')
-                    ->numeric(),
+                TextEntry::make('items_count')->state(fn ($record): int => $record->items()->count())->label('Items'),
+                TextEntry::make('total_minor')
+                    ->label('Total')
+                    ->formatStateUsing(fn (int $state, $record): string => number_format($state / 100, 2).' '.$record->currency),
                 TextEntry::make('currency'),
                 TextEntry::make('status')
                     ->badge(),

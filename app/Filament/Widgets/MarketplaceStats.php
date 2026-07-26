@@ -18,7 +18,7 @@ class MarketplaceStats extends StatsOverviewWidget
                 ->description('Submissions awaiting action')
                 ->color('warning'),
             Stat::make('Approved', AppSubmission::where('status', AppSubmissionStatus::Approved)->count())
-                ->description('Ready for manual WooCommerce setup')
+                ->description('Ready for catalog review')
                 ->color('success'),
             Stat::make('Rejected', AppSubmission::where('status', AppSubmissionStatus::Rejected)->count())
                 ->description('Closed submissions')

@@ -3,6 +3,8 @@
 namespace Database\Factories;
 
 use App\Models\CartItem;
+use App\Models\ProductPlan;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,7 +20,10 @@ class CartItemFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'user_id' => User::factory(),
+            'product_id' => fn (array $attributes) => ProductPlan::find($attributes['product_plan_id'])?->product_id,
+            'product_plan_id' => ProductPlan::factory(),
+            'quantity' => 1,
         ];
     }
 }

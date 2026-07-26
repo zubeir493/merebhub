@@ -3,6 +3,7 @@
 namespace App\Actions;
 
 use App\Enums\AppSubmissionStatus;
+use App\Enums\AuthorRole;
 use App\Enums\ProductStatus;
 use App\Models\AppSubmission;
 use App\Models\AppVersion;
@@ -10,7 +11,7 @@ use App\Models\Author;
 use App\Models\Platform;
 use App\Models\Product;
 use App\Models\User;
-use App\Services\WooCommerceService;
+use App\Support\Money;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -18,8 +19,6 @@ use RuntimeException;
 
 class ApproveSubmission
 {
-    public function __construct(private WooCommerceService $woocommerce) {}
-
     public function handle(AppSubmission $submission, User $reviewer, array $data): Product
     {
         if ($submission->status !== AppSubmissionStatus::Pending) {
@@ -48,7 +47,29 @@ class ApproveSubmission
                 'cover_path' => $data['cover_path'],
                 'keygen_policy_id' => $data['keygen_policy_id'] ?? null,
                 'is_featured' => (bool) ($data['is_featured'] ?? false),
-                'status' => ProductStatus::Published,
+                'status' => ProductStatus::Approved,
+            ]);
+
+            $product->plans()->create([
+                'name' => 'Personal',
+                'slug' => 'personal',
+                'price_minor' => Money::fromMajor((string) $data['price']),
+                'currency' => 'ETB',
+                'billing_model' => $submission->payment_model,
+                'billing_interval' => $submission->billing_interval,
+                'license_type' => $submission->payment_model->value === 'manual_subscription' ? 'fixed_term' : 'perpetual',
+                'activation_limit' => 1,
+                'keygen_policy_id' => $data['keygen_policy_id'] ?? null,
+                'fulfillment_type' => $submission->fulfillment_type,
+                'is_active' => true,
+            ]);
+
+            $product->authors()->attach($author, [
+                'role' => AuthorRole::PrimaryDeveloper,
+                'is_primary' => true,
+                'is_publicly_displayed' => true,
+                'can_manage_product' => true,
+                'revenue_share_basis_points' => 7000,
             ]);
 
             $platform = Platform::firstOrCreate(
@@ -64,9 +85,6 @@ class ApproveSubmission
                 'file_size' => Storage::disk(config('filesystems.builds_disk'))->size($submission->file_path),
                 'changelog' => 'Initial marketplace release.',
             ]);
-
-            $wooProduct = $this->woocommerce->createProduct($product);
-            $product->update(['wc_product_id' => $wooProduct['id']]);
 
             $submission->update([
                 'status' => AppSubmissionStatus::Approved,

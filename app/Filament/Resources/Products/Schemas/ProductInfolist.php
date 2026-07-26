@@ -11,9 +11,6 @@ class ProductInfolist
     {
         return $schema
             ->components([
-                TextEntry::make('wc_product_id')
-                    ->numeric()
-                    ->placeholder('-'),
                 TextEntry::make('author.name')
                     ->label('Author'),
                 TextEntry::make('category'),

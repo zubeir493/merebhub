@@ -52,7 +52,6 @@ class ProductForm
                         ->imageEditor()
                         ->required(fn (string $operation): bool => $operation === 'create'),
                     FileUpload::make('icon_path')->image()->disk('public')->directory('product-icons')->imageEditor(),
-                    TextInput::make('wc_product_id')->label('WooCommerce product ID')->numeric()->disabled()->dehydrated(),
                 ]),
         ]);
     }

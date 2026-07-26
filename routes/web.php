@@ -1,19 +1,22 @@
 <?php
 
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AccountController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\ChapaWebhookController;
+use App\Http\Controllers\CheckoutReturnController;
 use App\Http\Controllers\DownloadController;
-use App\Http\Controllers\FulfillmentWebhookController;
 use App\Http\Controllers\StorefrontController;
+use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\VerificationController;
 use App\Http\Controllers\WishlistController;
-use App\Http\Controllers\WooCommerceWebhookController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [StorefrontController::class, 'home'])->name('home');
 Route::get('/apps/{product:slug}', [StorefrontController::class, 'product'])->name('products.show');
-Route::get('/authors/{author:slug}', [StorefrontController::class, 'author'])->name('authors.show');
+Route::get('/vendors', [StorefrontController::class, 'vendors'])->name('vendors.index');
+Route::get('/vendors/{author:slug}', [StorefrontController::class, 'vendor'])->name('vendors.show');
+Route::redirect('/authors/{author}', '/vendors/{author}', 301);
 Route::get('/submit', [StorefrontController::class, 'submit'])->name('submissions.create');
 Route::post('/submit', [StorefrontController::class, 'storeSubmission'])->middleware('throttle:public-form')->name('submissions.store');
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
@@ -21,8 +24,7 @@ Route::post('/cart/{product}', [CartController::class, 'store'])->whereNumber('p
 Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
 Route::get('/orders/lookup', [StorefrontController::class, 'lookup'])->name('orders.lookup');
 Route::post('/orders/lookup', [StorefrontController::class, 'lookupResult'])->middleware('throttle:public-form')->name('orders.lookup.result');
-Route::post('/webhooks/woocommerce', WooCommerceWebhookController::class)->middleware('throttle:webhooks')->name('webhooks.woocommerce');
-Route::post('/webhooks/fulfillment', FulfillmentWebhookController::class)->middleware('throttle:webhooks')->name('webhooks.fulfillment');
+Route::post('/webhooks/chapa', ChapaWebhookController::class)->middleware('throttle:webhooks')->name('webhooks.chapa');
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
@@ -40,7 +42,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/email/verify', [VerificationController::class, 'notice'])->name('verification.notice');
     Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])->middleware('signed')->name('verification.verify');
     Route::post('/email/verification-notification', [VerificationController::class, 'send'])->middleware('throttle:6,1')->name('verification.send');
-    Route::post('/cart/checkout', [CartController::class, 'checkout'])->name('cart.checkout');
+    Route::post('/cart/checkout', [CartController::class, 'checkout'])->middleware('verified')->name('cart.checkout');
     Route::patch('/cart/{cartItem}', [CartController::class, 'update'])->whereNumber('cartItem')->name('cart.update');
     Route::delete('/cart/{cartItem}', [CartController::class, 'destroy'])->whereNumber('cartItem')->name('cart.destroy');
     Route::post('/wishlist/{product}', [WishlistController::class, 'store'])->whereNumber('product')->name('wishlist.store');
@@ -49,8 +51,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/account/purchases', [AccountController::class, 'orders'])->name('account.purchases');
     Route::get('/account/settings', [AccountController::class, 'settings'])->name('account.settings');
     Route::patch('/account/settings', [AccountController::class, 'update'])->name('account.settings.update');
+    Route::get('/account/subscriptions', [SubscriptionController::class, 'index'])->name('account.subscriptions');
+    Route::post('/account/subscriptions/{subscription}/renew', [SubscriptionController::class, 'renew'])->name('account.subscriptions.renew');
+    Route::get('/checkout/return/{order:public_id}', CheckoutReturnController::class)->name('payments.chapa.return');
 });
 
 Route::get('/downloads/{version}/{license}', DownloadController::class)
-    ->middleware('signed')
+    ->middleware(['auth', 'signed'])
     ->name('downloads.show');

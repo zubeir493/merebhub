@@ -9,7 +9,7 @@
                 <article class="rounded-lg border border-zinc-200">
                     <header class="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-200 bg-zinc-50 px-5 py-4">
                         <div>
-                            <strong>Order #{{ $order->wc_order_id }}</strong>
+                            <strong>Order {{ $order->public_id }}</strong>
                             <p class="mt-1 text-xs text-zinc-500">{{ $order->created_at->format('M j, Y') }} · {{ number_format((float) $order->amount) }} {{ $order->currency }}</p>
                         </div>
                         <span class="rounded-md bg-white px-2.5 py-1 text-xs font-bold capitalize text-zinc-700 ring-1 ring-zinc-200">{{ $order->status->value }}</span>

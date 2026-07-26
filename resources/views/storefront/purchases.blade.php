@@ -14,7 +14,7 @@
                             <h2 class="text-lg font-extrabold">{{ $order->product->name }}</h2>
                             <span class="rounded-md bg-zinc-100 px-2 py-1 text-xs font-bold capitalize text-zinc-600">{{ $order->status->value }}</span>
                         </div>
-                        <p class="mt-2 text-xs font-semibold text-zinc-500">Order #{{ $order->wc_order_id }} · {{ number_format((float) $order->amount) }} {{ $order->currency }}</p>
+                        <p class="mt-2 text-xs font-semibold text-zinc-500">Order {{ $order->public_id }} · {{ number_format($order->total_minor / 100, 2) }} {{ $order->currency }}</p>
                         @if ($order->license)
                             <div class="mt-4 rounded-lg bg-zinc-50 px-3 py-2 font-mono text-sm font-bold text-zinc-700">{{ $order->license->license_key }}</div>
                         @elseif ($order->fulfillment_error)

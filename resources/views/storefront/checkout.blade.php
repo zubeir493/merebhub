@@ -5,7 +5,7 @@
         <section>
             <p class="text-sm font-extrabold uppercase text-teal-700">Secure checkout</p>
             <h1 class="mt-2 text-4xl font-extrabold">Where should we send your license?</h1>
-            <p class="mt-4 max-w-xl leading-7 text-zinc-600">You will continue to WooCommerce and pay with Chapa. MerebHub sends your license and download link as soon as payment clears.</p>
+            <p class="mt-4 max-w-xl leading-7 text-zinc-600">You will continue to Chapa Hosted Checkout. MerebHub sends your license and download link only after Chapa verifies payment.</p>
             @if ($errors->has('checkout'))
                 <div class="mt-6 rounded-lg border border-rose-200 bg-rose-50 p-4 text-sm font-bold text-rose-700">{{ $errors->first('checkout') }}</div>
             @endif

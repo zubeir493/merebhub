@@ -18,7 +18,6 @@ class ProductFactory extends Factory
         $name = fake()->unique()->words(2, true);
 
         return [
-            'wc_product_id' => null,
             'author_id' => Author::factory(),
             'category' => fake()->randomElement(['Developer tools', 'Productivity', 'Business', 'Design', 'Marketing', 'Utilities']),
             'name' => Str::title($name),

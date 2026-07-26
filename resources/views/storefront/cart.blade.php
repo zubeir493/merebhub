@@ -8,7 +8,7 @@
                 <h1 class="mt-2 text-4xl font-extrabold">Your cart</h1>
             </div>
             @auth
-                <span class="text-sm font-semibold text-zinc-500">{{ $items->sum('quantity') }} {{ Str::plural('seat', $items->sum('quantity')) }}</span>
+                <span class="text-sm font-semibold text-zinc-500">{{ $items->count() }} {{ Str::plural('item', $items->count()) }}</span>
             @endauth
         </div>
 
@@ -38,33 +38,28 @@
                                 <div class="min-w-0">
                                     <p class="text-xs font-bold text-zinc-500">{{ $item->product->author->name }}</p>
                                     <a href="{{ route('products.show', $item->product) }}" class="mt-1 block text-lg font-extrabold hover:text-teal-700">{{ $item->product->name }}</a>
-                                    <p class="mt-2 text-sm font-semibold text-zinc-600">{{ number_format((float) $item->product->price) }} ETB per seat</p>
+                                    <p class="mt-1 text-sm text-zinc-500">{{ $item->productPlan?->name ?? 'Legacy plan' }}</p>
+                                    <p class="mt-2 text-sm font-semibold text-zinc-600">{{ number_format(($item->productPlan?->price_minor ?? 0) / 100, 2) }} ETB</p>
                                     <form method="POST" action="{{ route('cart.destroy', $item) }}" class="mt-3">
                                         @csrf
                                         @method('DELETE')
                                         <button class="text-xs font-bold text-rose-600 hover:text-rose-800">Remove</button>
                                     </form>
                                 </div>
-                                <form method="POST" action="{{ route('cart.update', $item) }}" x-data="{ quantity: {{ $item->quantity }} }" class="flex items-center gap-2">
-                                    @csrf
-                                    @method('PATCH')
-                                    <button type="button" @click="quantity = Math.max(1, quantity - 1); $nextTick(() => $el.form.requestSubmit())" class="grid size-9 place-items-center rounded-lg border border-zinc-300 hover:bg-zinc-50" aria-label="Remove one seat"><x-heroicon-o-minus class="size-4" /></button>
-                                    <input name="quantity" x-model.number="quantity" @change="$el.form.requestSubmit()" type="number" min="1" max="100" class="h-9 w-14 rounded-lg border border-zinc-300 text-center text-sm font-bold">
-                                    <button type="button" @click="quantity = Math.min(100, quantity + 1); $nextTick(() => $el.form.requestSubmit())" class="grid size-9 place-items-center rounded-lg border border-zinc-300 hover:bg-zinc-50" aria-label="Add one seat"><x-heroicon-o-plus class="size-4" /></button>
-                                </form>
+                                <span class="text-sm font-bold text-zinc-500">Qty 1</span>
                             </article>
                         @endforeach
                     </div>
                     <aside class="h-fit border-t border-zinc-950 pt-5 lg:sticky lg:top-28">
                         <h2 class="text-lg font-extrabold">Order summary</h2>
-                        <div class="mt-5 flex items-center justify-between text-sm text-zinc-600"><span>Subtotal</span><strong class="text-zinc-950">{{ number_format($subtotal) }} ETB</strong></div>
+                        <div class="mt-5 flex items-center justify-between text-sm text-zinc-600"><span>Subtotal</span><strong class="text-zinc-950">{{ number_format($subtotalMinor / 100, 2) }} ETB</strong></div>
                         <div class="mt-4 flex items-center justify-between border-b border-zinc-200 pb-5 text-sm text-zinc-600"><span>Payment</span><span>Secure Chapa checkout</span></div>
-                        <div class="mt-5 flex items-end justify-between"><strong>Total</strong><strong class="text-2xl">{{ number_format($subtotal) }} ETB</strong></div>
+                        <div class="mt-5 flex items-end justify-between"><strong>Total</strong><strong class="text-2xl">{{ number_format($subtotalMinor / 100, 2) }} ETB</strong></div>
                         <form method="POST" action="{{ route('cart.checkout') }}" class="mt-6">
                             @csrf
                             <button class="btn-primary w-full"><x-heroicon-o-lock-closed class="size-4" /> Continue to Chapa</button>
                         </form>
-                        <p class="mt-4 text-center text-xs leading-5 text-zinc-500">Prices are verified with WooCommerce before payment.</p>
+                        <p class="mt-4 text-center text-xs leading-5 text-zinc-500">Prices and availability are revalidated by MerebHub before Chapa checkout.</p>
                     </aside>
                 </div>
             @endif

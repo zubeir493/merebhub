@@ -23,7 +23,7 @@ class ViewAppSubmission extends ViewRecord
                 ->icon(Heroicon::CheckCircle)
                 ->visible(fn (AppSubmission $record): bool => $record->status === AppSubmissionStatus::Pending)
                 ->modalHeading('Approve submission')
-                ->modalDescription('Mark this submission ready for manual setup in WooCommerce.')
+                ->modalDescription('Approve this submission for catalog setup.')
                 ->requiresConfirmation()
                 ->action(function (AppSubmission $record): void {
                     $record->update([

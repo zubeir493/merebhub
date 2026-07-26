@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Contracts\LicensingProvider;
+use App\Contracts\PaymentGateway;
+use App\Payments\ChapaPaymentGateway;
+use App\Services\KeygenService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -17,7 +21,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(PaymentGateway::class, ChapaPaymentGateway::class);
+        $this->app->bind(LicensingProvider::class, KeygenService::class);
     }
 
     /**

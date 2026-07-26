@@ -44,7 +44,7 @@ class AppServiceProvider extends ServiceProvider
             $user = auth()->user();
 
             $view->with([
-                'headerCartCount' => $user?->cartItems()->sum('quantity') ?? 0,
+                'headerCartCount' => $user?->cartItems()->count() ?? 0,
                 'headerWishlistCount' => $user?->wishlistItems()->count() ?? 0,
             ]);
         });

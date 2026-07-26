@@ -19,6 +19,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class StorefrontController extends Controller
@@ -26,6 +27,49 @@ class StorefrontController extends Controller
     public function home(): View
     {
         return view('storefront.home');
+    }
+
+    public function search(Request $request): View
+    {
+        $search = Str::of($request->string('q'))->squish()->limit(100)->toString();
+        $products = Product::query()
+            ->published()
+            ->with(['author', 'platforms'])
+            ->when(
+                $search !== '',
+                fn ($query) => $query->where(fn ($query) => $query
+                    ->where('name', 'like', "%{$search}%")
+                    ->orWhere('tagline', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhere('category', 'like', "%{$search}%")
+                    ->orWhereHas('author', fn ($query) => $query->where('name', 'like', "%{$search}%"))),
+                fn ($query) => $query->whereKey([]),
+            )
+            ->orderByDesc('weekly_sales')
+            ->paginate(12)
+            ->withQueryString();
+        $authors = Author::query()
+            ->publiclyVisible()
+            ->withCount(['products' => fn ($query) => $query->published()])
+            ->when(
+                $search !== '',
+                fn ($query) => $query->where(fn ($query) => $query
+                    ->where('name', 'like', "%{$search}%")
+                    ->orWhere('tagline', 'like', "%{$search}%")
+                    ->orWhere('bio', 'like', "%{$search}%")),
+                fn ($query) => $query->whereKey([]),
+            )
+            ->orderByDesc('is_verified')
+            ->orderByDesc('average_rating')
+            ->limit(6)
+            ->get();
+
+        return view('storefront.search', [
+            'products' => $products,
+            'authors' => $authors,
+            'search' => $search,
+            'title' => $search === '' ? 'Search' : "Search results for {$search}",
+        ]);
     }
 
     public function product(Product $product): View

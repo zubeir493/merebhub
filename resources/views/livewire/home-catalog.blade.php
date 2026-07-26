@@ -18,10 +18,10 @@
                     {{ $item }}
                 </button>
             @endforeach
-            <button wire:click="clearFilters" class="ml-auto flex shrink-0 items-center gap-2 hover:text-teal-700">
+            <a href="{{ route('store.index') }}" class="ml-auto flex shrink-0 items-center gap-2 hover:text-teal-700">
                 <x-heroicon-o-view-columns class="size-5" />
                 View all
-            </button>
+            </a>
         </div>
     </div>
 
@@ -33,7 +33,7 @@
                 <p class="mb-3 text-sm font-extrabold uppercase text-teal-300">Built here. Ready for everywhere.</p>
                 <h1 class="text-4xl font-extrabold leading-tight sm:text-5xl">Ethiopia's home for remarkable software</h1>
                 <p class="mt-4 max-w-lg text-base leading-7 text-zinc-200">Curated apps, tools, and games from independent makers. Secure checkout and instant license delivery included.</p>
-                <a href="#catalog" class="mt-7 inline-flex items-center gap-2 rounded-lg bg-teal-400 px-5 py-3 text-sm font-extrabold text-zinc-950 hover:bg-teal-300">
+                <a href="{{ route('store.index') }}" class="mt-7 inline-flex items-center gap-2 rounded-lg bg-teal-400 px-5 py-3 text-sm font-extrabold text-zinc-950 hover:bg-teal-300">
                     Explore software
                     <x-heroicon-o-arrow-right class="size-4" />
                 </a>
@@ -46,7 +46,6 @@
             <div class="mx-auto grid max-w-[1500px] grid-cols-1 divide-y divide-zinc-200 sm:grid-cols-2 sm:divide-x sm:divide-y-0 xl:grid-cols-5">
                 @foreach ($deals as $index => $deal)
                     <a wire:key="deal-{{ $deal->id }}" href="{{ route('products.show', $deal) }}" class="flex items-center gap-3 px-5 py-4 hover:bg-zinc-50">
-                        <span class="text-sm font-extrabold text-zinc-400">{{ $index + 1 }}</span>
                         <img src="{{ $deal->coverUrl() }}" alt="" class="size-12 rounded-lg object-cover">
                         <span class="min-w-0 flex-1">
                             <strong class="block truncate text-sm text-zinc-950">{{ $deal->name }}</strong>
@@ -64,7 +63,7 @@
             <section>
                 <div class="mb-6 flex items-center justify-between">
                     <h2 class="text-2xl font-extrabold text-zinc-950">Top selling this week</h2>
-                    <button wire:click="clearFilters" class="text-sm font-extrabold text-teal-700 hover:text-teal-900">See all</button>
+                    <a href="{{ route('store.bestsellers') }}" class="text-sm font-extrabold text-teal-700 hover:text-teal-900">See all</a>
                 </div>
                 <div class="grid gap-x-12 gap-y-5 md:grid-cols-2 xl:grid-cols-3">
                     @foreach ($topProducts as $index => $product)

@@ -18,36 +18,39 @@
                 <x-heroicon-o-bars-3 class="size-6" />
             </button>
             <a href="{{ route('home') }}" class="flex shrink-0 items-center gap-2.5">
-                <span class="grid size-9 place-items-center rounded-lg bg-teal-400 text-lg font-extrabold text-zinc-950">M</span>
+                <img src="/images/marketplace/logo.svg" alt="" width="32" height="32" class="h-8 w-8">
                 <span class="text-lg font-extrabold">MerebHub</span>
             </a>
             <nav class="hidden items-center gap-6 text-sm font-bold lg:flex">
                 <a href="{{ route('home') }}" class="text-teal-700">Discover</a>
-                <a href="{{ route('home') }}#catalog" class="hover:text-teal-700">Categories</a>
-                <a href="{{ route('vendors.index') }}" class="hover:text-teal-700">Developers</a>
-                <a href="{{ route('home', ['category' => 'Games']) }}" class="hover:text-teal-700">Games</a>
+                <a href="{{ route('store.index') }}" class="hover:text-teal-700">Store</a>
+                <a href="{{ route('store.newarrivals') }}" class="hover:text-teal-700">New Arrivals</a>
                 <a href="{{ route('submissions.create') }}" class="hover:text-teal-700">Sell software</a>
             </nav>
-            <form action="{{ route('home') }}" class="relative ml-auto hidden max-w-xl flex-1 md:block">
-                <x-heroicon-o-magnifying-glass class="pointer-events-none absolute left-4 top-1/2 size-5 -translate-y-1/2 text-zinc-400" />
+            <form action="{{ route('search') }}" role="search" class="relative ml-auto hidden max-w-xl flex-1 md:block">
+                <button type="submit" class="absolute left-0 top-0 grid size-11 place-items-center text-zinc-400 transition-colors hover:text-teal-700" aria-label="Submit search">
+                    <x-heroicon-o-magnifying-glass class="size-5" />
+                </button>
                 <input
                     name="q"
                     value="{{ request('q') }}"
+                    aria-label="Search MerebHub"
                     placeholder="Search software, categories, or makers"
                     class="h-11 w-full rounded-lg border border-zinc-300 bg-zinc-50 pl-11 pr-4 text-sm outline-none transition focus:border-teal-500 focus:bg-white focus:ring-4 focus:ring-teal-500/10"
                 >
             </form>
             <div class="flex shrink-0 items-center gap-1 sm:gap-2">
                 <a href="{{ route('wishlist.index') }}" class="relative grid size-10 place-items-center rounded-lg hover:bg-zinc-100" aria-label="Wishlist" title="Wishlist">
-                    <x-heroicon-o-heart class="size-5" />
                     @if ($headerWishlistCount)
-                        <span class="absolute right-0 top-0 grid size-4 place-items-center rounded-full bg-teal-500 text-[9px] font-extrabold text-zinc-950">{{ $headerWishlistCount }}</span>
+                        <x-heroicon-s-heart class="size-5" />
+                    @else
+                        <x-heroicon-o-heart class="size-5" />
                     @endif
                 </a>
                 <a href="{{ route('cart.index') }}" class="relative grid size-10 place-items-center rounded-lg hover:bg-zinc-100" aria-label="Cart" title="Cart">
                     <x-heroicon-o-shopping-cart class="size-5" />
                     @if ($headerCartCount)
-                        <span class="absolute right-0 top-0 grid size-4 place-items-center rounded-full bg-teal-500 text-[9px] font-extrabold text-zinc-950">{{ $headerCartCount }}</span>
+                        <span class="absolute right-0 top-0 grid size-4 place-items-center rounded-full bg-teal-500 text-[9px] font-extrabold text-zinc-950" aria-label="{{ $headerCartCount }} {{ Str::plural('item type', $headerCartCount) }} in cart">{{ $headerCartCount }}</span>
                     @endif
                 </a>
                 @auth
@@ -83,13 +86,18 @@
             </div>
         </div>
         <div x-cloak x-show="mobileOpen" x-transition class="border-t border-zinc-200 bg-white px-5 py-4 lg:hidden">
-            <form action="{{ route('home') }}" class="relative mb-4">
-                <x-heroicon-o-magnifying-glass class="absolute left-4 top-1/2 size-5 -translate-y-1/2 text-zinc-400" />
-                <input name="q" value="{{ request('q') }}" placeholder="Search software" class="h-11 w-full rounded-lg border border-zinc-300 pl-11 pr-4 text-sm">
+            <form action="{{ route('search') }}" role="search" class="relative mb-4">
+                <button type="submit" class="absolute left-0 top-0 grid size-11 place-items-center text-zinc-400 transition-colors hover:text-teal-700" aria-label="Submit search">
+                    <x-heroicon-o-magnifying-glass class="size-5" />
+                </button>
+                <input name="q" value="{{ request('q') }}" aria-label="Search MerebHub" placeholder="Search software" class="h-11 w-full rounded-lg border border-zinc-300 pl-11 pr-4 text-sm">
             </form>
             <nav class="grid gap-1 text-sm font-bold">
                 <a href="{{ route('home') }}" class="rounded-lg px-3 py-2 hover:bg-zinc-100">Discover</a>
-                <a href="{{ route('home') }}#catalog" class="rounded-lg px-3 py-2 hover:bg-zinc-100">Categories</a>
+                <a href="{{ route('store.index') }}" class="rounded-lg px-3 py-2 hover:bg-zinc-100">Store</a>
+                <a href="{{ route('store.newarrivals') }}" class="rounded-lg px-3 py-2 hover:bg-zinc-100">New arrivals</a>
+                <a href="{{ route('store.bestsellers') }}" class="rounded-lg px-3 py-2 hover:bg-zinc-100">Best sellers</a>
+                <a href="{{ route('store.deals') }}" class="rounded-lg px-3 py-2 hover:bg-zinc-100">Deals</a>
                 <a href="{{ route('vendors.index') }}" class="rounded-lg px-3 py-2 hover:bg-zinc-100">Developers</a>
                 <a href="{{ route('submissions.create') }}" class="rounded-lg px-3 py-2 hover:bg-zinc-100">Sell software</a>
                 <a href="{{ route('wishlist.index') }}" class="rounded-lg px-3 py-2 hover:bg-zinc-100">Wishlist</a>
@@ -98,21 +106,15 @@
         </div>
     </header>
 
-    @if (session('status'))
-        <div class="mx-auto mt-5 max-w-[1440px] px-5 lg:px-8">
-            <div class="flex items-center gap-3 rounded-lg border border-teal-200 bg-teal-50 px-4 py-3 text-sm font-bold text-teal-900">
-                <x-heroicon-o-check-circle class="size-5 shrink-0" />
-                {{ session('status') }}
-            </div>
-        </div>
-    @endif
+    @if (session('status') || $errors->any())
+        <div class="pointer-events-none fixed right-4 top-20 z-50 flex w-[calc(100%-2rem)] max-w-sm flex-col gap-2 sm:right-6">
+            @if (session('status'))
+                <x-toast :message="session('status')" />
+            @endif
 
-    @if ($errors->any())
-        <div class="mx-auto mt-5 max-w-[1440px] px-5 lg:px-8">
-            <div class="flex items-start gap-3 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-800">
-                <x-heroicon-o-exclamation-circle class="mt-0.5 size-5 shrink-0" />
-                {{ $errors->first() }}
-            </div>
+            @if ($errors->any())
+                <x-toast :message="$errors->first()" type="error" :duration="7000" />
+            @endif
         </div>
     @endif
 
@@ -121,10 +123,13 @@
     <footer class="mt-16 border-t border-zinc-200 bg-zinc-950 text-zinc-300">
         <div class="mx-auto grid max-w-[1500px] gap-8 px-5 py-10 sm:grid-cols-2 lg:grid-cols-4 lg:px-8">
             <div>
-                <div class="flex items-center gap-2 text-white"><span class="grid size-8 place-items-center rounded-lg bg-teal-400 font-extrabold text-zinc-950">M</span><strong>MerebHub</strong></div>
+                <div class="flex items-center gap-2 text-white">
+                    <img src="/images/marketplace/logo.svg" alt="" width="32" height="32" class="h-8 w-8">
+                    <strong>MerebHub</strong>
+                </div>
                 <p class="mt-4 text-sm leading-6 text-zinc-400">Independent Ethiopian software, reviewed and ready to use.</p>
             </div>
-            <div><strong class="text-sm text-white">Marketplace</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('home') }}">Discover</a><a href="{{ route('home') }}#catalog">Browse all</a><a href="{{ route('vendors.index') }}">Developers</a></div></div>
+            <div><strong class="text-sm text-white">Marketplace</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('home') }}">Discover</a><a href="{{ route('store.index') }}">Browse all</a><a href="{{ route('store.newarrivals') }}">New arrivals</a><a href="{{ route('store.deals') }}">Deals</a></div></div>
             <div><strong class="text-sm text-white">Developers</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('submissions.create') }}">Submit software</a><a href="{{ route('orders.lookup') }}">Order lookup</a></div></div>
             <div><strong class="text-sm text-white">Your account</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('account.orders') }}">Previous orders</a><a href="{{ route('wishlist.index') }}">Wishlist</a><a href="{{ route('cart.index') }}">Cart</a></div></div>
         </div>

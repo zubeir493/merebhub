@@ -6,6 +6,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\ChapaWebhookController;
 use App\Http\Controllers\CheckoutReturnController;
 use App\Http\Controllers\DownloadController;
+use App\Http\Controllers\StoreController;
 use App\Http\Controllers\StorefrontController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\VerificationController;
@@ -13,6 +14,13 @@ use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [StorefrontController::class, 'home'])->name('home');
+Route::get('/search', [StorefrontController::class, 'search'])->name('search');
+Route::prefix('store')->name('store.')->controller(StoreController::class)->group(function () {
+    Route::get('/', 'index')->name('index');
+    Route::get('/new-arrivals', 'newArrivals')->name('newarrivals');
+    Route::get('/best-sellers', 'bestsellers')->name('bestsellers');
+    Route::get('/deals', 'deals')->name('deals');
+});
 Route::get('/apps/{product:slug}', [StorefrontController::class, 'product'])->name('products.show');
 Route::get('/vendors', [StorefrontController::class, 'vendors'])->name('vendors.index');
 Route::get('/vendors/{author:slug}', [StorefrontController::class, 'vendor'])->name('vendors.show');

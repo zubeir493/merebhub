@@ -5,10 +5,13 @@ use App\Enums\LicenseStatus;
 use App\Livewire\HomeCatalog;
 use App\Mail\PurchaseConfirmation;
 use App\Models\AppSubmission;
+use App\Models\Author;
+use App\Models\CartItem;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductPlan;
 use App\Models\User;
+use App\Models\WishlistItem;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
@@ -25,6 +28,16 @@ test('the storefront renders published catalog content', function () {
     $this->get('/')->assertSuccessful()->assertSee('Soko Inventory')->assertSee('Top selling this week');
 });
 
+test('flash messages render as dismissible timed toasts', function () {
+    $this->withSession(['status' => 'Cart updated.'])
+        ->get(route('home'))
+        ->assertSuccessful()
+        ->assertSee('Cart updated.')
+        ->assertSee('Dismiss notification')
+        ->assertSee('role="status"', false)
+        ->assertSee('5000', false);
+});
+
 test('the Livewire catalog filters by category', function () {
     Product::factory()->published()->create(['category' => 'Games']);
     Product::factory()->published()->create(['category' => 'Business']);
@@ -33,6 +46,83 @@ test('the Livewire catalog filters by category', function () {
         ->set('category', 'Games')
         ->assertSet('category', 'Games')
         ->assertViewHas('products', fn ($products): bool => $products->count() === 1 && $products->first()->category === 'Games');
+});
+
+test('global search has a dedicated results page for software and makers', function () {
+    $author = Author::factory()->verified()->create(['name' => 'Soko Labs']);
+    Product::factory()->for($author)->published()->create(['name' => 'Soko Inventory']);
+    Product::factory()->published()->create(['name' => 'Unrelated Product']);
+
+    $this->get(route('vendors.show', $author))
+        ->assertSuccessful()
+        ->assertSee('action="'.route('search').'"', false);
+
+    $this->get(route('search', ['q' => 'Soko']))
+        ->assertSuccessful()
+        ->assertSee('Results for “Soko”')
+        ->assertSee('Soko Inventory')
+        ->assertSee('Soko Labs')
+        ->assertDontSee('Unrelated Product');
+});
+
+test('buyers can update cart quantities', function () {
+    $buyer = User::factory()->create();
+    $product = Product::factory()->published()->create();
+    $plan = ProductPlan::factory()->for($product)->create(['price_minor' => 125000]);
+    $cartItem = CartItem::factory()
+        ->for($buyer)
+        ->for($product)
+        ->for($plan, 'productPlan')
+        ->create();
+
+    $this->actingAs($buyer)
+        ->patch(route('cart.update', $cartItem), ['quantity' => 3])
+        ->assertSessionHasNoErrors()
+        ->assertRedirect();
+
+    expect($cartItem->refresh()->quantity)->toBe(3);
+
+    $this->actingAs($buyer)
+        ->get(route('cart.index'))
+        ->assertSuccessful()
+        ->assertSee('Decrease quantity')
+        ->assertSee('Increase quantity')
+        ->assertSee('3,750.00 ETB');
+});
+
+test('the cart badge counts item types instead of total quantity', function () {
+    $buyer = User::factory()->create();
+
+    foreach ([2, 3] as $quantity) {
+        $product = Product::factory()->published()->create();
+        $plan = ProductPlan::factory()->for($product)->create();
+
+        CartItem::factory()
+            ->for($buyer)
+            ->for($product)
+            ->for($plan, 'productPlan')
+            ->create(['quantity' => $quantity]);
+    }
+
+    $this->actingAs($buyer)
+        ->get(route('cart.index'))
+        ->assertSuccessful()
+        ->assertSee('aria-label="2 item types in cart"', false);
+});
+
+test('wishlist items can be moved to the cart with an active plan', function () {
+    $buyer = User::factory()->create();
+    $product = Product::factory()->published()->create();
+    $plan = ProductPlan::factory()->for($product)->create();
+    WishlistItem::query()->create([
+        'user_id' => $buyer->id,
+        'product_id' => $product->id,
+    ]);
+
+    $this->actingAs($buyer)
+        ->get(route('wishlist.index'))
+        ->assertSuccessful()
+        ->assertSee('name="product_plan_id" value="'.$plan->id.'"', false);
 });
 
 test('buyers can register and access their purchase library', function () {

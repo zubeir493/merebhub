@@ -28,7 +28,7 @@ test('one Chapa checkout contains products from different vendors', function () 
     $secondProduct = Product::factory()->for(Author::factory())->published()->create();
     $firstPlan = ProductPlan::factory()->for($firstProduct)->create(['price_minor' => 125000]);
     $secondPlan = ProductPlan::factory()->for($secondProduct)->create(['price_minor' => 275000]);
-    CartItem::factory()->for($buyer)->for($firstProduct)->for($firstPlan, 'productPlan')->create();
+    CartItem::factory()->for($buyer)->for($firstProduct)->for($firstPlan, 'productPlan')->create(['quantity' => 2]);
     CartItem::factory()->for($buyer)->for($secondProduct)->for($secondPlan, 'productPlan')->create();
 
     $this->actingAs($buyer)
@@ -38,13 +38,15 @@ test('one Chapa checkout contains products from different vendors', function () 
     $order = Order::sole();
 
     expect($order->status)->toBe(OrderStatus::AwaitingPayment)
-        ->and($order->total_minor)->toBe(400000)
+        ->and($order->total_minor)->toBe(525000)
         ->and($order->items)->toHaveCount(2)
+        ->and($order->items->first()->quantity)->toBe(2)
+        ->and($order->items->first()->total_minor)->toBe(250000)
         ->and($order->payments)->toHaveCount(1)
         ->and($order->payments->first()->status)->toBe(PaymentStatus::Pending)
         ->and($buyer->cartItems()->count())->toBe(0);
 
-    Http::assertSent(fn ($request): bool => $request['amount'] === '4000.00'
+    Http::assertSent(fn ($request): bool => $request['amount'] === '5250.00'
         && $request['currency'] === 'ETB'
         && $request['tx_ref'] === $order->transaction_reference);
 });

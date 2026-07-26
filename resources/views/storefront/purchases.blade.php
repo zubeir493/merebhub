@@ -33,7 +33,7 @@
                 <div class="border-y border-zinc-200 py-16 text-center">
                     <x-heroicon-o-shopping-bag class="mx-auto size-9 text-zinc-400" />
                     <h2 class="mt-4 text-lg font-extrabold">Your library is empty</h2>
-                    <a href="{{ route('home') }}#catalog" class="mt-4 inline-block text-sm font-bold text-teal-700">Browse software</a>
+                    <a href="{{ route('store.index') }}" class="mt-4 inline-block text-sm font-bold text-teal-700">Browse software</a>
                 </div>
             @endforelse
         </div>

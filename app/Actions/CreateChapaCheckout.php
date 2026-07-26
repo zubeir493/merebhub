@@ -33,7 +33,8 @@ class CreateChapaCheckout
 
             foreach ($cartItems as $cartItem) {
                 if (
-                    $cartItem->quantity !== 1
+                    $cartItem->quantity < 1
+                    || $cartItem->quantity > 10
                     || $cartItem->product->status !== ProductStatus::Published
                     || ! $cartItem->productPlan
                     || ! $cartItem->productPlan->is_active
@@ -44,7 +45,7 @@ class CreateChapaCheckout
             }
 
             $subtotalMinor = $cartItems->sum(
-                fn (CartItem $item): int => $item->productPlan->price_minor,
+                fn (CartItem $item): int => $item->productPlan->price_minor * $item->quantity,
             );
             $reference = 'MH-'.Str::upper(Str::ulid()->toBase32());
             $order = Order::create([
@@ -66,23 +67,24 @@ class CreateChapaCheckout
                 $primaryAttribution = $product->authors->first(
                     fn ($author): bool => (bool) $author->pivot->is_primary,
                 );
+                $lineTotalMinor = $plan->price_minor * $cartItem->quantity;
                 $commissionBasisPoints = $primaryAttribution
                     ? (int) $primaryAttribution->pivot->revenue_share_basis_points
                     : 7000;
-                $authorShareMinor = intdiv($plan->price_minor * $commissionBasisPoints, 10000);
+                $authorShareMinor = intdiv($lineTotalMinor * $commissionBasisPoints, 10000);
 
                 $order->items()->create([
                     'product_id' => $product->id,
                     'product_plan_id' => $plan->id,
                     'renewal_subscription_id' => $cartItem->renewal_subscription_id,
-                    'quantity' => 1,
+                    'quantity' => $cartItem->quantity,
                     'unit_amount' => Money::toMajor($plan->price_minor),
-                    'total' => Money::toMajor($plan->price_minor),
+                    'total' => Money::toMajor($lineTotalMinor),
                     'product_name' => $product->name,
                     'plan_name' => $plan->name,
                     'unit_amount_minor' => $plan->price_minor,
                     'discount_minor' => 0,
-                    'total_minor' => $plan->price_minor,
+                    'total_minor' => $lineTotalMinor,
                     'currency' => 'ETB',
                     'primary_author_snapshot' => [
                         'id' => $product->author->id,
@@ -90,14 +92,14 @@ class CreateChapaCheckout
                         'slug' => $product->author->slug,
                     ],
                     'commission_basis_points' => $commissionBasisPoints,
-                    'platform_share_minor' => $plan->price_minor - $authorShareMinor,
+                    'platform_share_minor' => $lineTotalMinor - $authorShareMinor,
                     'author_share_minor' => $authorShareMinor,
                     'billing_model' => $plan->billing_model->value,
                     'fulfillment_type' => $plan->fulfillment_type->value,
                     'license_configuration' => [
                         'type' => $plan->license_type,
                         'duration_days' => $plan->license_duration_days,
-                        'activation_limit' => $plan->activation_limit,
+                        'activation_limit' => $plan->activation_limit * $cartItem->quantity,
                         'entitlements' => $plan->entitlements,
                         'keygen_policy_id' => $plan->keygen_policy_id,
                     ],

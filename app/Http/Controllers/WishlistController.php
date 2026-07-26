@@ -15,7 +15,7 @@ class WishlistController extends Controller
     {
         return view('storefront.wishlist', [
             'items' => $request->user()
-                ? $request->user()->wishlistItems()->with('product.author')->latest()->get()
+                ? $request->user()->wishlistItems()->with(['product.author', 'product.activePlans'])->latest()->get()
                 : collect(),
         ]);
     }

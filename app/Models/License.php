@@ -15,6 +15,7 @@ class License extends Model
 
     protected $fillable = [
         'order_id',
+        'order_item_id',
         'product_id',
         'buyer_email',
         'keygen_license_id',
@@ -43,5 +44,10 @@ class License extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function orderItem(): BelongsTo
+    {
+        return $this->belongsTo(OrderItem::class);
     }
 }

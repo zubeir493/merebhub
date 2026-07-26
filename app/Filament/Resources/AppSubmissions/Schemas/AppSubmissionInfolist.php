@@ -20,7 +20,17 @@ class AppSubmissionInfolist
                     ->money()
                     ->placeholder('-'),
                 TextEntry::make('platform'),
-                TextEntry::make('file_path'),
+                TextEntry::make('category')->placeholder('-'),
+                TextEntry::make('fulfillment_type')->badge(),
+                TextEntry::make('payment_model')->badge(),
+                TextEntry::make('billing_interval')->badge()->placeholder('-'),
+                TextEntry::make('trial_days')->suffix(' days')->placeholder('-'),
+                TextEntry::make('demo_url')->url(fn ($state): ?string => $state)->openUrlInNewTab()->placeholder('-'),
+                TextEntry::make('attachments.original_name')
+                    ->label('Attachments')
+                    ->listWithLineBreaks()
+                    ->placeholder('No attachments')
+                    ->columnSpanFull(),
                 TextEntry::make('status')
                     ->badge(),
                 TextEntry::make('reviewer.name')

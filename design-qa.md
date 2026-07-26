@@ -1,29 +1,25 @@
 # Design QA
 
 Reference: supplied MerebHub homepage sketch.
+Live source inspected: https://mereb.maxgroup.et/
 
-## Storefront
+## Source Findings
 
-- Preserved the reference structure: navigation, category strip, 4:1 hero, deal rail, ranked weekly sellers, and product shelves.
-- Replaced placeholders with generated product artwork and realistic Ethiopian marketplace data.
-- Default browser viewport: 1265px content width, 1265px scroll width, no horizontal overflow.
-- Hero: 1265 x 316px at desktop, matching the 4:1 target.
-- No broken images, console errors, or browser warnings.
-- Livewire category filtering updates the catalog successfully.
-- Product, checkout, submission, authentication, order lookup, and buyer-library pages render with working controls.
+- The deployed theme used filled WordPress Dashicons instead of the reference's thin outline icon style.
+- The account page exposed an unstyled WooCommerce login form and no registration form.
+- Product pages exposed quantity before cart.
+- Sparse catalog data left large sections visually empty.
 
-## Admin
+## Implemented
 
-- Filament authentication and admin authorization verified.
-- Dashboard, products table, catalog navigation, integration state, and product artwork verified.
-- Strict Eloquent lazy-loading failure found during QA and fixed with explicit eager loading.
-- Broken admin image URLs found during QA and fixed.
+- Replaced storefront icons with bundled Lucide outline icons.
+- Added a responsive login/register experience and live WordPress authentication-state refresh.
+- Removed product-page quantity while retaining seat controls in cart.
+- Added a 30-product WooCommerce CSV and weekly-sales ordering.
+- Corrected theme package metadata, required files, and screenshot dimensions.
 
-## Automated Checks
+## Blocking Condition
 
-- Pest: 10 tests, 27 assertions.
-- Pint: passed.
-- Vite production build: passed.
-- Route registration: 43 application routes.
+The updated packages cannot be installed on the remote WordPress site from this workspace. Post-change screenshots and same-viewport comparison are blocked until version 1.1.0 is deployed.
 
-Final result: passed.
+Final result: blocked

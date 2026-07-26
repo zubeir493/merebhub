@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\BillingInterval;
+use App\Enums\BillingModel;
+use App\Enums\FulfillmentType;
 use App\Enums\ProductStatus;
 use Database\Factories\ProductFactory;
 use Illuminate\Database\Eloquent\Builder;
@@ -35,6 +38,13 @@ class Product extends Model
         'weekly_sales',
         'is_featured',
         'keygen_policy_id',
+        'fulfillment_type',
+        'billing_model',
+        'billing_interval',
+        'trial_days',
+        'app_url',
+        'wc_metadata',
+        'last_synced_at',
         'status',
     ];
 
@@ -43,6 +53,8 @@ class Product extends Model
         'ratings_count' => 0,
         'weekly_sales' => 0,
         'is_featured' => false,
+        'fulfillment_type' => FulfillmentType::LicenseKey,
+        'billing_model' => BillingModel::OneTime,
         'status' => ProductStatus::Draft,
     ];
 
@@ -55,6 +67,12 @@ class Product extends Model
             'ratings_count' => 'integer',
             'weekly_sales' => 'integer',
             'is_featured' => 'boolean',
+            'fulfillment_type' => FulfillmentType::class,
+            'billing_model' => BillingModel::class,
+            'billing_interval' => BillingInterval::class,
+            'trial_days' => 'integer',
+            'wc_metadata' => 'array',
+            'last_synced_at' => 'datetime',
             'status' => ProductStatus::class,
         ];
     }
@@ -104,5 +122,20 @@ class Product extends Model
     public function licenses(): HasMany
     {
         return $this->hasMany(License::class);
+    }
+
+    public function cartItems(): HasMany
+    {
+        return $this->hasMany(CartItem::class);
+    }
+
+    public function wishlistItems(): HasMany
+    {
+        return $this->hasMany(WishlistItem::class);
+    }
+
+    public function orderItems(): HasMany
+    {
+        return $this->hasMany(OrderItem::class);
     }
 }

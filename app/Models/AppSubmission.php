@@ -3,10 +3,14 @@
 namespace App\Models;
 
 use App\Enums\AppSubmissionStatus;
+use App\Enums\BillingInterval;
+use App\Enums\BillingModel;
+use App\Enums\FulfillmentType;
 use Database\Factories\AppSubmissionFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class AppSubmission extends Model
 {
@@ -21,6 +25,12 @@ class AppSubmission extends Model
         'suggested_price',
         'platform',
         'file_path',
+        'category',
+        'demo_url',
+        'fulfillment_type',
+        'payment_model',
+        'billing_interval',
+        'trial_days',
         'status',
         'reviewed_by',
         'linked_author_id',
@@ -31,6 +41,10 @@ class AppSubmission extends Model
     {
         return [
             'suggested_price' => 'decimal:2',
+            'fulfillment_type' => FulfillmentType::class,
+            'payment_model' => BillingModel::class,
+            'billing_interval' => BillingInterval::class,
+            'trial_days' => 'integer',
             'status' => AppSubmissionStatus::class,
         ];
     }
@@ -43,5 +57,10 @@ class AppSubmission extends Model
     public function linkedAuthor(): BelongsTo
     {
         return $this->belongsTo(Author::class, 'linked_author_id');
+    }
+
+    public function attachments(): HasMany
+    {
+        return $this->hasMany(SubmissionAttachment::class);
     }
 }

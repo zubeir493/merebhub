@@ -42,6 +42,8 @@ return [
         'site_url' => env('WC_SITE_URL'),
         'checkout_url' => env('WC_CHECKOUT_URL'),
         'webhook_secret' => env('WC_WEBHOOK_SECRET'),
+        'payment_method' => env('WC_PAYMENT_METHOD', 'chapa'),
+        'callback_secret' => env('MEREBHUB_CALLBACK_SECRET'),
         'timeout' => env('WC_TIMEOUT', 20),
     ],
 

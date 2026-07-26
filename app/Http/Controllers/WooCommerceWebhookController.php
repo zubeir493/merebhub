@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\ImportWooCommerceProduct;
 use App\Enums\OrderStatus;
-use App\Jobs\ProvisionOrderLicenseJob;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\DB;
 
 class WooCommerceWebhookController extends Controller
 {
-    public function __invoke(Request $request): JsonResponse
+    public function __invoke(Request $request, ImportWooCommerceProduct $importProduct): JsonResponse
     {
         $this->verifySignature($request);
 
@@ -42,12 +42,12 @@ class WooCommerceWebhookController extends Controller
         $event->increment('attempts');
 
         try {
-            if (in_array(Arr::get($payload, 'status'), ['processing', 'completed'], true)) {
-                $order = DB::transaction(fn () => $this->mirrorPaidOrder($payload));
+            if (str_starts_with($eventType, 'product.')) {
+                $this->syncProduct($eventType, $payload, $importProduct);
+            }
 
-                if ($order) {
-                    ProvisionOrderLicenseJob::dispatch($order->id);
-                }
+            if (str_starts_with($eventType, 'order.')) {
+                DB::transaction(fn () => $this->mirrorOrder($payload));
             }
 
             $event->update(['processed_at' => now(), 'last_error' => null]);
@@ -71,10 +71,10 @@ class WooCommerceWebhookController extends Controller
         abort_unless(hash_equals($expected, (string) $signature), 401);
     }
 
-    private function mirrorPaidOrder(array $payload): ?Order
+    private function mirrorOrder(array $payload): ?Order
     {
-        $lineItem = Arr::first(Arr::get($payload, 'line_items', []));
-        $product = Product::where('wc_product_id', Arr::get($lineItem, 'product_id'))->first();
+        $lineItems = collect(Arr::get($payload, 'line_items', []));
+        $product = Product::where('wc_product_id', Arr::get($lineItems->first(), 'product_id'))->first();
 
         if (! $product) {
             return null;
@@ -83,7 +83,7 @@ class WooCommerceWebhookController extends Controller
         $buyerEmail = Arr::get($payload, 'billing.email');
         $buyer = $buyerEmail ? User::where('email', $buyerEmail)->first() : null;
 
-        return Order::updateOrCreate(
+        $order = Order::updateOrCreate(
             ['wc_order_id' => Arr::get($payload, 'id')],
             [
                 'buyer_email' => $buyerEmail,
@@ -91,9 +91,53 @@ class WooCommerceWebhookController extends Controller
                 'product_id' => $product->id,
                 'amount' => Arr::get($payload, 'total', $product->price),
                 'currency' => Arr::get($payload, 'currency', 'ETB'),
-                'status' => OrderStatus::Paid,
-                'paid_at' => Arr::get($payload, 'date_paid') ? Carbon::parse(Arr::get($payload, 'date_paid')) : now(),
+                'status' => $this->orderStatus((string) Arr::get($payload, 'status')),
+                'paid_at' => Arr::get($payload, 'date_paid') ? Carbon::parse(Arr::get($payload, 'date_paid')) : null,
             ]
         );
+
+        foreach ($lineItems as $lineItem) {
+            $lineProduct = Product::where('wc_product_id', Arr::get($lineItem, 'product_id'))->first();
+
+            if (! $lineProduct) {
+                continue;
+            }
+
+            $quantity = max(1, (int) Arr::get($lineItem, 'quantity', 1));
+            $total = (float) Arr::get($lineItem, 'total', 0);
+            $order->items()->updateOrCreate(
+                ['wc_order_item_id' => Arr::get($lineItem, 'id')],
+                [
+                    'product_id' => $lineProduct->id,
+                    'quantity' => $quantity,
+                    'unit_amount' => $total / $quantity,
+                    'total' => $total,
+                ],
+            );
+        }
+
+        return $order;
+    }
+
+    private function syncProduct(string $eventType, array $payload, ImportWooCommerceProduct $importProduct): void
+    {
+        if ($eventType === 'product.deleted') {
+            Product::where('wc_product_id', Arr::get($payload, 'id'))
+                ->update(['status' => \App\Enums\ProductStatus::Draft]);
+
+            return;
+        }
+
+        $importProduct->handle($payload);
+    }
+
+    private function orderStatus(string $status): OrderStatus
+    {
+        return match ($status) {
+            'processing', 'completed' => OrderStatus::Paid,
+            'refunded' => OrderStatus::Refunded,
+            'failed', 'cancelled' => OrderStatus::Failed,
+            default => OrderStatus::Pending,
+        };
     }
 }

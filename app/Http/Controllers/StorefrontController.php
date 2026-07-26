@@ -3,21 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\Enums\AppSubmissionStatus;
-use App\Enums\OrderStatus;
+use App\Enums\BillingInterval;
+use App\Enums\BillingModel;
+use App\Enums\FulfillmentType;
 use App\Enums\ProductStatus;
 use App\Http\Requests\LookupOrderRequest;
-use App\Http\Requests\StartCheckoutRequest;
 use App\Http\Requests\StoreSubmissionRequest;
 use App\Models\AppSubmission;
 use App\Models\Author;
 use App\Models\Order;
 use App\Models\Product;
-use App\Services\WooCommerceService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\URL;
 use Illuminate\View\View;
-use Throwable;
 
 class StorefrontController extends Controller
 {
@@ -52,60 +52,33 @@ class StorefrontController extends Controller
 
     public function submit(): View
     {
-        return view('storefront.submit');
+        return view('storefront.submit', [
+            'billingModels' => BillingModel::cases(),
+            'billingIntervals' => BillingInterval::cases(),
+            'fulfillmentTypes' => FulfillmentType::cases(),
+        ]);
     }
 
     public function storeSubmission(StoreSubmissionRequest $request): RedirectResponse
     {
-        $data = $request->safe()->except('build');
-        $data['file_path'] = $request->file('build')->store(
-            'submissions',
-            config('filesystems.builds_disk'),
-        );
+        $data = $request->safe()->except('attachments');
 
-        AppSubmission::create($data + [
-            'status' => AppSubmissionStatus::Pending,
-        ]);
+        DB::transaction(function () use ($data, $request): void {
+            $submission = AppSubmission::create($data + [
+                'status' => AppSubmissionStatus::Pending,
+            ]);
+
+            foreach ($request->file('attachments', []) as $attachment) {
+                $submission->attachments()->create([
+                    'path' => $attachment->store('submissions', config('filesystems.builds_disk')),
+                    'original_name' => $attachment->getClientOriginalName(),
+                    'mime_type' => $attachment->getMimeType() ?: 'application/octet-stream',
+                    'size' => $attachment->getSize(),
+                ]);
+            }
+        });
 
         return back()->with('status', 'Submission received. An admin will review it.');
-    }
-
-    public function checkout(Product $product): View
-    {
-        abort_unless($product->status === ProductStatus::Published, 404);
-
-        return view('storefront.checkout', [
-            'product' => $product->load('author'),
-            'buyerEmail' => Auth::user()?->email,
-        ]);
-    }
-
-    public function startCheckout(StartCheckoutRequest $request, Product $product, WooCommerceService $woocommerce): RedirectResponse
-    {
-        abort_unless($product->status === ProductStatus::Published, 404);
-        abort_unless($product->wc_product_id, 422, 'This product is not connected to WooCommerce yet.');
-
-        try {
-            $wcOrder = $woocommerce->createOrder($product, $request->string('buyer_email'));
-        } catch (Throwable $exception) {
-            report($exception);
-
-            return back()->withErrors(['checkout' => 'Checkout is temporarily unavailable. Please try again shortly.']);
-        }
-
-        Order::updateOrCreate(
-            ['wc_order_id' => $wcOrder['id']],
-            [
-                'buyer_email' => $request->string('buyer_email'),
-                'buyer_user_id' => Auth::id(),
-                'product_id' => $product->id,
-                'amount' => $product->price,
-                'currency' => $wcOrder['currency'] ?? 'ETB',
-                'status' => OrderStatus::Pending,
-            ]
-        );
-
-        return redirect()->away($woocommerce->checkoutUrl($wcOrder));
     }
 
     public function purchases(): View

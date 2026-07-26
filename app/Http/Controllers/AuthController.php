@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\CartItem;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
@@ -30,6 +31,13 @@ class AuthController extends Controller
         }
 
         $request->session()->regenerate();
+
+        if ($productId = $request->session()->pull('pending_cart_product_id')) {
+            CartItem::firstOrCreate(
+                ['user_id' => Auth::id(), 'product_id' => $productId],
+                ['quantity' => 1],
+            );
+        }
 
         return redirect()->intended(route('account.purchases'));
     }

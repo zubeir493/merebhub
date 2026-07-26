@@ -33,10 +33,32 @@
                             <span class="pb-1 text-sm font-semibold text-zinc-400 line-through">{{ number_format((float) $product->compare_at_price) }} ETB</span>
                         @endif
                     </div>
-                    <a href="{{ route('checkout.show', $product) }}" class="btn-primary mt-5 w-full">
-                        <x-heroicon-o-shopping-bag class="size-5" />
-                        Buy now
-                    </a>
+                    <div class="mt-5 flex gap-2">
+                        <form method="POST" action="{{ route('cart.store', $product) }}" class="flex-1">
+                            @csrf
+                            <button class="btn-primary w-full"><x-heroicon-o-shopping-cart class="size-5" /> Buy now</button>
+                        </form>
+                        @auth
+                            @php($wishlistItem = auth()->user()->wishlistItems()->where('product_id', $product->id)->first())
+                            @if ($wishlistItem)
+                                <form method="POST" action="{{ route('wishlist.destroy', $wishlistItem) }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="grid size-11 place-items-center rounded-lg border border-teal-300 bg-teal-50 text-teal-700" aria-label="Remove from wishlist"><x-heroicon-s-heart class="size-5" /></button>
+                                </form>
+                            @else
+                                <form method="POST" action="{{ route('wishlist.store', $product) }}">
+                                    @csrf
+                                    <button class="grid size-11 place-items-center rounded-lg border border-zinc-300 hover:bg-zinc-50" aria-label="Add to wishlist"><x-heroicon-o-heart class="size-5" /></button>
+                                </form>
+                            @endif
+                        @else
+                            <a href="{{ route('wishlist.index') }}" class="grid size-11 place-items-center rounded-lg border border-zinc-300 hover:bg-zinc-50" aria-label="Wishlist"><x-heroicon-o-heart class="size-5" /></a>
+                        @endauth
+                    </div>
+                    @if ($product->billing_model->value === 'manual_subscription')
+                        <p class="mt-3 text-center text-xs font-semibold text-zinc-500">Manual {{ $product->billing_interval?->label() }} renewal · cancel by not renewing</p>
+                    @endif
                     <p class="mt-3 flex items-center justify-center gap-2 text-xs font-semibold text-zinc-500">
                         <x-heroicon-o-key class="size-4" /> License delivered automatically after payment
                     </p>

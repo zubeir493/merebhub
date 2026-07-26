@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Enums\ProductStatus;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Http;
@@ -16,6 +17,14 @@ class WooCommerceService
     {
         return $this->request()
             ->get($this->endpoint('products'), $query)
+            ->throw()
+            ->json();
+    }
+
+    public function fetchProduct(int $wooCommerceProductId): array
+    {
+        return $this->request()
+            ->get($this->endpoint("products/{$wooCommerceProductId}"))
             ->throw()
             ->json();
     }
@@ -66,21 +75,29 @@ class WooCommerceService
         ];
     }
 
-    public function createOrder(Product $product, string $buyerEmail): array
+    /**
+     * @param  array<int, array{product_id: int, quantity: int}>  $lineItems
+     */
+    public function createOrder(array $lineItems, User $buyer): array
     {
+        $payload = [
+            'billing' => [
+                'first_name' => $buyer->name,
+                'email' => $buyer->email,
+            ],
+            'line_items' => $lineItems,
+            'set_paid' => false,
+            'meta_data' => [
+                ['key' => '_merebhub_user_id', 'value' => (string) $buyer->id],
+            ],
+        ];
+
+        if ($paymentMethod = config('services.woocommerce.payment_method')) {
+            $payload['payment_method'] = $paymentMethod;
+        }
+
         return $this->request()
-            ->post($this->endpoint('orders'), [
-                'billing' => [
-                    'email' => $buyerEmail,
-                ],
-                'line_items' => [
-                    [
-                        'product_id' => $product->wc_product_id,
-                        'quantity' => 1,
-                    ],
-                ],
-                'set_paid' => false,
-            ])
+            ->post($this->endpoint('orders'), $payload)
             ->throw()
             ->json();
     }

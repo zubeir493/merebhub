@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Order extends Model
 {
@@ -24,6 +25,7 @@ class Order extends Model
         'status',
         'paid_at',
         'fulfillment_error',
+        'payment_url',
     ];
 
     protected function casts(): array
@@ -48,5 +50,15 @@ class Order extends Model
     public function license(): HasOne
     {
         return $this->hasOne(License::class);
+    }
+
+    public function items(): HasMany
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
+    public function licenses(): HasMany
+    {
+        return $this->hasMany(License::class);
     }
 }

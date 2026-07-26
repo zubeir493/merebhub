@@ -6,6 +6,7 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
 
@@ -33,5 +34,14 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('public-form', fn (Request $request) => Limit::perMinute(10)->by($request->ip()));
 
         RateLimiter::for('webhooks', fn (Request $request) => Limit::perMinute(120)->by($request->ip()));
+
+        View::composer('layouts.storefront', function ($view): void {
+            $user = auth()->user();
+
+            $view->with([
+                'headerCartCount' => $user?->cartItems()->sum('quantity') ?? 0,
+                'headerWishlistCount' => $user?->wishlistItems()->count() ?? 0,
+            ]);
+        });
     }
 }

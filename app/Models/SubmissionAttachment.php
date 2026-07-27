@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
+use Database\Factories\SubmissionAttachmentFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SubmissionAttachment extends Model
 {
-    /** @use HasFactory<\Database\Factories\SubmissionAttachmentFactory> */
+    /** @use HasFactory<SubmissionAttachmentFactory> */
     use HasFactory;
 
     protected $fillable = [

@@ -18,7 +18,7 @@
                 <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-zinc-500">Your cart is linked to your MerebHub account so it stays available across devices.</p>
                 <div class="mt-6 flex flex-wrap justify-center gap-3">
                     <a href="{{ route('login') }}" class="btn-primary">Log in</a>
-                    <a href="{{ route('store.index') }}" class="btn-dark">Browse software</a>
+                    <a href="{{ route('store.index') }}" class="btn-dark">Explore Deals</a>
                 </div>
             </section>
         @else
@@ -27,7 +27,7 @@
                     <span class="mx-auto grid size-14 place-items-center rounded-full bg-zinc-100"><x-heroicon-o-shopping-cart class="size-7 text-zinc-500" /></span>
                     <h2 class="mt-5 text-xl font-extrabold">Your cart is empty</h2>
                     <p class="mt-2 text-sm text-zinc-500">Explore the catalog and add software when you are ready.</p>
-                    <a href="{{ route('store.index') }}" class="btn-primary mt-6">Browse software</a>
+                    <a href="{{ route('store.index') }}" class="btn-primary mt-6">Explore Deals</a>
                 </section>
             @else
                 <div class="mt-8 grid gap-10 lg:grid-cols-[1fr_360px]">

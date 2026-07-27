@@ -44,20 +44,20 @@ class HomeCatalog extends Component
         $base = Product::published()->with(['author', 'platforms']);
 
         if ($this->search !== '') {
-            $term = '%' . trim($this->search) . '%';
-            $base->where(fn($query) => $query
+            $term = '%'.trim($this->search).'%';
+            $base->where(fn ($query) => $query
                 ->where('name', 'like', $term)
                 ->orWhere('tagline', 'like', $term)
                 ->orWhere('description', 'like', $term)
                 ->orWhere('category', 'like', $term)
-                ->orWhereHas('author', fn($author) => $author->where('name', 'like', $term)));
+                ->orWhereHas('author', fn ($author) => $author->where('name', 'like', $term)));
         }
 
         $base
-            ->when($this->category !== '', fn($query) => $query->where('category', $this->category))
-            ->when($this->platform !== '', fn($query) => $query->whereHas(
+            ->when($this->category !== '', fn ($query) => $query->where('category', $this->category))
+            ->when($this->platform !== '', fn ($query) => $query->whereHas(
                 'platforms',
-                fn($platform) => $platform->where('platforms.slug', $this->platform),
+                fn ($platform) => $platform->where('platforms.slug', $this->platform),
             ));
 
         return view('livewire.home-catalog', [

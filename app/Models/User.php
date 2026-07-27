@@ -6,6 +6,7 @@ use App\Enums\AuthorStatus;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -15,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\URL;
 
 #[Fillable(['name', 'email', 'password', 'is_admin'])]
 #[Hidden(['password', 'remember_token'])]
@@ -82,5 +84,31 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
                     ->exists(),
             default => false,
         };
+    }
+
+    public function sendEmailVerificationNotification(): void
+    {
+        if ($this->shouldLogEmailVerificationLink()) {
+            logger()->info('Email verification link (copy this URL): '.$this->emailVerificationUrl());
+        }
+
+        $this->notify(new VerifyEmail);
+    }
+
+    public function emailVerificationUrl(): string
+    {
+        return URL::temporarySignedRoute(
+            'verification.verify',
+            now()->addMinutes((int) config('auth.verification.expire', 60)),
+            [
+                'id' => $this->getKey(),
+                'hash' => sha1($this->getEmailForVerification()),
+            ],
+        );
+    }
+
+    public function shouldLogEmailVerificationLink(): bool
+    {
+        return ! app()->isProduction() && config('mail.default') === 'log';
     }
 }

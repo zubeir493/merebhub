@@ -80,8 +80,20 @@ return new class extends Migration
             $table->unique(['order_id', 'product_id']);
         });
 
+        $connection = Schema::getConnection();
+
+        if ($connection->getDriverName() === 'mysql') {
+            $foreignKeys = $connection->select(
+                'SELECT CONSTRAINT_NAME FROM information_schema.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ? AND REFERENCED_TABLE_NAME IS NOT NULL',
+                ['licenses', 'order_id']
+            );
+
+            foreach ($foreignKeys as $foreignKey) {
+                $connection->statement('ALTER TABLE licenses DROP FOREIGN KEY '.$foreignKey->CONSTRAINT_NAME);
+            }
+        }
+
         Schema::table('licenses', function (Blueprint $table) {
-            $table->dropForeign(['order_id']);
             $table->dropUnique(['order_id']);
             $table->foreignId('order_item_id')->nullable()->after('order_id')->constrained()->nullOnDelete();
             $table->unique('order_item_id');

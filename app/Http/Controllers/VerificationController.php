@@ -11,7 +11,16 @@ class VerificationController extends Controller
 {
     public function notice(): View
     {
-        return view('auth.verify-email');
+        $user = auth()->user();
+        $localVerificationUrl = null;
+
+        if ($user && ! $user->hasVerifiedEmail() && $user->shouldLogEmailVerificationLink()) {
+            $localVerificationUrl = $user->emailVerificationUrl();
+        }
+
+        return view('auth.verify-email', [
+            'localVerificationUrl' => $localVerificationUrl,
+        ]);
     }
 
     public function verify(EmailVerificationRequest $request): RedirectResponse

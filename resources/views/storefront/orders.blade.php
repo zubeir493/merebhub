@@ -2,7 +2,6 @@
 
 @section('content')
     <div class="mx-auto max-w-5xl px-5 py-12 lg:px-8">
-        <p class="text-sm font-extrabold uppercase text-teal-700">Purchase history</p>
         <h1 class="mt-2 border-b border-zinc-200 pb-6 text-4xl font-extrabold">Previous orders</h1>
         <div class="mt-8 grid gap-5">
             @forelse ($orders as $order)
@@ -36,7 +35,7 @@
                     </div>
                 </article>
             @empty
-                <div class="py-20 text-center"><x-heroicon-o-receipt-percent class="mx-auto size-9 text-zinc-400" /><h2 class="mt-4 text-lg font-extrabold">No previous orders</h2><a href="{{ route('store.index') }}" class="mt-4 inline-block text-sm font-bold text-teal-700">Browse software</a></div>
+                <div class="py-20 text-center"><x-heroicon-o-receipt-percent class="mx-auto size-9 text-zinc-400" /><h2 class="mt-4 text-lg font-extrabold">No previous orders</h2></div>
             @endforelse
         </div>
     </div>

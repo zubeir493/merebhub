@@ -1,0 +1,22 @@
+Product Name,Product Code,Product UUID,Policy Name,Policy UUID,Policy Type,Settings
+Windows 11 Pro,windows-11-pro,d4f0c7ce-8559-480d-919c-6bfbf0c58176,Perpetual License,9ade7479-9db2-4f7b-9306-5d5ea0c0e202,one-time,duration=perpetual max_machines=1 floating=false
+Microsoft 365 Business Standard,microsoft-365-business-standard,59768b68-dd0e-4601-b0ff-da55ce703a4f,Annual Subscription,89ee1a5b-47be-40a1-94fa-cb6559bd9efa,annual,duration=365d max_machines=1 floating=false
+Adobe Creative Cloud Pro,adobe-creative-cloud-pro,5abcbbde-6e75-4474-bf7c-978e220dc61c,Monthly Subscription,a1045b3f-afa6-4180-9ae3-fc9592ab00e7,monthly,duration=30d max_machines=1 floating=false
+Adobe Photoshop,adobe-photoshop,f3fe69e2-1674-4f46-9e9e-4110ba0e4064,Monthly Subscription,880796f5-1f8f-4eda-b8e1-11a7721e20e3,monthly,duration=30d max_machines=1 floating=false
+Adobe Acrobat Pro,adobe-acrobat-pro,e290be10-6b55-4e8b-abc7-0a22f89b141c,Annual Subscription,c54c2f49-87a6-4d5e-9a91-e3d958d46a16,annual,duration=365d max_machines=1 floating=false
+DaVinci Resolve Studio,davinci-resolve-studio,9fa81813-7fa6-48b2-a613-88c6859fb8a6,Perpetual License,667ba63a-bd83-4382-be9d-efc042ffb0ff,one-time,duration=perpetual max_machines=1 floating=false
+Slack Pro,slack-pro,9f4d9ce8-1892-458f-a741-0a5f2bc00b77,Monthly Per User,70854d55-d16a-4d63-9b94-37a882961a28,user-based,duration=30d max_machines=1 floating=true
+Zoom Workplace Pro,zoom-workplace-pro,95d0cf7f-a67c-42bd-9a7a-81004ef86d48,Annual Per User,1684b508-38e9-47a8-bf8a-3064b26fd664,user-based,duration=365d max_machines=1 floating=true
+Notion Business,notion-business,e77a7a4b-7faa-4031-92ff-c162732ee364,Monthly Per User,df7b258c-1558-45bf-a9c0-e33afac6c512,user-based,duration=30d max_machines=1 floating=true
+Google Workspace Business Standard,google-workspace,42c5e3a4-d621-43e3-8e4c-8ec2e86abe87,Annual Per User,23fede34-87dc-4037-be6d-96cc9a6c2502,user-based,duration=365d max_machines=1 floating=true
+Canva Pro,canva-pro,405eef07-c07c-4e21-926c-d06a67d9dfd9,Monthly,73dc2db7-9c5e-4b3c-96e6-cc07cb9ed18a,monthly,duration=30d max_machines=1 floating=false
+Figma Professional,figma-professional,899788eb-43fc-44c7-aebe-7c9501b63b16,Annual,3c274379-d123-4659-9d54-f6290e41f0f6,annual,duration=365d max_machines=1 floating=false
+Dropbox Essentials,dropbox-essentials,89a57744-43fd-4760-b146-d0cf2ae0c293,Monthly Team,8b820998-cd40-4d28-bf1c-6c34436cc2e3,monthly,duration=30d max_machines=1 floating=false
+Asana Starter,asana-starter,4a93e7b7-01e5-4488-bb94-1605919f0988,Free Starter,5f87c814-3348-4dc2-b37c-43397ac3c13f,free,duration=perpetual max_machines=1 floating=false
+monday.com Standard,monday-com-standard,73cd1659-5c7d-49d3-b30e-66ffd9c8b303,Annual Seat,8bcece80-de05-4174-a8b6-1841474c8e58,user-based,duration=365d max_machines=1 floating=true
+Jira Standard,jira-standard,84f0e523-1f0b-4e91-9172-aec4db71e203,Annual 10 Users,97f8f391-3b42-4588-b841-ebc7bb24e1f6,user-based,duration=365d max_machines=1 floating=true
+Todoist Pro,todoist-pro,e69677d4-e294-4990-a9b1-07e7a14a3707,Annual,0455f14e-cb8a-470b-bd2c-766a6f608266,annual,duration=365d max_machines=1 floating=false
+GitHub Copilot Business,github-copilot,257a9d18-6ae0-41d5-ba3c-6b86f91fcc34,Monthly Per User,cee2586c-89dd-4e5e-b7b6-cdefed0f51a0,user-based,duration=30d max_machines=1 floating=true
+JetBrains All Products Pack,jetbrains-all,657255f5-de84-4af1-8643-44164980d2bd,Annual Subscription,5e87df66-c5c1-4f43-896b-5b59a22f8964,annual,duration=365d max_machines=1 floating=false
+Autodesk AutoCAD,autodesk-autocad,93cac86e-dbc5-46bd-9ed1-ea9b5f9be777,Annual License,dc09d4cd-1f09-41f1-9ce7-ea37c4edbbc4,annual,duration=365d max_machines=1 floating=false
+Packledge MIS,packledge-mis,dcf12754-3624-42b0-8b5a-c635e916ddc2,Perpetual + Support,96f9904e-242f-4dd8-a8f5-d9597697fbc1,one-time,duration=perpetual max_machines=1 floating=false

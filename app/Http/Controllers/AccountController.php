@@ -14,13 +14,13 @@ class AccountController extends Controller
     {
         $orders = Order::query()
             ->with(['items.product', 'items.license', 'product', 'license'])
-            ->where(fn ($query) => $query
+            ->where(fn($query) => $query
                 ->whereBelongsTo($request->user(), 'buyer')
                 ->orWhere('buyer_email', $request->user()->email))
             ->latest()
             ->get();
 
-        return view('storefront.orders', ['orders' => $orders]);
+        return view('storefront.account.orders', ['orders' => $orders]);
     }
 
     public function settings(Request $request): View
@@ -32,7 +32,7 @@ class AccountController extends Controller
     {
         $orders = Order::query()
             ->with(['items.product', 'items.license', 'product', 'license'])
-            ->where(fn ($query) => $query
+            ->where(fn($query) => $query
                 ->whereBelongsTo($request->user(), 'buyer')
                 ->orWhere('buyer_email', $request->user()->email))
             ->latest()

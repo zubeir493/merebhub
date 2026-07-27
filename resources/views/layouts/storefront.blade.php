@@ -61,7 +61,7 @@
                                 <p class="truncate text-sm font-extrabold">{{ auth()->user()->name }}</p>
                                 <p class="truncate text-xs text-zinc-500">{{ auth()->user()->email }}</p>
                             </div>
-                            <a href="{{ route('account.orders') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-receipt-percent class="size-4" /> Previous Orders</a>
+                            <a href="{{ route('account.orders') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-gift class="size-4" /> Previous Orders</a>
                             <a href="{{ route('account.subscriptions') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-arrow-path-rounded-square class="size-4" /> Subscriptions</a>
                             <a href="{{ route('account.settings') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-cog-6-tooth class="size-4" /> Account settings</a>
                             <a href="{{ route('submissions.create') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-shopping-bag class="size-4" /> Sell software</a>

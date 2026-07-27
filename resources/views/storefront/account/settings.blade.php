@@ -56,7 +56,7 @@
                 </div>
             </section>
 
-            <div class="pt-4 border-t border-zinc-200 flex justify-end">
+            <div>
                 <button type="submit" class="btn-dark">
                     <x-heroicon-o-check-circle class="size-4" aria-hidden="true" />
                     Save Changes

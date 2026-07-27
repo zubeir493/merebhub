@@ -81,6 +81,7 @@ return new class extends Migration
         });
 
         Schema::table('licenses', function (Blueprint $table) {
+            $table->dropForeign(['order_id']);
             $table->dropUnique(['order_id']);
             $table->foreignId('order_item_id')->nullable()->after('order_id')->constrained()->nullOnDelete();
             $table->unique('order_item_id');

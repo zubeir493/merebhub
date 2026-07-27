@@ -55,6 +55,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/cart/{cartItem}', [CartController::class, 'destroy'])->whereNumber('cartItem')->name('cart.destroy');
     Route::post('/wishlist/{product}', [WishlistController::class, 'store'])->whereNumber('product')->name('wishlist.store');
     Route::delete('/wishlist/{wishlistItem}', [WishlistController::class, 'destroy'])->whereNumber('wishlistItem')->name('wishlist.destroy');
+    Route::get('/account', function () {
+        return redirect()->route('account.settings');
+    })->name('account');
     Route::get('/account/orders', [AccountController::class, 'orders'])->name('account.orders');
     Route::get('/account/purchases', [AccountController::class, 'orders'])->name('account.purchases');
     Route::get('/account/settings', [AccountController::class, 'settings'])->name('account.settings');

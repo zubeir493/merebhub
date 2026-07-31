@@ -28,9 +28,7 @@
             <div class="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 @foreach ($items as $item)
                     <article class="group">
-                        <div class="rounded-2xl border border-zinc-200 bg-white p-4 transition-all hover:border-teal-200 hover:shadow-md">
-                            <x-product-card :product="$item->product" />
-                        </div>
+                        <x-product-card :product="$item->product" />
                         <div class="mt-3 flex gap-2">
                             @if ($plan = $item->product->activePlans->first())
                                 <form method="POST" action="{{ route('cart.store', $item->product) }}" class="flex-1">

@@ -2,132 +2,96 @@
 
 namespace App\Models;
 
-use App\Enums\AuthorStatus;
-use Database\Factories\AuthorFactory;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Lunar\Core\Models\Brand;
 
-class Author extends Model
+class Author extends Brand
 {
-    /** @use HasFactory<AuthorFactory> */
-    use HasFactory;
+    protected $table = 'brands';
 
-    protected $fillable = [
-        'name',
-        'slug',
-        'user_id',
-        'tagline',
-        'bio',
-        'avatar_path',
-        'cover_path',
-        'location',
-        'website_url',
-        'support_url',
-        'social_links',
-        'member_since',
-        'status',
-        'is_verified',
-        'is_featured',
-        'show_public_sales',
-        'public_sales_count',
-        'average_rating',
-        'public_support_instructions',
-        'is_public',
-    ];
-
-    protected $attributes = [
-        'status' => AuthorStatus::Active,
-        'is_public' => true,
-        'is_verified' => false,
-        'is_featured' => false,
-        'show_public_sales' => true,
-        'public_sales_count' => 0,
-        'average_rating' => 0,
-    ];
-
-    protected function casts(): array
+    public function getMorphClass(): string
     {
-        return [
-            'status' => AuthorStatus::class,
-            'is_public' => 'boolean',
-            'is_verified' => 'boolean',
-            'is_featured' => 'boolean',
-            'show_public_sales' => 'boolean',
-            'social_links' => 'array',
-            'member_since' => 'date',
-            'moderated_at' => 'datetime',
-            'public_sales_count' => 'integer',
-            'average_rating' => 'decimal:1',
-        ];
+        return 'brand';
     }
 
-    public function scopePubliclyVisible(Builder $query): Builder
+    protected function tagline(): Attribute
     {
-        return $query
-            ->where('status', AuthorStatus::Active)
-            ->where('is_public', true);
-    }
-
-    public function avatarUrl(): ?string
-    {
-        return $this->mediaUrl($this->avatar_path);
-    }
-
-    public function coverUrl(): ?string
-    {
-        return $this->mediaUrl($this->cover_path);
-    }
-
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    public function moderatedBy(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'moderated_by');
+        return Attribute::get(fn (): string => (string) $this->attr('tagline'));
     }
 
     public function products(): HasMany
     {
-        return $this->hasMany(Product::class);
+        return $this->hasMany(Product::class, 'brand_id');
     }
 
-    public function contributedProducts(): BelongsToMany
+    protected function bio(): Attribute
     {
-        return $this->belongsToMany(Product::class)
-            ->using(AuthorProduct::class)
-            ->withPivot([
-                'role',
-                'is_primary',
-                'is_publicly_displayed',
-                'can_manage_product',
-                'revenue_share_basis_points',
-                'sort_order',
-                'internal_notes',
-            ])
-            ->withTimestamps();
+        return Attribute::get(fn (): string => (string) $this->attr('bio'));
     }
 
-    public function appSubmissions(): HasMany
+    protected function isVerified(): Attribute
     {
-        return $this->hasMany(AppSubmission::class, 'linked_author_id');
+        return Attribute::get(fn (): bool => (bool) $this->attr('is_verified'));
     }
 
-    public function earnings(): HasMany
+    protected function averageRating(): Attribute
     {
-        return $this->hasMany(Earning::class);
+        return Attribute::get(fn (): float => (float) ($this->attr('average_rating') ?: 0));
     }
 
-    private function mediaUrl(?string $path): ?string
+    protected function publicSalesCount(): Attribute
     {
-        if (blank($path)) {
+        return Attribute::get(fn (): int => (int) ($this->attr('public_sales_count') ?: 0));
+    }
+
+    protected function showPublicSales(): Attribute
+    {
+        return Attribute::get(fn (): bool => true);
+    }
+
+    protected function websiteUrl(): Attribute
+    {
+        return Attribute::get(fn (): ?string => $this->attr('website_url'));
+    }
+
+    protected function supportUrl(): Attribute
+    {
+        return Attribute::get(fn (): ?string => $this->attr('support_url'));
+    }
+
+    protected function location(): Attribute
+    {
+        return Attribute::get(fn (): ?string => $this->attr('location'));
+    }
+
+    protected function memberSince(): Attribute
+    {
+        return Attribute::get(fn () => $this->created_at);
+    }
+
+    public function avatarUrl(): ?string
+    {
+        return $this->mediaUrl('avatar_url');
+    }
+
+    public function coverUrl(): ?string
+    {
+        return $this->mediaUrl('cover_url');
+    }
+
+    public function getRouteKey(): mixed
+    {
+        return $this->defaultUrl?->slug ?? Str::slug($this->name);
+    }
+
+    private function mediaUrl(string $attribute): ?string
+    {
+        $path = (string) $this->attr($attribute);
+
+        if ($path === '') {
             return null;
         }
 

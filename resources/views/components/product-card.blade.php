@@ -22,10 +22,10 @@
         <div class="min-w-0">
             <a href="{{ route('products.show', $product) }}" class="block truncate text-[15px] font-extrabold text-zinc-950 group-hover:text-teal-700">{{ $product->name }}</a>
             <p class="mt-1 truncate text-xs font-medium text-zinc-500">
-                @if ($product->author->status === \App\Enums\AuthorStatus::Active && $product->author->is_public)
+                @if ($product->author)
                     <a href="{{ route('vendors.show', $product->author) }}" class="hover:text-teal-700">{{ $product->author->name }}</a>
                 @else
-                    {{ $product->author->name }}
+                    Independent
                 @endif
                 · {{ $product->category }}
             </p>

@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
-use App\Models\CartItem;
 use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\RedirectResponse;
@@ -14,6 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
+use Lunar\Core\Models\Customer;
 
 class AuthController extends Controller
 {
@@ -32,15 +32,7 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        if ($productId = $request->session()->pull('pending_cart_product_id')) {
-            $productPlanId = $request->session()->pull('pending_cart_product_plan_id');
-            CartItem::firstOrCreate(
-                ['user_id' => Auth::id(), 'product_plan_id' => $productPlanId],
-                ['product_id' => $productId, 'quantity' => 1],
-            );
-        }
-
-        return redirect()->intended(route('account.purchases'));
+        return redirect()->intended(route('account.orders'));
     }
 
     public function registerForm(): View
@@ -51,6 +43,12 @@ class AuthController extends Controller
     public function register(RegisterRequest $request): RedirectResponse
     {
         $user = User::create($request->safe()->only(['name', 'email', 'password']));
+        $name = Str::of($user->name)->squish();
+        $customer = Customer::create([
+            'first_name' => $name->beforeLast(' ')->toString() ?: $name->toString(),
+            'last_name' => $name->contains(' ') ? $name->afterLast(' ')->toString() : '',
+        ]);
+        $customer->users()->attach($user);
         $user->sendEmailVerificationNotification();
         Auth::login($user);
 

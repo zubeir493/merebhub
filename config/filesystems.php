@@ -2,8 +2,6 @@
 
 return [
 
-    'builds_disk' => env('BUILDS_DISK', 'local'),
-
     /*
     |--------------------------------------------------------------------------
     | Default Filesystem Disk

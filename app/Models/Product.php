@@ -2,169 +2,134 @@
 
 namespace App\Models;
 
-use App\Enums\BillingInterval;
-use App\Enums\BillingModel;
-use App\Enums\FulfillmentType;
-use App\Enums\ProductStatus;
-use Database\Factories\ProductFactory;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Lunar\Core\Facades\StorefrontSession;
+use Lunar\Core\Models\Price;
 
-class Product extends Model
+class Product extends \Lunar\Core\Models\Product
 {
-    /** @use HasFactory<ProductFactory> */
-    use HasFactory;
-
-    protected $fillable = [
-        'author_id',
-        'category',
-        'name',
-        'slug',
-        'tagline',
-        'description',
-        'price',
-        'compare_at_price',
-        'icon_path',
-        'cover_path',
-        'rating',
-        'ratings_count',
-        'weekly_sales',
-        'is_featured',
-        'keygen_policy_id',
-        'fulfillment_type',
-        'billing_model',
-        'billing_interval',
-        'trial_days',
-        'app_url',
-        'status',
-    ];
-
-    protected $attributes = [
-        'rating' => 0,
-        'ratings_count' => 0,
-        'weekly_sales' => 0,
-        'is_featured' => false,
-        'fulfillment_type' => FulfillmentType::LicenseKey,
-        'billing_model' => BillingModel::OneTime,
-        'status' => ProductStatus::Draft,
-    ];
-
-    protected function casts(): array
+    public function getMorphClass(): string
     {
-        return [
-            'price' => 'decimal:2',
-            'compare_at_price' => 'decimal:2',
-            'rating' => 'decimal:1',
-            'ratings_count' => 'integer',
-            'weekly_sales' => 'integer',
-            'is_featured' => 'boolean',
-            'fulfillment_type' => FulfillmentType::class,
-            'billing_model' => BillingModel::class,
-            'billing_interval' => BillingInterval::class,
-            'trial_days' => 'integer',
-            'status' => ProductStatus::class,
-        ];
+        return 'product';
     }
 
-    public function scopePublished(Builder $query): Builder
+    protected function name(): Attribute
     {
-        return $query->where('status', ProductStatus::Published);
+        return Attribute::get(fn (): string => $this->localizedColumn('name'));
     }
 
-    public function coverUrl(): ?string
+    protected function tagline(): Attribute
     {
-        if (blank($this->cover_path)) {
-            return null;
-        }
+        return Attribute::get(fn (): string => (string) $this->attr('tagline'));
+    }
 
-        if (Str::startsWith($this->cover_path, ['http://', 'https://'])) {
-            return $this->cover_path;
-        }
+    protected function description(): Attribute
+    {
+        return Attribute::get(fn (): string => $this->localizedColumn('description'));
+    }
 
-        if (Str::startsWith($this->cover_path, ['/images/', 'images/'])) {
-            return asset(ltrim($this->cover_path, '/'));
-        }
+    protected function category(): Attribute
+    {
+        return Attribute::get(fn (): string => (string) ($this->attr('category') ?: 'Software'));
+    }
 
-        return Storage::disk('public')->url($this->cover_path);
+    protected function rating(): Attribute
+    {
+        return Attribute::get(fn (): float => (float) ($this->attr('rating') ?: 0));
+    }
+
+    protected function ratingsCount(): Attribute
+    {
+        return Attribute::get(fn (): int => (int) ($this->attr('ratings_count') ?: 0));
+    }
+
+    protected function platforms(): Attribute
+    {
+        return Attribute::get(fn (): Collection => collect(explode(',', (string) $this->attr('platform')))
+            ->map(fn (string $name): string => trim($name))
+            ->filter()
+            ->map(fn (string $name): object => (object) ['name' => $name, 'slug' => Str::slug($name)])
+            ->values());
+    }
+
+    protected function price(): Attribute
+    {
+        return Attribute::get(fn (): float => (float) ($this->storefrontPrice()?->price ?? 0) / 100);
+    }
+
+    protected function compareAtPrice(): Attribute
+    {
+        return Attribute::get(fn (): ?float => ($price = $this->storefrontPrice()?->list_price) === null ? null : (float) $price / 100);
     }
 
     public function author(): BelongsTo
     {
-        return $this->belongsTo(Author::class);
+        return $this->belongsTo(Author::class, 'brand_id');
     }
 
-    public function authors(): BelongsToMany
+    public function coverUrl(): ?string
     {
-        return $this->belongsToMany(Author::class)
-            ->using(AuthorProduct::class)
-            ->withPivot([
-                'role',
-                'is_primary',
-                'is_publicly_displayed',
-                'can_manage_product',
-                'revenue_share_basis_points',
-                'sort_order',
-                'internal_notes',
-            ])
-            ->withTimestamps()
-            ->orderByPivot('sort_order');
+        $mediaUrl = $this->getFirstMediaUrl(config('lunar.media.collection'));
+
+        if ($mediaUrl !== '') {
+            return $mediaUrl;
+        }
+
+        $path = (string) $this->attr('cover_url');
+
+        if ($path === '') {
+            return null;
+        }
+
+        if (Str::startsWith($path, ['http://', 'https://'])) {
+            return $path;
+        }
+
+        if (Str::startsWith($path, ['/images/', 'images/'])) {
+            return asset(ltrim($path, '/'));
+        }
+
+        return Storage::disk('public')->url($path);
     }
 
-    public function publicContributors(): BelongsToMany
+    public function getRouteKey(): mixed
     {
-        return $this->authors()
-            ->wherePivot('is_publicly_displayed', true)
-            ->where('authors.is_public', true);
+        return $this->defaultUrl?->slug ?? $this->getKey();
     }
 
-    public function platforms(): BelongsToMany
+    public function scopePublished(Builder $query): Builder
     {
-        return $this->belongsToMany(Platform::class)->withTimestamps();
+        return $query->where('status', 'published')
+            ->channel(StorefrontSession::getChannel())
+            ->customerGroup(StorefrontSession::getCustomerGroups());
     }
 
-    public function versions(): HasMany
+    private function storefrontPrice(): ?Price
     {
-        return $this->hasMany(AppVersion::class);
+        $variant = $this->variants->first();
+
+        if (! $variant) {
+            return null;
+        }
+
+        return $variant->prices
+            ->firstWhere('currency_id', StorefrontSession::getCurrency()?->id)
+            ?? $variant->prices->first();
     }
 
-    public function plans(): HasMany
+    private function localizedColumn(string $column): string
     {
-        return $this->hasMany(ProductPlan::class)->orderBy('sort_order');
-    }
+        $value = json_decode((string) $this->getRawOriginal($column), true);
 
-    public function activePlans(): HasMany
-    {
-        return $this->plans()->where('is_active', true);
-    }
+        if (! is_array($value)) {
+            return (string) $value;
+        }
 
-    public function orders(): HasMany
-    {
-        return $this->hasMany(Order::class);
-    }
-
-    public function licenses(): HasMany
-    {
-        return $this->hasMany(License::class);
-    }
-
-    public function cartItems(): HasMany
-    {
-        return $this->hasMany(CartItem::class);
-    }
-
-    public function wishlistItems(): HasMany
-    {
-        return $this->hasMany(WishlistItem::class);
-    }
-
-    public function orderItems(): HasMany
-    {
-        return $this->hasMany(OrderItem::class);
+        return (string) ($value[app()->getLocale()] ?? reset($value) ?: '');
     }
 }

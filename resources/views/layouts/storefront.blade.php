@@ -35,14 +35,7 @@
                 >
                 <span id="search-shortcut-desktop" role="button" tabindex="0" aria-label="Focus search (shortcut)" style="position: absolute;right: 10px;" class="top-1/2 -translate-y-1/2 rounded-sm bg-zinc-100 px-2 py-1 text-xs text-zinc-600 cursor-pointer select-none">Ctrl+K</span>
             </form>
-            <div class="flex shrink-0 items-center gap-1 sm:gap-2">
-                <a href="{{ route('wishlist.index') }}" class="relative grid size-10 place-items-center rounded-lg hover:bg-zinc-100" aria-label="Wishlist" title="Wishlist">
-                    @if ($headerWishlistCount)
-                        <x-heroicon-s-heart class="size-5" />
-                    @else
-                        <x-heroicon-o-heart class="size-5" />
-                    @endif
-                </a>
+            <div class="flex shrink-0 items-center">
                 <a href="{{ route('cart.index') }}" class="relative grid size-10 place-items-center rounded-lg hover:bg-zinc-100" aria-label="Cart" title="Cart">
                     <x-heroicon-o-shopping-cart class="size-5" />
                     @if ($headerCartCount)
@@ -62,12 +55,7 @@
                                 <p class="truncate text-xs text-zinc-500">{{ auth()->user()->email }}</p>
                             </div>
                             <a href="{{ route('account.orders') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-gift class="size-4" /> Previous Orders</a>
-                            <a href="{{ route('account.subscriptions') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-arrow-path-rounded-square class="size-4" /> Subscriptions</a>
                             <a href="{{ route('account.settings') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-cog-6-tooth class="size-4" /> Account settings</a>
-                            <a href="{{ route('submissions.create') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-shopping-bag class="size-4" /> Sell software</a>
-                            @if (auth()->user()->is_admin)
-                                <a href="{{ url('/admin') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-adjustments-horizontal class="size-4" /> Submission admin</a>
-                            @endif
                             <form method="POST" action="{{ route('logout') }}" class="border-t border-zinc-100">
                                 @csrf
                                 <button class="flex w-full items-center gap-3 px-4 py-3 text-left text-sm font-bold text-rose-600 hover:bg-rose-50"><x-heroicon-o-arrow-right-start-on-rectangle class="size-4" /> Logout</button>
@@ -97,8 +85,6 @@
                 <a href="{{ route('store.bestsellers') }}" class="rounded-lg px-3 py-2 hover:bg-zinc-100">Best sellers</a>
                 <a href="{{ route('store.deals') }}" class="rounded-lg px-3 py-2 hover:bg-zinc-100">Deals</a>
                 <a href="{{ route('vendors.index') }}" class="rounded-lg px-3 py-2 hover:bg-zinc-100">Developers</a>
-                <a href="{{ route('submissions.create') }}" class="rounded-lg px-3 py-2 hover:bg-zinc-100">Sell software</a>
-                <a href="{{ route('wishlist.index') }}" class="rounded-lg px-3 py-2 hover:bg-zinc-100">Wishlist</a>
                 <a href="{{ route('cart.index') }}" class="rounded-lg px-3 py-2 hover:bg-zinc-100">Cart</a>
             </nav>
         </div>
@@ -128,8 +114,8 @@
                 <p class="mt-4 text-sm leading-6 text-zinc-400">Independent Ethiopian digital products, reviewed and ready to use.</p>
             </div>
             <div><strong class="text-sm text-white">Marketplace</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('store.index') }}">Browse all</a><a href="{{ route('store.newarrivals') }}">New arrivals</a><a href="{{ route('store.deals') }}">Deals</a></div></div>
-            <div><strong class="text-sm text-white">Developers</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('submissions.create') }}">Submit software</a><a href="{{ route('orders.lookup') }}">Order lookup</a></div></div>
-            <div><strong class="text-sm text-white">Your account</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('account.orders') }}">Previous orders</a><a href="{{ route('wishlist.index') }}">Wishlist</a><a href="{{ route('cart.index') }}">Cart</a></div></div>
+            <div><strong class="text-sm text-white">Developers</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('vendors.index') }}">Browse developers</a><a href="{{ route('store.index') }}">Browse software</a></div></div>
+            <div><strong class="text-sm text-white">Your account</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('account.orders') }}">Previous orders</a><a href="{{ route('account.settings') }}">Settings</a><a href="{{ route('cart.index') }}">Cart</a></div></div>
         </div>
     </footer>
 

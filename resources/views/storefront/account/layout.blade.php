@@ -12,13 +12,6 @@
                         <x-heroicon-o-user-circle class="size-5 shrink-0" aria-hidden="true" />
                         <span>Account Settings</span>
                     </a>
-                    <a href="{{ route('wishlist.index') }}"
-                       class="{{ request()->routeIs('wishlist.index') ? 'bg-teal-50 text-teal-700' : 'text-zinc-700 hover:bg-zinc-50 hover:text-teal-700' }}
-                           flex items-center gap-3 rounded-md px-4 py-4 text-sm font-semibold transition-all"
-                       aria-current="{{ request()->routeIs('wishlist.index') ? 'page' : 'false' }}">
-                        <x-heroicon-o-heart class="size-5 shrink-0" aria-hidden="true" />
-                        <span>Wishlist</span>
-                    </a>
                     <a href="{{ route('account.orders') }}"
                        class="{{ request()->routeIs('account.orders') ? 'bg-teal-50 text-teal-700' : 'text-zinc-700 hover:bg-zinc-50 hover:text-teal-700' }}
                            flex items-center gap-3 rounded-md px-4 py-4 text-sm font-semibold transition-all"
@@ -26,17 +19,11 @@
                         <x-heroicon-o-gift class="size-5 shrink-0" aria-hidden="true" />
                         <span>Orders</span>
                     </a>
-                    <a href="{{ route('account.subscriptions') }}"
-                       class="{{ request()->routeIs('account.subscriptions') ? 'bg-teal-50 text-teal-700' : 'text-zinc-700 hover:bg-zinc-50 hover:text-teal-700' }}
-                           flex items-center gap-3 rounded-md px-4 py-4 text-sm font-semibold transition-all"
-                       aria-current="{{ request()->routeIs('account.subscriptions') ? 'page' : 'false' }}">
-                        <x-heroicon-o-arrow-path-rounded-square class="size-5 shrink-0" aria-hidden="true" />
-                        <span>Subscriptions</span>
-                    </a>
                     <form method="POST" action="{{ route('logout') }}">
+                        @csrf
                         <button 
                         class="flex items-center gap-3 rounded-md px-4 py-4 text-sm font-semibold transition-all w-full hover:bg-rose-50 hover:text-rose-700"
-                        aria-current="{{ request()->routeIs('account.subscriptions') ? 'page' : 'false' }}">
+                        aria-label="Log out">
                             <x-heroicon-o-arrow-right-start-on-rectangle class="size-5 shrink-0" aria-hidden="true" />
                             <span>Logout</span>
                         </button>

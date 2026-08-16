@@ -3,38 +3,29 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
-use App\Http\Controllers\ChapaWebhookController;
-use App\Http\Controllers\CheckoutReturnController;
-use App\Http\Controllers\DownloadController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\StorefrontController;
-use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\VerificationController;
-use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [StorefrontController::class, 'home'])->name('home');
 Route::get('/search', [StorefrontController::class, 'search'])->name('search');
-Route::prefix('store')->name('store.')->controller(StoreController::class)->group(function () {
+Route::prefix('store')->name('store.')->controller(StoreController::class)->group(function (): void {
     Route::get('/', 'index')->name('index');
     Route::get('/new-arrivals', 'newArrivals')->name('newarrivals');
     Route::get('/best-sellers', 'bestsellers')->name('bestsellers');
     Route::get('/deals', 'deals')->name('deals');
 });
-Route::get('/apps/{product:slug}', [StorefrontController::class, 'product'])->name('products.show');
+Route::get('/apps/{slug}', [StorefrontController::class, 'product'])->name('products.show');
 Route::get('/vendors', [StorefrontController::class, 'vendors'])->name('vendors.index');
-Route::get('/vendors/{author:slug}', [StorefrontController::class, 'vendor'])->name('vendors.show');
-Route::redirect('/authors/{author}', '/vendors/{author}', 301);
-Route::get('/submit', [StorefrontController::class, 'submit'])->name('submissions.create');
-Route::post('/submit', [StorefrontController::class, 'storeSubmission'])->middleware('throttle:public-form')->name('submissions.store');
+Route::get('/vendors/{slug}', [StorefrontController::class, 'vendor'])->name('vendors.show');
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-Route::post('/cart/{product}', [CartController::class, 'store'])->whereNumber('product')->name('cart.store');
-Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
-Route::get('/orders/lookup', [StorefrontController::class, 'lookup'])->name('orders.lookup');
-Route::post('/orders/lookup', [StorefrontController::class, 'lookupResult'])->middleware('throttle:public-form')->name('orders.lookup.result');
-Route::post('/webhooks/chapa', ChapaWebhookController::class)->middleware('throttle:webhooks')->name('webhooks.chapa');
+Route::post('/cart/{slug}', [CartController::class, 'store'])->name('cart.store');
+Route::patch('/cart/{cartLine}', [CartController::class, 'update'])->whereNumber('cartLine')->name('cart.update');
+Route::delete('/cart/{cartLine}', [CartController::class, 'destroy'])->whereNumber('cartLine')->name('cart.destroy');
 
-Route::middleware('guest')->group(function () {
+Route::middleware('guest')->group(function (): void {
     Route::get('/login', [AuthController::class, 'loginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login');
     Route::get('/register', [AuthController::class, 'registerForm'])->name('register');
@@ -45,28 +36,20 @@ Route::middleware('guest')->group(function () {
     Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware('auth')->group(function (): void {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/email/verify', [VerificationController::class, 'notice'])->name('verification.notice');
     Route::get('/email/verify/{id}/{hash}', [VerificationController::class, 'verify'])->middleware('signed')->name('verification.verify');
     Route::post('/email/verification-notification', [VerificationController::class, 'send'])->middleware('throttle:6,1')->name('verification.send');
-    Route::post('/cart/checkout', [CartController::class, 'checkout'])->middleware('verified')->name('cart.checkout');
-    Route::patch('/cart/{cartItem}', [CartController::class, 'update'])->whereNumber('cartItem')->name('cart.update');
-    Route::delete('/cart/{cartItem}', [CartController::class, 'destroy'])->whereNumber('cartItem')->name('cart.destroy');
-    Route::post('/wishlist/{product}', [WishlistController::class, 'store'])->whereNumber('product')->name('wishlist.store');
-    Route::delete('/wishlist/{wishlistItem}', [WishlistController::class, 'destroy'])->whereNumber('wishlistItem')->name('wishlist.destroy');
-    Route::get('/account', function () {
-        return redirect()->route('account.settings');
-    })->name('account');
+    Route::get('/account', fn () => redirect()->route('account.settings'))->name('account');
     Route::get('/account/orders', [AccountController::class, 'orders'])->name('account.orders');
     Route::get('/account/purchases', [AccountController::class, 'orders'])->name('account.purchases');
     Route::get('/account/settings', [AccountController::class, 'settings'])->name('account.settings');
     Route::patch('/account/settings', [AccountController::class, 'update'])->name('account.settings.update');
-    Route::get('/account/subscriptions', [SubscriptionController::class, 'index'])->name('account.subscriptions');
-    Route::post('/account/subscriptions/{subscription}/renew', [SubscriptionController::class, 'renew'])->name('account.subscriptions.renew');
-    Route::get('/checkout/return/{order:public_id}', CheckoutReturnController::class)->name('payments.chapa.return');
-});
 
-Route::get('/downloads/{version}/{license}', DownloadController::class)
-    ->middleware(['auth', 'signed'])
-    ->name('downloads.show');
+    Route::middleware('verified')->group(function (): void {
+        Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout.show');
+        Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+        Route::get('/checkout/complete/{order}', [CheckoutController::class, 'complete'])->name('checkout.complete');
+    });
+});

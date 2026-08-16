@@ -35,19 +35,4 @@ return [
         ],
     ],
 
-    'chapa' => [
-        'api_url' => env('CHAPA_API_URL', 'https://api.chapa.co/v1'),
-        'secret_key' => env('CHAPA_SECRET_KEY'),
-        'webhook_secret' => env('CHAPA_WEBHOOK_SECRET'),
-        'timeout' => env('CHAPA_TIMEOUT', 15),
-    ],
-
-    'keygen' => [
-        'api_url' => env('KEYGEN_API_URL', 'https://api.keygen.sh'),
-        'api_token' => env('KEYGEN_API_TOKEN'),
-        'account_id' => env('KEYGEN_ACCOUNT_ID'),
-        'policy_id' => env('KEYGEN_POLICY_ID'),
-        'timeout' => env('KEYGEN_TIMEOUT', 15),
-    ],
-
 ];

@@ -2,89 +2,79 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\CreateChapaCheckout;
-use App\Enums\ProductStatus;
-use App\Http\Requests\UpdateCartItemRequest;
-use App\Models\CartItem;
 use App\Models\Product;
-use App\Models\ProductPlan;
-use App\Support\Money;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
-use Throwable;
+use Lunar\Core\Exceptions\Carts\CartException;
+use Lunar\Core\Facades\CartSession;
+use Lunar\Core\Models\CartLine;
+use Lunar\Core\Models\ProductVariant;
+use Lunar\Core\Models\Url;
 
 class CartController extends Controller
 {
-    public function index(Request $request): View
+    public function index(): View
     {
-        $items = $request->user()
-            ? $request->user()->cartItems()->with(['product.author', 'productPlan'])->latest()->get()
-            : collect();
+        $cart = CartSession::current();
+        $items = $cart?->lines ?? collect();
+        $productIds = $items->pluck('purchasable.product_id')->filter()->unique();
+        $products = Product::query()
+            ->with(['author', 'defaultUrl', 'media'])
+            ->whereKey($productIds)
+            ->get()
+            ->keyBy('id');
+
+        $items->each(function (CartLine $item) use ($products): void {
+            $variant = $item->purchasable;
+
+            if ($variant && $products->has($variant->product_id)) {
+                $variant->setRelation('product', $products->get($variant->product_id));
+            }
+        });
 
         return view('storefront.cart', [
+            'cart' => $cart,
             'items' => $items,
-            'subtotalMinor' => $items->sum(
-                fn (CartItem $item): int => ($item->productPlan?->price_minor ?? Money::fromMajor($item->product->price)) * $item->quantity,
-            ),
+            'subtotalMinor' => $cart?->subTotal?->value ?? 0,
         ]);
     }
 
-    public function store(Request $request, Product $product): RedirectResponse
+    public function store(Request $request, string $slug): RedirectResponse
     {
-        abort_unless($product->status === ProductStatus::Published, 404);
         $validated = $request->validate([
-            'product_plan_id' => ['required', 'integer', 'exists:product_plans,id'],
+            'variant_id' => ['required', 'integer', 'exists:lunar_product_variants,id'],
         ]);
-        $plan = ProductPlan::query()
-            ->whereKey($validated['product_plan_id'])
-            ->whereBelongsTo($product)
-            ->where('is_active', true)
+        $productId = Url::query()
+            ->where('slug', $slug)
+            ->where('element_type', (new Product)->getMorphClass())
+            ->value('element_id');
+        $variant = ProductVariant::query()
+            ->whereKey($validated['variant_id'])
+            ->where('product_id', $productId)
             ->firstOrFail();
 
-        if (! Auth::check()) {
-            $request->session()->put('pending_cart_product_id', $product->id);
-            $request->session()->put('pending_cart_product_plan_id', $plan->id);
-            $request->session()->put('url.intended', route('cart.index'));
-
-            return redirect()->route('login')->with('status', 'Log in to add this app to your cart.');
+        try {
+            CartSession::add($variant, 1);
+        } catch (CartException $exception) {
+            return back()->withErrors(['cart' => $exception->getMessage()]);
         }
 
-        CartItem::firstOrCreate(
-            ['user_id' => $request->user()->id, 'product_plan_id' => $plan->id],
-            ['product_id' => $product->id, 'quantity' => 1],
-        );
-
-        return redirect()->route('cart.index')->with('status', "{$product->name} was added to your cart.");
+        return redirect()->route('cart.index')->with('status', 'Added to your cart.');
     }
 
-    public function update(UpdateCartItemRequest $request, CartItem $cartItem): RedirectResponse
+    public function update(Request $request, int $cartLine): RedirectResponse
     {
-        abort_unless($cartItem->user_id === $request->user()->id, 404);
-        $cartItem->update($request->validated());
+        $validated = $request->validate(['quantity' => ['required', 'integer', 'min:1', 'max:10']]);
+        CartSession::updateLine($cartLine, $validated['quantity']);
 
         return back()->with('status', 'Cart updated.');
     }
 
-    public function destroy(Request $request, CartItem $cartItem): RedirectResponse
+    public function destroy(int $cartLine): RedirectResponse
     {
-        abort_unless($cartItem->user_id === $request->user()?->id, 404);
-        $cartItem->delete();
+        CartSession::remove($cartLine);
 
         return back()->with('status', 'Item removed from your cart.');
-    }
-
-    public function checkout(Request $request, CreateChapaCheckout $checkout): RedirectResponse
-    {
-        try {
-            $order = $checkout->handle($request->user());
-        } catch (Throwable $exception) {
-            report($exception);
-
-            return back()->withErrors(['checkout' => $exception->getMessage()]);
-        }
-
-        return redirect()->away((string) $order->payment_url);
     }
 }

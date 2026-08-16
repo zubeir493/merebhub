@@ -1,0 +1,143 @@
+<?php
+
+use Lunar\Core\Pipelines\Cart\ApplyDiscounts;
+use Lunar\Core\Pipelines\Cart\ApplyShipping;
+use Lunar\Core\Pipelines\Cart\Calculate;
+use Lunar\Core\Pipelines\Cart\CalculateLines;
+use Lunar\Core\Pipelines\Cart\CalculateShippingSubTotal;
+use Lunar\Core\Pipelines\Cart\CalculateTax;
+use Lunar\Core\Pipelines\CartLine\GetUnitPrice;
+use Lunar\Core\Pipelines\CartPrune\PruneAfter;
+use Lunar\Core\Pipelines\CartPrune\WhereNotMerged;
+use Lunar\Core\Pipelines\CartPrune\WithoutOrders;
+use Lunar\Core\Validation\Cart\ShippingOptionValidator;
+use Lunar\Core\Validation\Cart\ValidateCartForOrderCreation;
+use Lunar\Core\Validation\CartLine\CartLineAvailability;
+use Lunar\Core\Validation\CartLine\CartLineQuantity;
+use Lunar\Core\Validation\CartLine\CartLineStock;
+
+return [
+    /*
+    |--------------------------------------------------------------------------
+    | Authentication policy
+    |--------------------------------------------------------------------------
+    |
+    | When a user logs in, by default, Lunar will merge the current (guest) cart
+    | with the users current cart, if they have one.
+    | Available options: 'merge', 'override'
+    |
+    */
+    'auth_policy' => 'merge',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cart Pipelines
+    |--------------------------------------------------------------------------
+    |
+    | Define which pipelines should be run when performing cart calculations.
+    | The default ones provided should suit most needs, however you are
+    | free to add your own as you see fit.
+    |
+    | Each pipeline class will be run from top to bottom.
+    |
+    */
+    'pipelines' => [
+        /*
+         * Run these pipelines when the cart is calculating.
+        */
+        'cart' => [
+            CalculateLines::class,
+            ApplyShipping::class,
+            CalculateShippingSubTotal::class,
+            ApplyDiscounts::class,
+            CalculateTax::class,
+            Calculate::class,
+        ],
+
+        /*
+         * Run these pipelines when the cart lines are being calculated.
+        */
+        'cart_lines' => [
+            GetUnitPrice::class,
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cart Action Validators
+    |--------------------------------------------------------------------------
+    |
+    | You may wish to provide additional validation when actions executed on
+    | the cart model. The defaults provided should be enough for most cases.
+    |
+    */
+    'validators' => [
+
+        'add_to_cart' => [
+            CartLineQuantity::class,
+            CartLineStock::class,
+            CartLineAvailability::class,
+        ],
+
+        'update_cart_line' => [
+            CartLineQuantity::class,
+            CartLineStock::class,
+            CartLineAvailability::class,
+        ],
+
+        'remove_from_cart' => [],
+
+        'set_shipping_option' => [
+            ShippingOptionValidator::class,
+        ],
+
+        'order_create' => [
+            ValidateCartForOrderCreation::class,
+        ],
+
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Default eager loading
+    |--------------------------------------------------------------------------
+    |
+    | When loading up a cart and doing calculations, there's a few relationships
+    | that are used when it's running. Here you can define which relationships
+    | should be eager loaded when these calculations take place.
+    |
+    */
+    'eager_load' => [
+        'currency',
+        'lines.purchasable.taxClass',
+        'lines.purchasable.values',
+        'lines.purchasable.product.thumbnail',
+        'lines.purchasable.prices.currency',
+        'lines.purchasable.prices.priceable',
+        'lines.purchasable.product',
+        'lines.cart.currency',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Prune carts
+    |--------------------------------------------------------------------------
+    |
+    | Should the cart models be pruned to prevent data build up and
+    | some settings controlling how pruning should be determined
+    |
+    */
+    'prune_tables' => [
+
+        'enabled' => false,
+
+        'pipelines' => [
+            PruneAfter::class,
+            WithoutOrders::class,
+            WhereNotMerged::class,
+        ],
+
+        'prune_interval' => 90, // days
+
+    ],
+];

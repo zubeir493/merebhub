@@ -17,6 +17,7 @@ class CartController extends Controller
     public function index(): View
     {
         $cart = CartSession::current();
+        $cart?->loadMissing('lines.purchasable.values');
         $items = $cart?->lines ?? collect();
         $productIds = $items->pluck('purchasable.product_id')->filter()->unique();
         $products = Product::query()

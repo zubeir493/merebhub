@@ -31,7 +31,7 @@
                             <td class="px-6 py-4">
                                 <span class="inline-flex rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700 ring-1 ring-teal-100">{{ Str::headline($order->status) }}</span>
                             </td>
-                            <td class="px-6 py-4 text-sm font-semibold text-zinc-900">{{ $order->total->format() }}</td>
+                            <td class="px-6 py-4 text-sm font-semibold text-zinc-900">{{ $order->format('total') }}</td>
                             <td class="px-6 py-4 text-sm text-zinc-500">{{ $order->placed_at->format('M j, Y') }}</td>
                         </tr>
                     @endforeach

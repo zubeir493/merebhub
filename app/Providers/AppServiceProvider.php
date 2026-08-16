@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Support\DashboardExtension;
+use Filament\Navigation\NavigationBuilder;
+use Filament\Panel;
+use Filament\Support\Colors\Color;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -9,6 +13,19 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
+use Lunar\Admin\Filament\Pages\Dashboard;
+use Lunar\Admin\Filament\Resources\ActivityResource;
+use Lunar\Admin\Filament\Resources\ChannelResource;
+use Lunar\Admin\Filament\Resources\CurrencyResource;
+use Lunar\Admin\Filament\Resources\CustomerGroupResource;
+use Lunar\Admin\Filament\Resources\LanguageResource;
+use Lunar\Admin\Filament\Resources\LocationResource;
+use Lunar\Admin\Filament\Resources\ProductOptionResource;
+use Lunar\Admin\Filament\Resources\ProductTypeResource;
+use Lunar\Admin\Filament\Resources\RegionResource;
+use Lunar\Admin\Filament\Resources\TaxClassResource;
+use Lunar\Admin\Filament\Resources\TaxRateResource;
+use Lunar\Admin\Filament\Resources\TaxZoneResource;
 use Lunar\Admin\Support\Facades\LunarPanel;
 use Lunar\Core\Facades\CartSession;
 
@@ -19,7 +36,38 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        LunarPanel::register();
+        LunarPanel::excludeResources([
+            ActivityResource::class,
+            ChannelResource::class,
+            CurrencyResource::class,
+            CustomerGroupResource::class,
+            LanguageResource::class,
+            LocationResource::class,
+            ProductOptionResource::class,
+            ProductTypeResource::class,
+            RegionResource::class,
+            TaxClassResource::class,
+            TaxRateResource::class,
+            TaxZoneResource::class,
+        ])->withoutInventoryControls()
+            ->panel(fn (Panel $panel): Panel => $panel
+                ->brandName('MerebHub')
+                ->colors(['primary' => Color::Teal])
+                ->font('Instrument Sans')
+                ->navigation(function (NavigationBuilder $builder): NavigationBuilder {
+                    $items = [];
+
+                    foreach ([...LunarPanel::getPages(), ...LunarPanel::getActiveResources()] as $component) {
+                        $items = [...$items, ...$component::getNavigationItems()];
+                    }
+
+                    return $builder->items($items);
+                })
+            )
+            ->extensions([
+                Dashboard::class => new DashboardExtension,
+            ])
+            ->register();
     }
 
     /**

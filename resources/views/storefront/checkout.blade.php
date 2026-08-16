@@ -42,7 +42,7 @@
             <div class="mt-4 grid gap-4">
                 @foreach ($cart->lines as $line)
                     <div class="flex items-center justify-between gap-4 text-sm">
-                        <span>{{ $line->purchasable->product->name }} × {{ $line->quantity }}</span>
+                        <span>{{ $line->purchasable->getDescription() }} × {{ $line->quantity }}</span>
                         <strong>{{ $line->total->format() }}</strong>
                     </div>
                 @endforeach

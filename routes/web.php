@@ -4,12 +4,17 @@ use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\HealthController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\StorefrontController;
 use App\Http\Controllers\VerificationController;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 Route::get('/', [StorefrontController::class, 'home'])->name('home');
+Route::get('/health', [HealthController::class, 'shallow'])->name('health');
+Route::middleware('auth')->get('/health/deep', [HealthController::class, 'deep'])->name('health.deep');
+Route::get('/app-shell', fn () => Inertia::render('PlatformShell'))->name('app-shell');
 Route::get('/search', [StorefrontController::class, 'search'])->name('search');
 Route::prefix('store')->name('store.')->controller(StoreController::class)->group(function (): void {
     Route::get('/', 'index')->name('index');

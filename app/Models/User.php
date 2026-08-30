@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Database\Factories\UserFactory;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -16,10 +18,15 @@ use Lunar\Core\Models\Concerns\IsLunarUser;
 
 #[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable implements LunarUserInterface, MustVerifyEmail
+class User extends Authenticatable implements FilamentUser, LunarUserInterface, MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, IsLunarUser, Notifiable;
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $panel->getId() === 'merchant' && (bool) ($this->getAttribute('merchant_access') ?? false);
+    }
 
     /**
      * Get the attributes that should be cast.

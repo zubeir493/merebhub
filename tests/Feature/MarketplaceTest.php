@@ -24,7 +24,8 @@ test('a Lunar product detail page renders its price and publisher', function () 
         ->assertSee('Cart and order processing powered by Lunar');
 });
 
-test('Filament panels are no longer exposed', function () {
-    $this->get('/admin')->assertNotFound();
+test('separate admin and merchant panel entry points require authentication', function () {
+    $this->get('/admin')->assertRedirect('/admin/login');
+    $this->get('/merchant')->assertRedirect('/merchant/login');
     $this->get('/author')->assertNotFound();
 });

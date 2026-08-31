@@ -38,3 +38,27 @@ test('merchant product resource excludes products from other merchants', functio
     expect(MerchantProductResource::getEloquentQuery()->pluck('id')->all())
         ->toBe([$ownedProduct->id]);
 });
+
+test('catalog resources eager load product URLs for panel links', function () {
+    $product = Product::factory()->create();
+
+    $adminProduct = AdminProductResource::getEloquentQuery()
+        ->whereKey($product->getKey())
+        ->firstOrFail();
+    $merchant = User::factory()->create();
+    $ownedMerchant = Merchant::factory()->create();
+    $ownedMerchant->memberships()->create([
+        'user_id' => $merchant->id,
+        'merchant_role' => MerchantMembershipRole::Owner,
+        'status' => MerchantMembershipStatus::Active,
+    ]);
+    $merchantProduct = Product::factory()->forMerchant($ownedMerchant)->create();
+
+    $this->actingAs($merchant);
+    $scopedMerchantProduct = MerchantProductResource::getEloquentQuery()
+        ->whereKey($merchantProduct->getKey())
+        ->firstOrFail();
+
+    expect($adminProduct->relationLoaded('defaultUrl'))->toBeTrue()
+        ->and($scopedMerchantProduct->relationLoaded('defaultUrl'))->toBeTrue();
+});

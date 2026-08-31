@@ -53,7 +53,7 @@ class ProductResource extends Resource
                 (new Product)->qualifyColumn('merchant_id'),
                 $user->approvedMerchants()->select((new Merchant)->qualifyColumn('id')),
             )
-            ->with('merchant')
+            ->with(['merchant', 'defaultUrl'])
             ->latest();
     }
 

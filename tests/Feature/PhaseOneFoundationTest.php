@@ -80,8 +80,8 @@ test('panel access is separated by account type', function () {
     $staff = new Staff(['admin' => true]);
     $user = new User;
 
-    expect($staff->canAccessPanel(Filament::getPanel('admin')))->toBeTrue()
+    expect($staff->canAccessPanel(Filament::getPanel('lunar')))->toBeTrue()
         ->and($staff->canAccessPanel(Filament::getPanel('merchant')))->toBeFalse()
-        ->and($user->canAccessPanel(Filament::getPanel('admin')))->toBeFalse()
+        ->and($user->canAccessPanel(Filament::getPanel('lunar')))->toBeFalse()
         ->and($user->canAccessPanel(Filament::getPanel('merchant')))->toBeFalse();
 });

@@ -10,7 +10,7 @@ class Staff extends \Lunar\Core\Models\Staff implements FilamentUser, HasName
 {
     public function canAccessPanel(Panel $panel): bool
     {
-        return $panel->getId() === 'admin' && $this->admin;
+        return $panel->getId() === 'lunar' && $this->admin;
     }
 
     public function getFilamentName(): string

@@ -15,7 +15,7 @@ test('merchant panel registers a tenant-scoped product resource', function () {
 });
 
 test('admin panel registers the catalog review resource', function () {
-    expect(Filament::getPanel('admin')->getResources())
+    expect(Filament::getPanel('lunar')->getResources())
         ->toContain(AdminProductResource::class);
 });
 

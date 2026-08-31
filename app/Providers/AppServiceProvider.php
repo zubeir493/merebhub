@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Filament\Admin\Resources\Products\ProductResource as AdminProductResource;
 use App\Support\DashboardExtension;
 use Filament\Navigation\NavigationBuilder;
 use Filament\Panel;
@@ -21,6 +22,7 @@ use Lunar\Admin\Filament\Resources\CustomerGroupResource;
 use Lunar\Admin\Filament\Resources\LanguageResource;
 use Lunar\Admin\Filament\Resources\LocationResource;
 use Lunar\Admin\Filament\Resources\ProductOptionResource;
+use Lunar\Admin\Filament\Resources\ProductResource as LunarProductResource;
 use Lunar\Admin\Filament\Resources\ProductTypeResource;
 use Lunar\Admin\Filament\Resources\RegionResource;
 use Lunar\Admin\Filament\Resources\TaxClassResource;
@@ -49,15 +51,21 @@ class AppServiceProvider extends ServiceProvider
             TaxClassResource::class,
             TaxRateResource::class,
             TaxZoneResource::class,
+            LunarProductResource::class,
         ])->withoutInventoryControls()
             ->panel(fn (Panel $panel): Panel => $panel
                 ->brandName('MerebHub')
                 ->colors(['primary' => Color::Teal])
                 ->font('Instrument Sans')
+                ->path('admin')
+                ->discoverResources(
+                    in: app_path('Filament/Admin/Resources'),
+                    for: 'App\\Filament\\Admin\\Resources',
+                )
                 ->navigation(function (NavigationBuilder $builder): NavigationBuilder {
                     $items = [];
 
-                    foreach ([...LunarPanel::getPages(), ...LunarPanel::getActiveResources()] as $component) {
+                    foreach ([...LunarPanel::getPages(), ...LunarPanel::getActiveResources(), AdminProductResource::class] as $component) {
                         $items = [...$items, ...$component::getNavigationItems()];
                     }
 

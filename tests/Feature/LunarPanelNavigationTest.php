@@ -2,7 +2,7 @@
 
 use Filament\Facades\Filament;
 
-test('the Lunar sidebar is flat and has no navigation groups', function () {
+test('the unified admin sidebar is flat and has no navigation groups', function () {
     $groups = Filament::getPanel('lunar')->getNavigation();
 
     expect($groups)->toHaveCount(1)

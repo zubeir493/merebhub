@@ -24,6 +24,6 @@ test('database seeder creates local admin and merchant accounts', function () {
         ->and($merchantProfile)->not->toBeNull()
         ->and($merchantProfile->users()->whereKey($merchant->getKey())->exists())->toBeTrue()
         ->and($demoProduct)->not->toBeNull()
-        ->and($admin->canAccessPanel(Filament::getPanel('admin')))->toBeTrue()
+        ->and($admin->canAccessPanel(Filament::getPanel('lunar')))->toBeTrue()
         ->and($merchant->canAccessPanel(Filament::getPanel('merchant')))->toBeTrue();
 });

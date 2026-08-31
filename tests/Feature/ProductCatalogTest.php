@@ -8,6 +8,7 @@ use App\Models\Merchant;
 use App\Models\Product;
 use App\Models\Staff;
 use App\Policies\ProductPolicy;
+use Lunar\Filament\Models\Staff as FilamentStaff;
 
 test('a merchant can submit a draft product for review', function () {
     $merchant = Merchant::factory()->create();
@@ -75,4 +76,17 @@ test('only an admin staff member can access the admin product policy', function 
 
     expect($policy->view($admin, $product))->toBeTrue()
         ->and($policy->view($staff, $product))->toBeFalse();
+});
+
+test('the Lunar Filament staff model can access the admin product policy', function () {
+    $admin = FilamentStaff::forceCreate([
+        'first_name' => 'Lunar',
+        'last_name' => 'Admin',
+        'email' => 'lunar-admin-policy@example.test',
+        'password' => 'password',
+        'admin' => true,
+    ]);
+    $product = Product::factory()->create();
+
+    expect(app(ProductPolicy::class)->view($admin, $product))->toBeTrue();
 });

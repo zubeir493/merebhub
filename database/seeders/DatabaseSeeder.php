@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Author;
 use App\Models\Product;
+use App\Models\Staff;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -22,6 +23,10 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        if (! app()->isProduction()) {
+            $this->seedDemoAccounts();
+        }
+
         $user = User::updateOrCreate(
             ['email' => 'buyer@merebhub.test'],
             [
@@ -129,5 +134,29 @@ class DatabaseSeeder extends Seeder
                 'default' => true,
             ]);
         }
+    }
+
+    private function seedDemoAccounts(): void
+    {
+        Staff::updateOrCreate(
+            ['email' => 'admin@merebhub.test'],
+            [
+                'first_name' => 'Demo',
+                'last_name' => 'Admin',
+                'admin' => true,
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+            ],
+        );
+
+        User::updateOrCreate(
+            ['email' => 'merchant@merebhub.test'],
+            [
+                'name' => 'Demo Merchant',
+                'password' => Hash::make('password'),
+                'email_verified_at' => now(),
+                'merchant_access' => true,
+            ],
+        );
     }
 }

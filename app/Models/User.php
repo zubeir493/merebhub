@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\URL;
 use Lunar\Core\Contracts\LunarUser as LunarUserInterface;
 use Lunar\Core\Models\Concerns\IsLunarUser;
 
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['name', 'email', 'password', 'merchant_access'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements FilamentUser, LunarUserInterface, MustVerifyEmail
 {
@@ -38,6 +38,7 @@ class User extends Authenticatable implements FilamentUser, LunarUserInterface, 
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'merchant_access' => 'boolean',
         ];
     }
 

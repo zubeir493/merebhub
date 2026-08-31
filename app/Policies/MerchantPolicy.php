@@ -9,7 +9,7 @@ class MerchantPolicy
 {
     public function view(User $user, Merchant $merchant): bool
     {
-        return $user->activeMerchants()->whereKey($merchant->getKey())->exists();
+        return $user->approvedMerchants()->whereKey($merchant->getKey())->exists();
     }
 
     public function update(User $user, Merchant $merchant): bool

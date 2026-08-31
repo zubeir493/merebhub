@@ -30,7 +30,7 @@ class User extends Authenticatable implements FilamentUser, LunarUserInterface, 
     {
         return $panel->getId() === 'merchant'
             && (bool) ($this->getAttribute('merchant_access') ?? false)
-            && $this->activeMerchants()->where('merchants.status', MerchantStatus::Approved->value)->exists();
+            && $this->approvedMerchants()->exists();
     }
 
     public function merchants(): BelongsToMany
@@ -43,6 +43,12 @@ class User extends Authenticatable implements FilamentUser, LunarUserInterface, 
     public function activeMerchants(): BelongsToMany
     {
         return $this->merchants()->wherePivot('status', MerchantMembershipStatus::Active->value);
+    }
+
+    public function approvedMerchants(): BelongsToMany
+    {
+        return $this->activeMerchants()
+            ->where((new Merchant)->qualifyColumn('status'), MerchantStatus::Approved->value);
     }
 
     /**

@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use Database\Factories\ProductFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
@@ -32,6 +34,11 @@ class Product extends \Lunar\Core\Models\Product
         'published_at',
         'archived_at',
     ];
+
+    protected static function newFactory(): Factory
+    {
+        return ProductFactory::new();
+    }
 
     public function getMorphClass(): string
     {

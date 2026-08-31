@@ -64,6 +64,8 @@ class DatabaseSeeder extends Seeder
                 ]]);
             });
 
+            $this->assignDemoMerchantProduct();
+
             return;
         }
 
@@ -140,6 +142,8 @@ class DatabaseSeeder extends Seeder
                 'default' => true,
             ]);
         }
+
+        $this->assignDemoMerchantProduct();
     }
 
     private function seedDemoAccounts(): void
@@ -186,5 +190,25 @@ class DatabaseSeeder extends Seeder
                 'joined_at' => now(),
             ],
         );
+    }
+
+    private function assignDemoMerchantProduct(): void
+    {
+        if (app()->isProduction()) {
+            return;
+        }
+
+        $merchant = Merchant::query()->where('slug', 'demo-merchant')->first();
+        $product = Product::query()->first();
+
+        if ($merchant === null || $product === null) {
+            return;
+        }
+
+        $product->forceFill([
+            'merchant_id' => $merchant->getKey(),
+            'publication_state' => 'draft',
+            'source_type' => 'local_developer',
+        ])->save();
     }
 }

@@ -13,6 +13,26 @@ use Lunar\Core\Models\Price;
 
 class Product extends \Lunar\Core\Models\Product
 {
+    protected $fillable = [
+        'attribute_data',
+        'public_id',
+        'product_type_id',
+        'status',
+        'brand_id',
+        'name',
+        'description',
+        'short_description',
+        'merchant_id',
+        'source_type',
+        'publication_state',
+        'current_revision_id',
+        'support_owner',
+        'official_partner',
+        'fulfillment_summary',
+        'published_at',
+        'archived_at',
+    ];
+
     public function getMorphClass(): string
     {
         return 'product';
@@ -70,6 +90,16 @@ class Product extends \Lunar\Core\Models\Product
     public function author(): BelongsTo
     {
         return $this->belongsTo(Author::class, 'brand_id');
+    }
+
+    public function merchant(): BelongsTo
+    {
+        return $this->belongsTo(Merchant::class);
+    }
+
+    public function scopeForMerchant(Builder $query, Merchant $merchant): Builder
+    {
+        return $query->where('merchant_id', $merchant->getKey());
     }
 
     public function coverUrl(): ?string

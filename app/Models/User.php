@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Domain\Merchants\Enums\MerchantMembershipStatus;
+use App\Domain\Merchants\Enums\MerchantStatus;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
@@ -10,6 +12,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\URL;
@@ -25,7 +28,21 @@ class User extends Authenticatable implements FilamentUser, LunarUserInterface, 
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return $panel->getId() === 'merchant' && (bool) ($this->getAttribute('merchant_access') ?? false);
+        return $panel->getId() === 'merchant'
+            && (bool) ($this->getAttribute('merchant_access') ?? false)
+            && $this->activeMerchants()->where('merchants.status', MerchantStatus::Approved->value)->exists();
+    }
+
+    public function merchants(): BelongsToMany
+    {
+        return $this->belongsToMany(Merchant::class, 'merchant_users')
+            ->withPivot(['merchant_role', 'status', 'invited_at', 'joined_at'])
+            ->withTimestamps();
+    }
+
+    public function activeMerchants(): BelongsToMany
+    {
+        return $this->merchants()->wherePivot('status', MerchantMembershipStatus::Active->value);
     }
 
     /**

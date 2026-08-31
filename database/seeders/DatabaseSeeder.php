@@ -2,7 +2,13 @@
 
 namespace Database\Seeders;
 
+use App\Domain\Merchants\Enums\MerchantMembershipRole;
+use App\Domain\Merchants\Enums\MerchantMembershipStatus;
+use App\Domain\Merchants\Enums\MerchantStatus;
+use App\Domain\Merchants\Enums\MerchantType;
 use App\Models\Author;
+use App\Models\Merchant;
+use App\Models\MerchantMembership;
 use App\Models\Product;
 use App\Models\Staff;
 use App\Models\User;
@@ -149,13 +155,35 @@ class DatabaseSeeder extends Seeder
             ],
         );
 
-        User::updateOrCreate(
+        $merchantUser = User::updateOrCreate(
             ['email' => 'merchant@merebhub.test'],
             [
                 'name' => 'Demo Merchant',
                 'password' => Hash::make('password'),
                 'email_verified_at' => now(),
                 'merchant_access' => true,
+            ],
+        );
+
+        $merchant = Merchant::updateOrCreate(
+            ['slug' => 'demo-merchant'],
+            [
+                'type' => MerchantType::LocalDeveloper,
+                'legal_name' => 'MerebHub Demo Merchant',
+                'display_name' => 'Demo Merchant',
+                'profile' => 'A seeded merchant account for local panel testing.',
+                'status' => MerchantStatus::Approved,
+                'approved_at' => now(),
+            ],
+        );
+
+        MerchantMembership::updateOrCreate(
+            ['merchant_id' => $merchant->id, 'user_id' => $merchantUser->id],
+            [
+                'merchant_role' => MerchantMembershipRole::Owner,
+                'status' => MerchantMembershipStatus::Active,
+                'invited_at' => now(),
+                'joined_at' => now(),
             ],
         );
     }

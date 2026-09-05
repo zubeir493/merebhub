@@ -7,7 +7,9 @@ use App\Models\OutboxMessage;
 use App\Models\Staff;
 use App\Models\User;
 use Filament\Facades\Filament;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use Lunar\Filament\Models\Staff as FilamentStaff;
 
 test('public health endpoint returns a correlation id', function () {
     $response = $this->getJson(route('health'));
@@ -24,6 +26,14 @@ test('correlation middleware preserves a valid incoming id', function () {
 
     $this->getJson(route('health'), ['X-Correlation-ID' => $correlationId])
         ->assertHeader('X-Correlation-ID', $correlationId);
+});
+
+test('correlation middleware adds a header to binary responses', function () {
+    Route::get('/test-binary-response', fn () => response()->file(base_path('composer.json')));
+
+    $this->get('/test-binary-response')
+        ->assertSuccessful()
+        ->assertHeader('X-Correlation-ID');
 });
 
 test('audit action redacts sensitive metadata and stores only a hash of the ip', function () {
@@ -84,4 +94,21 @@ test('panel access is separated by account type', function () {
         ->and($staff->canAccessPanel(Filament::getPanel('merchant')))->toBeFalse()
         ->and($user->canAccessPanel(Filament::getPanel('lunar')))->toBeFalse()
         ->and($user->canAccessPanel(Filament::getPanel('merchant')))->toBeFalse();
+});
+
+test('authenticated staff can reach the admin dashboard', function () {
+    $staff = FilamentStaff::query()->create([
+        'first_name' => 'Test',
+        'last_name' => 'Staff',
+        'email' => 'test-staff@example.test',
+        'admin' => true,
+        'password' => 'password',
+        'email_verified_at' => now(),
+    ]);
+
+    $this->actingAs($staff, 'staff');
+
+    $this
+        ->get('/admin')
+        ->assertSuccessful();
 });

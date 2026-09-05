@@ -28,6 +28,9 @@ class AssignCorrelationId
         Context::add('correlation_id', $correlationId);
         Log::withContext(['correlation_id' => $correlationId]);
 
-        return $next($request)->header($header, $correlationId);
+        $response = $next($request);
+        $response->headers->set($header, $correlationId);
+
+        return $response;
     }
 }

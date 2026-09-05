@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Domain\Catalog\Enums\ProductPublicationState;
 use App\Domain\Merchants\Enums\MerchantMembershipRole;
 use App\Domain\Merchants\Enums\MerchantMembershipStatus;
 use App\Domain\Merchants\Enums\MerchantStatus;
@@ -52,6 +53,12 @@ class DatabaseSeeder extends Seeder
 
         if (Url::query()->where('slug', 'soko-inventory')->exists()) {
             Product::query()->each(function (Product $product) use ($channel, $customerGroup): void {
+                if (! app()->isProduction() && $product->merchant_id === null) {
+                    $product->forceFill([
+                        'publication_state' => ProductPublicationState::Published->value,
+                    ])->save();
+                }
+
                 $product->channels()->syncWithoutDetaching([$channel->id => ['enabled' => true]]);
                 DB::table('lunar_channelables')
                     ->where('channelable_id', $product->id)
@@ -100,6 +107,7 @@ class DatabaseSeeder extends Seeder
                 'product_type_id' => $productType->id,
                 'brand_id' => $author->id,
                 'status' => 'published',
+                'publication_state' => ProductPublicationState::Published->value,
                 'name' => collect(['en' => $name]),
                 'description' => collect(['en' => $tagline]),
                 'attribute_data' => collect([

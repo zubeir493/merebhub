@@ -21,6 +21,9 @@
     <div class="mt-3 flex items-start justify-between gap-3">
         <div class="min-w-0">
             <a href="{{ route('products.show', $product) }}" class="block truncate text-[15px] font-extrabold text-zinc-950 group-hover:text-teal-700">{{ $product->name }}</a>
+            @if ($product->short_description)
+                <p class="mt-1 line-clamp-2 text-xs leading-5 text-zinc-500">{{ $product->short_description }}</p>
+            @endif
             <p class="mt-1 truncate text-xs font-medium text-zinc-500">
                 @if ($product->author)
                     <a href="{{ route('vendors.show', $product->author) }}" class="hover:text-teal-700">{{ $product->author->name }}</a>

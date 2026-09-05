@@ -21,7 +21,7 @@ class StorefrontController extends Controller
     {
         $search = Str::of($request->string('q'))->squish()->limit(100)->toString();
         $products = $this->products()
-            ->when($search !== '', fn (Builder $query) => $query->where('attribute_data', 'like', "%{$search}%"), fn (Builder $query) => $query->whereKey([]))
+            ->when($search !== '', fn (Builder $query) => $query->search($search), fn (Builder $query) => $query->whereKey([]))
             ->latest()
             ->paginate(12)
             ->withQueryString();
@@ -53,7 +53,7 @@ class StorefrontController extends Controller
             'product' => $product,
             'relatedProducts' => $this->products()
                 ->whereKeyNot($product)
-                ->where('attribute_data', 'like', '%'.$product->category.'%')
+                ->catalogAttributeContains('attribute_data', $product->category)
                 ->take(4)
                 ->get(),
         ]);
@@ -86,8 +86,8 @@ class StorefrontController extends Controller
         $sort = $request->string('sort', 'newest')->toString();
         $query = $this->products()
             ->whereBelongsTo($author, 'author')
-            ->when($search !== '', fn (Builder $query) => $query->where('attribute_data', 'like', "%{$search}%"))
-            ->when($category !== '', fn (Builder $query) => $query->where('attribute_data', 'like', "%{$category}%"));
+            ->when($search !== '', fn (Builder $query) => $query->search($search))
+            ->when($category !== '', fn (Builder $query) => $query->catalogAttributeContains('attribute_data', $category));
         $products = (clone $query)->latest()->paginate(12)->withQueryString();
         $categories = (clone $query)->get()->pluck('category')->filter()->unique()->sort()->values();
 

@@ -7,7 +7,7 @@ beforeEach(function () {
 });
 
 test('the existing storefront renders Lunar catalog products', function () {
-    $product = Product::query()->firstOrFail();
+    $product = Product::published()->firstOrFail();
 
     $this->get(route('home'))
         ->assertSuccessful()
@@ -15,7 +15,7 @@ test('the existing storefront renders Lunar catalog products', function () {
 });
 
 test('a Lunar product detail page renders its price and publisher', function () {
-    $product = Product::query()->with(['defaultUrl', 'author'])->firstOrFail();
+    $product = Product::published()->with(['defaultUrl', 'author'])->firstOrFail();
 
     $this->get(route('products.show', $product))
         ->assertSuccessful()

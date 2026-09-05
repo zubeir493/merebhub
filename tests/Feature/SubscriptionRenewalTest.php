@@ -11,7 +11,7 @@ beforeEach(function () {
 
 test('verified customers can reach Lunar checkout with an active cart', function () {
     $user = User::query()->where('email', 'buyer@merebhub.test')->firstOrFail();
-    $product = Product::query()->with(['defaultUrl', 'variants'])->firstOrFail();
+    $product = Product::published()->with(['defaultUrl', 'variants'])->firstOrFail();
 
     $this->actingAs($user)
         ->post(route('cart.store', $product), ['variant_id' => $product->variants->first()->id])

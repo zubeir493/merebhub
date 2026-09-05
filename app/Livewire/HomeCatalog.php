@@ -43,9 +43,9 @@ class HomeCatalog extends Component
     {
         $catalog = Product::published()->with(['author.defaultUrl', 'defaultUrl', 'media', 'variants.prices.currency', 'variants.prices.priceable']);
         $base = (clone $catalog)
-            ->when($this->search !== '', fn (Builder $query) => $query->where('attribute_data', 'like', '%'.trim($this->search).'%'))
-            ->when($this->category !== '', fn (Builder $query) => $query->where('attribute_data', 'like', "%{$this->category}%"))
-            ->when($this->platform !== '', fn (Builder $query) => $query->where('attribute_data', 'like', '%'.str_replace('-', ' ', $this->platform).'%'));
+            ->when($this->search !== '', fn (Builder $query) => $query->search($this->search))
+            ->when($this->category !== '', fn (Builder $query) => $query->catalogAttributeContains('attribute_data', $this->category))
+            ->when($this->platform !== '', fn (Builder $query) => $query->catalogAttributeContains('attribute_data', str_replace('-', ' ', $this->platform)));
         $allProducts = $catalog->get();
 
         return view('livewire.home-catalog', [

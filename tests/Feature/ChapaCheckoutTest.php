@@ -7,7 +7,7 @@ beforeEach(function () {
 });
 
 test('a Lunar variant can be added to the storefront cart', function () {
-    $product = Product::query()->with(['defaultUrl', 'variants'])->firstOrFail();
+    $product = Product::published()->with(['defaultUrl', 'variants'])->firstOrFail();
 
     $this->post(route('cart.store', $product), [
         'variant_id' => $product->variants->first()->id,

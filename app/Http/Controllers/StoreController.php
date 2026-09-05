@@ -46,9 +46,9 @@ class StoreController extends Controller
         $base = Product::published()->with(['author.defaultUrl', 'defaultUrl', 'media', 'variants.prices.currency', 'variants.prices.priceable']);
         $products = (clone $base)
             ->when($collection === 'deals', fn (Builder $query) => $query->whereHas('prices', fn (Builder $query) => $query->whereNotNull('list_price')))
-            ->when($search !== '', fn (Builder $query) => $query->where('attribute_data', 'like', "%{$search}%"))
-            ->when($category !== '', fn (Builder $query) => $query->where('attribute_data', 'like', "%{$category}%"))
-            ->when($platform !== '', fn (Builder $query) => $query->where('attribute_data', 'like', '%'.str_replace('-', ' ', $platform).'%'))
+            ->when($search !== '', fn (Builder $query) => $query->search($search))
+            ->when($category !== '', fn (Builder $query) => $query->catalogAttributeContains('attribute_data', $category))
+            ->when($platform !== '', fn (Builder $query) => $query->catalogAttributeContains('attribute_data', str_replace('-', ' ', $platform)))
             ->withMin('prices', 'price');
 
         match ($sort) {

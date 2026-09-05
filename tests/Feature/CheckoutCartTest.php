@@ -10,7 +10,7 @@ beforeEach(function () {
 
 test('checkout shows localized cart item names and creates the order', function () {
     $user = User::query()->where('email', 'buyer@merebhub.test')->firstOrFail();
-    $product = Product::query()->with(['defaultUrl', 'variants'])->firstOrFail();
+    $product = Product::published()->with(['defaultUrl', 'variants'])->firstOrFail();
 
     $this->actingAs($user)
         ->post(route('cart.store', $product), [

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Domain\Catalog\Enums\ProductPublicationState;
 use Database\Factories\ProductFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -10,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 use Lunar\Core\Facades\StorefrontSession;
 use Lunar\Core\Models\Price;
 
@@ -58,6 +60,11 @@ class Product extends \Lunar\Core\Models\Product
     protected function description(): Attribute
     {
         return Attribute::get(fn (): string => $this->localizedColumn('description'));
+    }
+
+    protected function shortDescription(): Attribute
+    {
+        return Attribute::get(fn (): string => $this->localizedColumn('short_description'));
     }
 
     protected function category(): Attribute
@@ -142,8 +149,44 @@ class Product extends \Lunar\Core\Models\Product
     public function scopePublished(Builder $query): Builder
     {
         return $query->where('status', 'published')
+            ->where('publication_state', ProductPublicationState::Published->value)
             ->channel(StorefrontSession::getChannel())
             ->customerGroup(StorefrontSession::getCustomerGroups());
+    }
+
+    public function scopeSearch(Builder $query, string $term): Builder
+    {
+        $term = trim($term);
+
+        if ($term === '') {
+            return $query;
+        }
+
+        $like = "%{$term}%";
+
+        return $query->where(function (Builder $query) use ($like): void {
+            foreach (['name', 'description', 'short_description', 'attribute_data'] as $column) {
+                self::addTextContains($query, $column, $like, 'or');
+            }
+
+            $query->orWhereIn('brand_id', Author::query()
+                ->where('name', 'like', $like)
+                ->select('id'));
+            $query->orWhereIn('merchant_id', Merchant::query()
+                ->where('display_name', 'like', $like)
+                ->select('id'));
+        });
+    }
+
+    public function scopeCatalogAttributeContains(Builder $query, string $column, string $value): Builder
+    {
+        if (! in_array($column, ['attribute_data'], true)) {
+            throw new InvalidArgumentException("The [{$column}] column is not searchable as catalog metadata.");
+        }
+
+        return $query->where(function (Builder $query) use ($column, $value): void {
+            self::addTextContains($query, $column, "%{$value}%");
+        });
     }
 
     private function storefrontPrice(): ?Price
@@ -168,5 +211,25 @@ class Product extends \Lunar\Core\Models\Product
         }
 
         return (string) ($value[app()->getLocale()] ?? reset($value) ?: '');
+    }
+
+    private static function addTextContains(Builder $query, string $column, string $value, string $boolean = 'and'): void
+    {
+        $wrappedColumn = $query->getQuery()->getGrammar()->wrap($query->qualifyColumn($column));
+        $driver = $query->getModel()->getConnection()->getDriverName();
+
+        if ($driver === 'pgsql') {
+            $query->whereRaw("CAST({$wrappedColumn} AS TEXT) ILIKE ?", [$value], $boolean);
+
+            return;
+        }
+
+        if ($driver === 'mysql' || $driver === 'mariadb') {
+            $query->whereRaw("CAST({$wrappedColumn} AS CHAR) LIKE ?", [$value], $boolean);
+
+            return;
+        }
+
+        $query->where($query->qualifyColumn($column), 'like', $value, $boolean);
     }
 }

@@ -50,9 +50,12 @@ class CartController extends Controller
             ->where('slug', $slug)
             ->where('element_type', (new Product)->getMorphClass())
             ->value('element_id');
+        abort_unless($productId !== null, 404);
+
+        $product = Product::published()->whereKey($productId)->firstOrFail();
         $variant = ProductVariant::query()
             ->whereKey($validated['variant_id'])
-            ->where('product_id', $productId)
+            ->whereBelongsTo($product)
             ->firstOrFail();
 
         try {

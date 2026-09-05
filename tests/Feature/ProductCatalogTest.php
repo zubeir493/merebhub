@@ -32,7 +32,7 @@ test('an admin review records a decision and audit note', function () {
     $product = Product::factory()->create([
         'publication_state' => ProductPublicationState::Submitted->value,
     ]);
-    $reviewer = Staff::forceCreate([
+    $reviewer = FilamentStaff::forceCreate([
         'first_name' => 'Review',
         'last_name' => 'Admin',
         'email' => 'reviewer@example.test',

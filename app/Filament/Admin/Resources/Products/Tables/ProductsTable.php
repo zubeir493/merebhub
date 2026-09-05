@@ -6,7 +6,6 @@ use App\Domain\Catalog\Actions\ReviewProductAction;
 use App\Domain\Catalog\Enums\ProductPublicationState;
 use App\Filament\Admin\Resources\Products\ProductResource;
 use App\Models\Product;
-use App\Models\Staff;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -17,6 +16,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Lunar\Core\Models\Staff;
 
 class ProductsTable
 {

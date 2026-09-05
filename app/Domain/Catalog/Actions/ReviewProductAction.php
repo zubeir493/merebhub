@@ -5,8 +5,8 @@ namespace App\Domain\Catalog\Actions;
 use App\Domain\Catalog\Enums\ProductPublicationState;
 use App\Domain\Shared\Actions\RecordAuditEventAction;
 use App\Models\Product;
-use App\Models\Staff;
 use DomainException;
+use Lunar\Core\Models\Staff;
 
 class ReviewProductAction
 {

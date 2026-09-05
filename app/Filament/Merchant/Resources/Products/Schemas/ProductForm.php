@@ -9,11 +9,24 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Collection;
 
 class ProductForm
 {
     public static function configure(Schema $schema): Schema
     {
+        $toEnglish = static function (mixed $state): ?string {
+            if ($state instanceof Collection) {
+                $state = $state->all();
+            }
+
+            if (is_array($state)) {
+                $state = $state['en'] ?? collect($state)->first();
+            }
+
+            return $state === null ? null : (string) $state;
+        };
+
         return $schema
             ->components([
                 Section::make('Product details')
@@ -24,7 +37,8 @@ class ProductForm
                             ->label('Product name')
                             ->required()
                             ->maxLength(255)
-                            ->dehydrateStateUsing(fn (?string $state): array => ['en' => $state]),
+                            ->formatStateUsing($toEnglish)
+                            ->dehydrateStateUsing(fn (mixed $state): array => ['en' => $toEnglish($state)]),
                         Select::make('product_type_id')
                             ->label('Product type')
                             ->relationship('productType', 'name')
@@ -55,12 +69,18 @@ class ProductForm
                             ->label('Short description')
                             ->rows(3)
                             ->maxLength(500)
-                            ->dehydrateStateUsing(fn (?string $state): ?array => $state === null || $state === '' ? null : ['en' => $state]),
+                            ->formatStateUsing($toEnglish)
+                            ->dehydrateStateUsing(function (mixed $state) use ($toEnglish): ?array {
+                                $state = $toEnglish($state);
+
+                                return $state === null || $state === '' ? null : ['en' => $state];
+                            }),
                         Textarea::make('description')
                             ->label('Description')
                             ->rows(7)
                             ->required()
-                            ->dehydrateStateUsing(fn (?string $state): array => ['en' => $state]),
+                            ->formatStateUsing($toEnglish)
+                            ->dehydrateStateUsing(fn (mixed $state): array => ['en' => $toEnglish($state)]),
                     ]),
                 Section::make('Submission')
                     ->columns(2)

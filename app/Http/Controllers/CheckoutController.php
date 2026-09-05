@@ -54,10 +54,21 @@ class CheckoutController extends Controller
 
         $cart->setCustomer($customer);
         $cart->setBillingAddress($validated);
-        $payment = Payments::driver('cash-in-hand')->cart($cart)->authorize();
+        $paymentDriver = (string) config('lunar.payments.default', 'cash-in-hand');
+        $payment = Payments::driver($paymentDriver)->withData($validated)->cart($cart)->authorize();
 
         if (! $payment->success || ! $payment->orderId) {
             return back()->withErrors(['checkout' => $payment->message ?: 'The order could not be placed.']);
+        }
+
+        if ($paymentDriver === 'chapa') {
+            $checkoutUrl = data_get(Order::query()->find($payment->orderId)?->meta, 'chapa.checkout_url');
+
+            if (blank($checkoutUrl)) {
+                return back()->withErrors(['checkout' => 'The payment checkout could not be started.']);
+            }
+
+            return redirect()->away($checkoutUrl);
         }
 
         CartSession::forget(delete: false);

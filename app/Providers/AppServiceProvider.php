@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Filament\Admin\Resources\Products\ProductResource as AdminProductResource;
+use App\Integrations\Chapa\ChapaPayment;
 use App\Support\DashboardExtension;
 use Filament\Navigation\NavigationBuilder;
 use Filament\Panel;
@@ -30,6 +31,7 @@ use Lunar\Admin\Filament\Resources\TaxRateResource;
 use Lunar\Admin\Filament\Resources\TaxZoneResource;
 use Lunar\Admin\Support\Facades\LunarPanel;
 use Lunar\Core\Facades\CartSession;
+use Lunar\Core\Facades\Payments;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -83,6 +85,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Payments::extend('chapa', fn ($app): ChapaPayment => $app->make(ChapaPayment::class));
+
         Model::preventLazyLoading(! app()->isProduction());
         RateLimiter::for('login', fn (Request $request) => Limit::perMinute(5)
             ->by(Str::lower($request->string('email')).'|'.$request->ip()));

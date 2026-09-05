@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->prepend(AssignCorrelationId::class);
         $middleware->prepend(BlockRemovedLunarPages::class);
         $middleware->web(append: [HandleInertiaRequests::class]);
+        $middleware->validateCsrfTokens(except: ['payments/chapa/webhook']);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

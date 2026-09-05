@@ -9,6 +9,10 @@ return [
             'driver' => 'offline',
             'authorized' => 'captured',
         ],
+        'chapa' => [
+            'driver' => 'chapa',
+            'authorized' => 'captured',
+        ],
     ],
 
 ];

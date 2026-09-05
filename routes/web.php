@@ -3,6 +3,7 @@
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\ChapaPaymentController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\StoreController;
@@ -29,6 +30,9 @@ Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/{slug}', [CartController::class, 'store'])->name('cart.store');
 Route::patch('/cart/{cartLine}', [CartController::class, 'update'])->whereNumber('cartLine')->name('cart.update');
 Route::delete('/cart/{cartLine}', [CartController::class, 'destroy'])->whereNumber('cartLine')->name('cart.destroy');
+Route::get('/payments/chapa/callback', [ChapaPaymentController::class, 'return'])->name('payments.chapa.callback');
+Route::get('/payments/chapa/return', [ChapaPaymentController::class, 'return'])->name('payments.chapa.return');
+Route::post('/payments/chapa/webhook', [ChapaPaymentController::class, 'webhook'])->name('payments.chapa.webhook');
 
 Route::middleware('guest')->group(function (): void {
     Route::get('/login', [AuthController::class, 'loginForm'])->name('login');

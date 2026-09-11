@@ -18,17 +18,26 @@ class StoreOutboxMessageAction
         array $payload,
         ?Model $aggregate = null,
         ?CarbonInterface $availableAt = null,
+        ?string $dedupeKey = null,
     ): OutboxMessage {
-        $message = OutboxMessage::query()->create([
-            'public_id' => (string) Str::uuid(),
+        $attributes = [
             'event' => $event,
             'aggregate_type' => $aggregate?->getMorphClass(),
             'aggregate_id' => $aggregate === null ? null : (string) $aggregate->getKey(),
+            'dedupe_key' => $dedupeKey,
+        ];
+        $values = [
+            'public_id' => (string) Str::uuid(),
             'payload' => $payload,
             'available_at' => $availableAt,
-        ]);
+        ];
+        $message = $dedupeKey === null
+            ? OutboxMessage::query()->create([...$attributes, ...$values])
+            : OutboxMessage::query()->firstOrCreate($attributes, $values);
 
-        event(new OutboxMessageRecorded($message));
+        if ($message->wasRecentlyCreated) {
+            event(new OutboxMessageRecorded($message));
+        }
 
         return $message;
     }

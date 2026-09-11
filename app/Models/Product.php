@@ -116,6 +116,13 @@ class Product extends \Lunar\Core\Models\Product
         return $query->where('merchant_id', $merchant->getKey());
     }
 
+    protected function casts(): array
+    {
+        return [
+            'fulfillment_summary' => 'array',
+        ];
+    }
+
     public function coverUrl(): ?string
     {
         $mediaUrl = $this->getFirstMediaUrl(config('lunar.media.collection'));

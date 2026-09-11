@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ChapaPaymentController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\StorefrontController;
@@ -55,6 +56,9 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/account/purchases', [AccountController::class, 'orders'])->name('account.purchases');
     Route::get('/account/settings', [AccountController::class, 'settings'])->name('account.settings');
     Route::patch('/account/settings', [AccountController::class, 'update'])->name('account.settings.update');
+    Route::get('/account/downloads/{downloadableAsset}/url', [DownloadController::class, 'url'])
+        ->middleware('verified')
+        ->name('downloads.url');
 
     Route::middleware('verified')->group(function (): void {
         Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout.show');
@@ -62,3 +66,7 @@ Route::middleware('auth')->group(function (): void {
         Route::get('/checkout/complete/{order}', [CheckoutController::class, 'complete'])->name('checkout.complete');
     });
 });
+
+Route::get('/downloads/{downloadableAsset}', [DownloadController::class, 'download'])
+    ->middleware(['auth', 'verified', 'signed'])
+    ->name('downloads.show');

@@ -2,6 +2,7 @@
 
 use App\Domain\Merchants\Enums\MerchantMembershipRole;
 use App\Domain\Merchants\Enums\MerchantMembershipStatus;
+use App\Filament\Admin\Resources\FulfillmentUnits\FulfillmentUnitResource;
 use App\Filament\Admin\Resources\Products\ProductResource as AdminProductResource;
 use App\Filament\Merchant\Resources\Products\ProductResource as MerchantProductResource;
 use App\Models\Merchant;
@@ -17,6 +18,11 @@ test('merchant panel registers a tenant-scoped product resource', function () {
 test('admin panel registers the catalog review resource', function () {
     expect(Filament::getPanel('lunar')->getResources())
         ->toContain(AdminProductResource::class);
+});
+
+test('admin panel registers the fulfillment recovery resource', function () {
+    expect(Filament::getPanel('lunar')->getResources())
+        ->toContain(FulfillmentUnitResource::class);
 });
 
 test('merchant product resource excludes products from other merchants', function () {

@@ -35,6 +35,11 @@ class ProductFactory extends Factory
             'publication_state' => 'draft',
             'support_owner' => 'merebhub',
             'official_partner' => false,
+            'fulfillment_summary' => [
+                'type' => 'license',
+                'provider' => 'fake-keygen',
+                'provider_product_id' => fake()->slug(),
+            ],
         ];
     }
 

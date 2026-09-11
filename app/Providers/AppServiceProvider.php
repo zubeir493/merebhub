@@ -2,8 +2,12 @@
 
 namespace App\Providers;
 
+use App\Domain\Fulfillment\Contracts\LicenseProvider;
+use App\Domain\Fulfillment\Providers\FakeKeygenLicenseProvider;
 use App\Filament\Admin\Resources\Products\ProductResource as AdminProductResource;
 use App\Integrations\Chapa\ChapaPayment;
+use App\Models\DownloadableAsset;
+use App\Policies\DownloadableAssetPolicy;
 use App\Support\DashboardExtension;
 use Filament\Navigation\NavigationBuilder;
 use Filament\Panel;
@@ -11,6 +15,7 @@ use Filament\Support\Colors\Color;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -40,6 +45,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->bind(LicenseProvider::class, function (): LicenseProvider {
+            return match (config('marketplace.fulfillment.license_provider')) {
+                'fake' => new FakeKeygenLicenseProvider,
+                default => throw new \LogicException('Unsupported license provider configured.'),
+            };
+        });
+
         LunarPanel::excludeResources([
             ActivityResource::class,
             ChannelResource::class,
@@ -86,6 +98,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Payments::extend('chapa', fn ($app): ChapaPayment => $app->make(ChapaPayment::class));
+
+        Gate::policy(DownloadableAsset::class, DownloadableAssetPolicy::class);
 
         Model::preventLazyLoading(! app()->isProduction());
         RateLimiter::for('login', fn (Request $request) => Limit::perMinute(5)

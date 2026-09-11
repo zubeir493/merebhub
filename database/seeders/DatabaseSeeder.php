@@ -119,6 +119,11 @@ class DatabaseSeeder extends Seeder
                     'is_featured' => $translated(true),
                     'cover_url' => $translated($cover),
                 ]),
+                'fulfillment_summary' => [
+                    'type' => 'license',
+                    'provider' => 'fake-keygen',
+                    'provider_product_id' => $slug,
+                ],
             ]);
             $product->channels()->syncWithoutDetaching([$channel->id => ['enabled' => true]]);
             DB::table('lunar_channelables')

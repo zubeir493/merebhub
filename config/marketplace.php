@@ -16,6 +16,10 @@ return [
 
     'private_files_disk' => env('MARKETPLACE_PRIVATE_FILES_DISK', 'private'),
 
+    'fulfillment' => [
+        'license_provider' => env('FULFILLMENT_LICENSE_PROVIDER', 'fake'),
+    ],
+
     'audit' => [
         'sensitive_keys' => [
             'password',

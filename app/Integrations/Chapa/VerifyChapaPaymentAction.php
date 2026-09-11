@@ -89,8 +89,8 @@ class VerifyChapaPaymentAction
 
         if ($status !== 'success'
             || ! in_array($paymentStatus, ['success', 'successful', 'completed', 'paid'], true)
-            || ($providerReference !== '' && $providerReference !== $transactionReference)
-            || ($providerCurrency !== '' && $providerCurrency !== strtoupper((string) ($orderCurrency?->code ?? 'ETB')))
+            || $providerReference !== $transactionReference
+            || $providerCurrency !== strtoupper((string) ($orderCurrency?->code ?? 'ETB'))
             || $actualAmount !== $expectedAmount) {
             throw new ChapaPaymentVerificationException('The Chapa payment could not be verified.');
         }

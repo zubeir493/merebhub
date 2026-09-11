@@ -12,6 +12,7 @@ class OutboxMessage extends Model
         'event',
         'aggregate_type',
         'aggregate_id',
+        'dedupe_key',
         'payload',
         'attempts',
         'available_at',

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Billing\Actions\EnsureInvoiceSnapshotAction;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -21,21 +22,29 @@ class CheckoutController extends Controller
             return redirect()->route('cart.index');
         }
 
+        $billingProfile = $request->user()->billingProfile()->first();
+
         return view('storefront.checkout', [
             'cart' => $cart,
-            'country' => Country::query()->where('iso3', 'ETH')->firstOrFail(),
+            'country' => Country::query()->where('iso3', $billingProfile?->country_iso3 ?? 'ETH')->firstOrFail(),
+            'billingProfile' => $billingProfile,
             'user' => $request->user(),
         ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request, EnsureInvoiceSnapshotAction $invoiceSnapshots): RedirectResponse
     {
         $validated = $request->validate([
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['nullable', 'string', 'max:255'],
+            'company_name' => ['nullable', 'string', 'max:255'],
+            'tax_identifier' => ['nullable', 'string', 'max:255'],
             'contact_email' => ['required', 'email', 'max:255'],
+            'contact_phone' => ['nullable', 'string', 'max:60'],
             'line_one' => ['required', 'string', 'max:255'],
+            'line_two' => ['nullable', 'string', 'max:255'],
             'city' => ['required', 'string', 'max:255'],
+            'state' => ['nullable', 'string', 'max:255'],
             'postcode' => ['required', 'string', 'max:50'],
             'country_id' => ['required', 'integer', 'exists:lunar_countries,id'],
         ]);
@@ -70,6 +79,9 @@ class CheckoutController extends Controller
 
             return redirect()->away($checkoutUrl);
         }
+
+        $order = Order::query()->findOrFail($payment->orderId);
+        $invoiceSnapshots->handle($order);
 
         CartSession::forget(delete: false);
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\InvoiceSnapshot;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
@@ -88,6 +89,7 @@ test('the Chapa return verifies and records one captured transaction', function 
         'type' => 'capture',
     ]);
     $this->assertDatabaseCount('lunar_transactions', 1);
+    expect(InvoiceSnapshot::query()->where('order_id', $order->getKey())->count())->toBe(1);
     expect($order->fresh()->placed_at)->not->toBeNull();
 
     $this->actingAs($user)
@@ -95,6 +97,7 @@ test('the Chapa return verifies and records one captured transaction', function 
         ->assertRedirect(route('checkout.complete', $order));
 
     $this->assertDatabaseCount('lunar_transactions', 1);
+    expect(InvoiceSnapshot::query()->where('order_id', $order->getKey())->count())->toBe(1);
 });
 
 test('a Chapa amount mismatch does not place the order', function (): void {

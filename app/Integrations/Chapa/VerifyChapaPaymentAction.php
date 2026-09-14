@@ -2,6 +2,7 @@
 
 namespace App\Integrations\Chapa;
 
+use App\Domain\Billing\Actions\EnsureInvoiceSnapshotAction;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Lunar\Core\Models\Order;
@@ -9,7 +10,10 @@ use Throwable;
 
 class VerifyChapaPaymentAction
 {
-    public function __construct(private readonly ChapaClient $client) {}
+    public function __construct(
+        private readonly ChapaClient $client,
+        private readonly EnsureInvoiceSnapshotAction $invoiceSnapshots,
+    ) {}
 
     public function handle(string $transactionReference): Order
     {
@@ -23,6 +27,8 @@ class VerifyChapaPaymentAction
         }
 
         if ($order->captures()->where('reference', $transactionReference)->whereSuccess(true)->exists()) {
+            $this->invoiceSnapshots->handle($order);
+
             return $order;
         }
 
@@ -35,7 +41,7 @@ class VerifyChapaPaymentAction
             throw new ChapaPaymentVerificationException('Chapa payment verification failed.', previous: $exception);
         }
 
-        return DB::transaction(function () use ($transactionReference, $order, $response): Order {
+        $verifiedOrder = DB::transaction(function () use ($transactionReference, $order, $response): Order {
             $lockedOrder = Order::query()->whereKey($order->getKey())->lockForUpdate()->firstOrFail();
 
             if (! $lockedOrder->captures()->where('reference', $transactionReference)->whereSuccess(true)->exists()) {
@@ -67,6 +73,10 @@ class VerifyChapaPaymentAction
 
             return $lockedOrder->refresh();
         });
+
+        $this->invoiceSnapshots->handle($verifiedOrder);
+
+        return $verifiedOrder;
     }
 
     /**

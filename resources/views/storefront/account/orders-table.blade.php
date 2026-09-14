@@ -15,6 +15,7 @@
                         <th class="px-6 py-3">Status</th>
                         <th class="px-6 py-3">Amount</th>
                         <th class="px-6 py-3">Date</th>
+                        <th class="px-6 py-3">Invoice</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-zinc-100">
@@ -33,6 +34,9 @@
                             </td>
                             <td class="px-6 py-4 text-sm font-semibold text-zinc-900">{{ $order->format('total') }}</td>
                             <td class="px-6 py-4 text-sm text-zinc-500">{{ $order->placed_at->format('M j, Y') }}</td>
+                            <td class="px-6 py-4">
+                                <a href="{{ route('account.invoices.show', ['invoiceOrder' => $order->public_id]) }}" class="text-sm font-bold text-teal-800 underline decoration-teal-300 underline-offset-4">View invoice</a>
+                            </td>
                         </tr>
                     @endforeach
                 </tbody>

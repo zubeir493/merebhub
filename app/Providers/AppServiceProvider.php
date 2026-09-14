@@ -6,8 +6,20 @@ use App\Domain\Fulfillment\Contracts\LicenseProvider;
 use App\Domain\Fulfillment\Providers\FakeKeygenLicenseProvider;
 use App\Filament\Admin\Resources\Products\ProductResource as AdminProductResource;
 use App\Integrations\Chapa\ChapaPayment;
+use App\Models\BillingProfile;
+use App\Models\Credential;
 use App\Models\DownloadableAsset;
+use App\Models\InvoiceSnapshot;
+use App\Models\SupportTicket;
+use App\Models\SupportTicketAttachment;
+use App\Models\UserSession;
+use App\Policies\BillingProfilePolicy;
+use App\Policies\CredentialPolicy;
 use App\Policies\DownloadableAssetPolicy;
+use App\Policies\InvoiceSnapshotPolicy;
+use App\Policies\SupportTicketAttachmentPolicy;
+use App\Policies\SupportTicketPolicy;
+use App\Policies\UserSessionPolicy;
 use App\Support\DashboardExtension;
 use Filament\Navigation\NavigationBuilder;
 use Filament\Panel;
@@ -100,12 +112,30 @@ class AppServiceProvider extends ServiceProvider
         Payments::extend('chapa', fn ($app): ChapaPayment => $app->make(ChapaPayment::class));
 
         Gate::policy(DownloadableAsset::class, DownloadableAssetPolicy::class);
+        Gate::policy(Credential::class, CredentialPolicy::class);
+        Gate::policy(BillingProfile::class, BillingProfilePolicy::class);
+        Gate::policy(InvoiceSnapshot::class, InvoiceSnapshotPolicy::class);
+        Gate::policy(UserSession::class, UserSessionPolicy::class);
+        Gate::policy(SupportTicket::class, SupportTicketPolicy::class);
+        Gate::policy(SupportTicketAttachment::class, SupportTicketAttachmentPolicy::class);
 
         Model::preventLazyLoading(! app()->isProduction());
         RateLimiter::for('login', fn (Request $request) => Limit::perMinute(5)
             ->by(Str::lower($request->string('email')).'|'.$request->ip()));
 
         RateLimiter::for('public-form', fn (Request $request) => Limit::perMinute(10)->by($request->ip()));
+
+        RateLimiter::for('credential-reveal', fn (Request $request) => Limit::perMinute(6)
+            ->by($request->user()->getAuthIdentifier().'|'.$request->ip()));
+
+        RateLimiter::for('support-ticket', fn (Request $request) => Limit::perMinute(5)
+            ->by(($request->user()?->getAuthIdentifier() ?? 'guest').'|'.$request->ip()));
+
+        RateLimiter::for('support-reply', fn (Request $request) => Limit::perMinute(10)
+            ->by(($request->user()?->getAuthIdentifier() ?? $request->user('staff')?->getAuthIdentifier() ?? 'guest').'|'.$request->ip()));
+
+        RateLimiter::for('session-revoke', fn (Request $request) => Limit::perMinute(10)
+            ->by($request->user()->getAuthIdentifier().'|'.$request->ip()));
 
         View::composer('layouts.storefront', fn ($view) => $view->with([
             'headerCartCount' => CartSession::current()?->lines->sum('quantity') ?? 0,

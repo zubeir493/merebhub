@@ -2,7 +2,9 @@
 
 use App\Http\Middleware\AssignCorrelationId;
 use App\Http\Middleware\BlockRemovedLunarPages;
+use App\Http\Middleware\EnsureAdminStaff;
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\TrackCustomerSession;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -17,7 +19,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->prepend(AssignCorrelationId::class);
         $middleware->prepend(BlockRemovedLunarPages::class);
-        $middleware->web(append: [HandleInertiaRequests::class]);
+        $middleware->web(append: [HandleInertiaRequests::class, TrackCustomerSession::class]);
+        $middleware->alias(['staff.admin' => EnsureAdminStaff::class]);
         $middleware->validateCsrfTokens(except: ['payments/chapa/webhook']);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

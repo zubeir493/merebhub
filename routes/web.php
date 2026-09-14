@@ -2,13 +2,19 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BillingProfileController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ChapaPaymentController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\CredentialController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\HealthController;
+use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\SecuritySessionController;
+use App\Http\Controllers\StaffSupportController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\StorefrontController;
+use App\Http\Controllers\SupportTicketController;
 use App\Http\Controllers\VerificationController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -53,12 +59,34 @@ Route::middleware('auth')->group(function (): void {
     Route::post('/email/verification-notification', [VerificationController::class, 'send'])->middleware('throttle:6,1')->name('verification.send');
     Route::get('/account', fn () => redirect()->route('account.settings'))->name('account');
     Route::get('/account/orders', [AccountController::class, 'orders'])->name('account.orders');
-    Route::get('/account/purchases', [AccountController::class, 'orders'])->name('account.purchases');
+    Route::get('/account/purchases', [AccountController::class, 'purchases'])->name('account.purchases');
+    Route::get('/account/invoices', [InvoiceController::class, 'index'])->name('account.invoices.index');
+    Route::get('/account/invoices/{invoiceOrder}', [InvoiceController::class, 'show'])->name('account.invoices.show');
     Route::get('/account/settings', [AccountController::class, 'settings'])->name('account.settings');
     Route::patch('/account/settings', [AccountController::class, 'update'])->name('account.settings.update');
+    Route::get('/account/billing', [BillingProfileController::class, 'edit'])->name('account.billing');
+    Route::put('/account/billing', [BillingProfileController::class, 'update'])->name('account.billing.update');
+    Route::get('/account/security', [SecuritySessionController::class, 'index'])->name('account.security');
+    Route::post('/account/security/sessions/{session}/revoke', [SecuritySessionController::class, 'revoke'])
+        ->middleware('throttle:session-revoke')
+        ->name('account.security.sessions.revoke');
+    Route::get('/account/support', [SupportTicketController::class, 'index'])->name('account.support.index');
+    Route::post('/account/support/tickets', [SupportTicketController::class, 'store'])
+        ->middleware('throttle:support-ticket')
+        ->name('account.support.store');
+    Route::get('/account/support/attachments/{attachment}', [SupportTicketController::class, 'downloadAttachment'])
+        ->name('account.support.attachments.download');
+    Route::post('/account/support/tickets/{supportTicket}/messages', [SupportTicketController::class, 'reply'])
+        ->middleware('throttle:support-reply')
+        ->name('account.support.reply');
+    Route::get('/account/support/tickets/{supportTicket}', [SupportTicketController::class, 'show'])
+        ->name('account.support.show');
     Route::get('/account/downloads/{downloadableAsset}/url', [DownloadController::class, 'url'])
         ->middleware('verified')
         ->name('downloads.url');
+    Route::post('/account/credentials/{credential}/reveal', [CredentialController::class, 'reveal'])
+        ->middleware(['verified', 'throttle:credential-reveal'])
+        ->name('credentials.reveal');
 
     Route::middleware('verified')->group(function (): void {
         Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout.show');
@@ -66,6 +94,21 @@ Route::middleware('auth')->group(function (): void {
         Route::get('/checkout/complete/{order}', [CheckoutController::class, 'complete'])->name('checkout.complete');
     });
 });
+
+Route::prefix('admin/support')
+    ->name('staff.support.')
+    ->middleware(['auth:staff', 'staff.admin'])
+    ->controller(StaffSupportController::class)
+    ->group(function (): void {
+        Route::get('/', 'index')->name('index');
+        Route::get('/attachments/{attachment}', 'downloadAttachment')->name('attachments.download');
+        Route::patch('/attachments/{attachment}/review', 'reviewAttachment')->name('attachments.review');
+        Route::get('/{supportTicket}', 'show')->name('show');
+        Route::post('/{supportTicket}/messages', 'reply')
+            ->middleware('throttle:support-reply')
+            ->name('reply');
+        Route::patch('/{supportTicket}', 'update')->name('update');
+    });
 
 Route::get('/downloads/{downloadableAsset}', [DownloadController::class, 'download'])
     ->middleware(['auth', 'verified', 'signed'])

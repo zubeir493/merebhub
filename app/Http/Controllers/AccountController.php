@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AccountSettingsRequest;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -13,11 +14,26 @@ class AccountController extends Controller
     {
         $orders = $request->user()->orders()
             ->whereNotNull('placed_at')
-            ->with('lines.purchasable.product')
+            ->with('productLines')
             ->latest('placed_at')
             ->get();
 
         return view('storefront.account.orders', ['orders' => $orders]);
+    }
+
+    public function purchases(Request $request): View
+    {
+        $purchases = $request->user()->entitlements()
+            ->with([
+                'credential',
+                'order',
+                'product.downloadableAssets' => fn (HasMany $query) => $query->where('scan_status', 'clean'),
+            ])
+            ->latest()
+            ->paginate(12)
+            ->withQueryString();
+
+        return view('storefront.account.purchases', ['purchases' => $purchases]);
     }
 
     public function settings(Request $request): View

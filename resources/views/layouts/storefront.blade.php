@@ -54,7 +54,12 @@
                                 <p class="truncate text-sm font-extrabold">{{ auth()->user()->name }}</p>
                                 <p class="truncate text-xs text-zinc-500">{{ auth()->user()->email }}</p>
                             </div>
+                            <a href="{{ route('account.purchases') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-key class="size-4" /> Purchases &amp; licenses</a>
                             <a href="{{ route('account.orders') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-gift class="size-4" /> Previous Orders</a>
+                            <a href="{{ route('account.invoices.index') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-document-text class="size-4" /> Invoices</a>
+                            <a href="{{ route('account.billing') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-credit-card class="size-4" /> Billing details</a>
+                            <a href="{{ route('account.security') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-shield-check class="size-4" /> Security &amp; sessions</a>
+                            <a href="{{ route('account.support.index') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-chat-bubble-left-right class="size-4" /> Support requests</a>
                             <a href="{{ route('account.settings') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-cog-6-tooth class="size-4" /> Account settings</a>
                             <form method="POST" action="{{ route('logout') }}" class="border-t border-zinc-100">
                                 @csrf
@@ -115,7 +120,7 @@
             </div>
             <div><strong class="text-sm text-white">Marketplace</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('store.index') }}">Browse all</a><a href="{{ route('store.newarrivals') }}">New arrivals</a><a href="{{ route('store.deals') }}">Deals</a></div></div>
             <div><strong class="text-sm text-white">Developers</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('vendors.index') }}">Browse developers</a><a href="{{ route('store.index') }}">Browse software</a></div></div>
-            <div><strong class="text-sm text-white">Your account</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('account.orders') }}">Previous orders</a><a href="{{ route('account.settings') }}">Settings</a><a href="{{ route('cart.index') }}">Cart</a></div></div>
+            <div><strong class="text-sm text-white">Your account</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('account.purchases') }}">Purchases &amp; licenses</a><a href="{{ route('account.orders') }}">Previous orders</a><a href="{{ route('account.invoices.index') }}">Invoices</a><a href="{{ route('account.billing') }}">Billing details</a><a href="{{ route('account.security') }}">Security &amp; sessions</a><a href="{{ route('account.support.index') }}">Support requests</a><a href="{{ route('account.settings') }}">Settings</a><a href="{{ route('cart.index') }}">Cart</a></div></div>
         </div>
     </footer>
 

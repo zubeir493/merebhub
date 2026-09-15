@@ -3,6 +3,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, h } from 'vue';
 import './account-invoices.js';
 import './account-purchases.js';
+import './cart.js';
 
 createInertiaApp({
     title: (title) => `${title} · MerebHub`,

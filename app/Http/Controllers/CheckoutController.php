@@ -47,6 +47,7 @@ class CheckoutController extends Controller
             'state' => ['nullable', 'string', 'max:255'],
             'postcode' => ['required', 'string', 'max:50'],
             'country_id' => ['required', 'integer', 'exists:lunar_countries,id'],
+            'payment_method' => ['required', 'string', 'in:chapa'],
         ]);
         $cart = CartSession::current();
 
@@ -63,7 +64,7 @@ class CheckoutController extends Controller
 
         $cart->setCustomer($customer);
         $cart->setBillingAddress($validated);
-        $paymentDriver = (string) config('lunar.payments.default', 'cash-in-hand');
+        $paymentDriver = $validated['payment_method'];
         $payment = Payments::driver($paymentDriver)->withData($validated)->cart($cart)->authorize();
 
         if (! $payment->success || ! $payment->orderId) {

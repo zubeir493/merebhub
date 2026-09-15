@@ -4,11 +4,13 @@ use App\Models\BillingProfile;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Lunar\Core\Models\Country;
 use Lunar\Core\Models\Order;
 
 beforeEach(function (): void {
     $this->seed();
+    config()->set('services.chapa.secret_key', 'test-secret');
 });
 
 test('customers can save encrypted personal and business billing details', function (): void {
@@ -100,13 +102,20 @@ test('saved billing details flow through checkout into the immutable invoice sna
 
     $this->actingAs($customer)
         ->post(route('cart.store', $product), ['variant_id' => $product->variants->first()->id])
-        ->assertRedirect(route('cart.index'));
+        ->assertRedirect(route('products.show', $product));
 
     $this->get(route('checkout.show'))
         ->assertSuccessful()
         ->assertSee('Acme Ethiopia PLC')
         ->assertSee('TIN-7654321')
         ->assertSee('Suite 3');
+
+    Http::fake([
+        'https://api.chapa.co/v1/transaction/initialize' => Http::response([
+            'status' => 'success',
+            'data' => ['checkout_url' => 'https://checkout.chapa.co/test-payment'],
+        ]),
+    ]);
 
     $this->post(route('checkout.store'), [
         'first_name' => 'Mimi',
@@ -121,9 +130,27 @@ test('saved billing details flow through checkout into the immutable invoice sna
         'state' => 'Addis Ababa',
         'postcode' => '1000',
         'country_id' => Country::query()->where('iso3', 'ETH')->firstOrFail()->id,
-    ])->assertRedirect();
+        'payment_method' => 'chapa',
+    ])->assertRedirect('https://checkout.chapa.co/test-payment');
 
     $order = Order::query()->sole();
+    $transactionReference = (string) data_get($order->meta, 'chapa.tx_ref');
+    Http::fake([
+        'https://api.chapa.co/v1/transaction/verify/*' => Http::response([
+            'status' => 'success',
+            'data' => [
+                'status' => 'success',
+                'tx_ref' => $transactionReference,
+                'amount' => number_format($order->total / 100, 2, '.', ''),
+                'currency' => 'ETB',
+            ],
+        ]),
+    ]);
+
+    $this->get(route('payments.chapa.return', ['tx_ref' => $transactionReference]))
+        ->assertRedirect(route('checkout.complete', $order));
+
+    $order->refresh();
     $billingAddress = $order->billingAddress()->firstOrFail();
     $snapshot = $order->user->invoiceSnapshots()->sole();
 

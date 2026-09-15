@@ -21,7 +21,7 @@ function startChapaCheckout(): array
 
     test()->actingAs($user)->post(route('cart.store', $product), [
         'variant_id' => $product->variants->first()->id,
-    ])->assertRedirect(route('cart.index'));
+    ])->assertRedirect(route('products.show', $product));
 
     Http::fake([
         'https://api.chapa.co/v1/transaction/initialize' => Http::response([
@@ -38,6 +38,7 @@ function startChapaCheckout(): array
         'city' => 'Addis Ababa',
         'postcode' => '1000',
         'country_id' => Country::query()->where('iso3', 'ETH')->firstOrFail()->id,
+        'payment_method' => 'chapa',
     ])->assertRedirect('https://checkout.chapa.co/test-payment');
 
     $order = Order::query()->latest('id')->firstOrFail();

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -41,7 +42,7 @@ class CartController extends Controller
         ]);
     }
 
-    public function store(Request $request, string $slug): RedirectResponse
+    public function store(Request $request, string $slug): RedirectResponse|JsonResponse
     {
         $validated = $request->validate([
             'variant_id' => ['required', 'integer', 'exists:lunar_product_variants,id'],
@@ -61,10 +62,23 @@ class CartController extends Controller
         try {
             CartSession::add($variant, 1);
         } catch (CartException $exception) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => $exception->getMessage()], 422);
+            }
+
             return back()->withErrors(['cart' => $exception->getMessage()]);
         }
 
-        return redirect()->route('cart.index')->with('status', 'Added to your cart.');
+        $message = 'Added to your cart.';
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => $message,
+                'cart_count' => CartSession::current()?->lines->sum('quantity') ?? 0,
+            ]);
+        }
+
+        return redirect()->route('products.show', $product)->with('status', $message);
     }
 
     public function update(Request $request, int $cartLine): RedirectResponse

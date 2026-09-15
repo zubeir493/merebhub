@@ -35,7 +35,7 @@ function createPaidFulfillmentOrder(): array
 
     test()->actingAs($user)->post(route('cart.store', $product), [
         'variant_id' => $product->variants->first()->id,
-    ])->assertRedirect(route('cart.index'));
+    ])->assertRedirect(route('products.show', $product));
 
     config()->set('lunar.payments.default', 'chapa');
     config()->set('services.chapa.secret_key', 'test-secret');
@@ -56,6 +56,7 @@ function createPaidFulfillmentOrder(): array
         'city' => 'Addis Ababa',
         'postcode' => '1000',
         'country_id' => Country::query()->where('iso3', 'ETH')->firstOrFail()->id,
+        'payment_method' => 'chapa',
     ])->assertRedirect('https://checkout.chapa.co/test-payment');
 
     $order = Order::query()->latest('id')->firstOrFail();

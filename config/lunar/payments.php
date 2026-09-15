@@ -2,13 +2,9 @@
 
 return [
 
-    'default' => env('PAYMENTS_TYPE', 'cash-in-hand'),
+    'default' => env('PAYMENTS_TYPE', 'chapa'),
 
     'types' => [
-        'cash-in-hand' => [
-            'driver' => 'offline',
-            'authorized' => 'captured',
-        ],
         'chapa' => [
             'driver' => 'chapa',
             'authorized' => 'captured',

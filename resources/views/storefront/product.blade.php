@@ -34,7 +34,7 @@
                 </div>
                 <div class="py-6">
                     @if ($product->variants->isNotEmpty())
-                        <form method="POST" action="{{ route('cart.store', $product) }}">
+                        <form method="POST" action="{{ route('cart.store', $product) }}" data-add-to-cart>
                             @csrf
                             <label class="form-label" for="product-variant">Choose an option</label>
                             <select id="product-variant" name="variant_id" class="form-input">
@@ -45,13 +45,36 @@
                                     </option>
                                 @endforeach
                             </select>
-                            <button class="btn-primary mt-4 w-full"><x-heroicon-o-shopping-cart class="size-5" /> Add to
+                            <button type="submit" class="btn-primary mt-4 w-full"><x-heroicon-o-shopping-cart class="size-5" /> Add to
                                 cart</button>
+                            <p data-cart-feedback class="mt-3 hidden text-center text-sm font-bold" role="status" aria-live="polite"></p>
                         </form>
                     @else
                         <div class="rounded-lg bg-amber-50 px-4 py-3 text-sm font-bold text-amber-800">This product is not
                             currently available for purchase.</div>
                     @endif
+                    @auth
+                        @if ($wishlistItem)
+                            <form method="POST" action="{{ route('wishlist.destroy', $wishlistItem) }}" class="mt-3">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-lg border border-zinc-300 px-4 py-3 text-sm font-bold text-zinc-700 transition hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700">
+                                    <x-heroicon-s-heart class="size-5 text-rose-500" /> Remove from wishlist
+                                </button>
+                            </form>
+                        @else
+                            <form method="POST" action="{{ route('wishlist.store', $product) }}" class="mt-3">
+                                @csrf
+                                <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-lg border border-zinc-300 px-4 py-3 text-sm font-bold text-zinc-700 transition hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700">
+                                    <x-heroicon-o-heart class="size-5 text-rose-500" /> Save to wishlist
+                                </button>
+                            </form>
+                        @endif
+                    @else
+                        <a href="{{ route('login') }}" class="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-zinc-300 px-4 py-3 text-sm font-bold text-zinc-700 transition hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700">
+                            <x-heroicon-o-heart class="size-5 text-rose-500" /> Sign in to save to wishlist
+                        </a>
+                    @endauth
                     <p class="mt-3 flex items-center justify-center gap-2 text-xs font-semibold text-zinc-500">
                         <x-heroicon-o-shield-check class="size-4" /> Cart and order processing powered by Lunar
                     </p>

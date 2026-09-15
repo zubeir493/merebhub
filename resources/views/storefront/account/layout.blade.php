@@ -25,6 +25,12 @@
                         <x-heroicon-o-key class="size-5 shrink-0" aria-hidden="true" />
                         <span>Purchases &amp; licenses</span>
                     </a>
+                    <a href="{{ route('account.wishlist') }}"
+                       class="{{ request()->routeIs('account.wishlist') ? 'bg-teal-50 text-teal-700' : 'text-zinc-700 hover:bg-zinc-50 hover:text-teal-700' }} flex items-center gap-3 rounded-md px-4 py-4 text-sm font-semibold transition-all"
+                       aria-current="{{ request()->routeIs('account.wishlist') ? 'page' : 'false' }}">
+                        <x-heroicon-o-heart class="size-5 shrink-0" aria-hidden="true" />
+                        <span>Wishlist</span>
+                    </a>
                     <a href="{{ route('account.invoices.index') }}"
                        class="{{ request()->routeIs('account.invoices.*') ? 'bg-teal-50 text-teal-700' : 'text-zinc-700 hover:bg-zinc-50 hover:text-teal-700' }} flex items-center gap-3 rounded-md px-4 py-4 text-sm font-semibold transition-all"
                        aria-current="{{ request()->routeIs('account.invoices.*') ? 'page' : 'false' }}">

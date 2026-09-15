@@ -16,6 +16,7 @@ use App\Http\Controllers\StoreController;
 use App\Http\Controllers\StorefrontController;
 use App\Http\Controllers\SupportTicketController;
 use App\Http\Controllers\VerificationController;
+use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -59,6 +60,9 @@ Route::middleware('auth')->group(function (): void {
     Route::post('/email/verification-notification', [VerificationController::class, 'send'])->middleware('throttle:6,1')->name('verification.send');
     Route::get('/account', fn () => redirect()->route('account.settings'))->name('account');
     Route::get('/account/orders', [AccountController::class, 'orders'])->name('account.orders');
+    Route::get('/account/wishlist', [WishlistController::class, 'index'])->name('account.wishlist');
+    Route::post('/account/wishlist/{slug}', [WishlistController::class, 'store'])->name('wishlist.store');
+    Route::delete('/account/wishlist/{wishlistItem}', [WishlistController::class, 'destroy'])->name('wishlist.destroy');
     Route::get('/account/purchases', [AccountController::class, 'purchases'])->name('account.purchases');
     Route::get('/account/invoices', [InvoiceController::class, 'index'])->name('account.invoices.index');
     Route::get('/account/invoices/{invoiceOrder}', [InvoiceController::class, 'show'])->name('account.invoices.show');

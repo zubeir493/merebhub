@@ -55,7 +55,18 @@
                     <label class="form-label" for="postcode">Postal code</label>
                     <input id="postcode" name="postcode" value="{{ old('postcode', $billingProfile?->postcode ?? '1000') }}" class="form-input" required>
                 </div>
-                <button class="btn-dark sm:col-span-2">Place order <x-heroicon-o-arrow-right class="size-4" /></button>
+                <fieldset class="sm:col-span-2">
+                    <legend class="form-label">Payment method</legend>
+                    <label class="flex cursor-pointer items-start gap-3 rounded-lg border border-teal-300 bg-teal-50/60 p-4 ring-1 ring-teal-100">
+                        <input name="payment_method" type="radio" value="chapa" class="mt-1 border-zinc-300 text-teal-600 focus:ring-teal-500" required @checked(old('payment_method', 'chapa') === 'chapa')>
+                        <span>
+                            <span class="block text-sm font-extrabold text-zinc-900">Pay securely with Chapa</span>
+                            <span class="mt-1 block text-xs leading-5 text-zinc-600">You will be redirected to Chapa to complete your payment by card or supported mobile money method.</span>
+                        </span>
+                    </label>
+                    @error('payment_method')<p class="form-error">{{ $message }}</p>@enderror
+                </fieldset>
+                <button type="submit" class="btn-dark sm:col-span-2">Continue to payment <x-heroicon-o-arrow-right class="size-4" /></button>
             </form>
         </section>
         <aside class="h-fit rounded-lg border border-zinc-200 bg-zinc-50 p-5">

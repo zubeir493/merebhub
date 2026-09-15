@@ -11,7 +11,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
-<body class="min-h-screen bg-white font-sans text-zinc-900 antialiased">
+<body class="flex min-h-screen flex-col bg-white font-sans text-zinc-900 antialiased">
     <header x-data="{ mobileOpen: false, accountOpen: false }" class="sticky top-0 z-40 border-b border-zinc-200 bg-white/95 backdrop-blur">
         <div class="mx-auto flex h-18 max-w-[1500px] items-center justify-between gap-5 px-5 lg:px-8">
             <button @click="mobileOpen = ! mobileOpen" class="grid size-10 place-items-center lg:hidden" aria-label="Toggle menu">
@@ -39,7 +39,9 @@
                 <a href="{{ route('cart.index') }}" class="relative grid size-10 place-items-center rounded-lg hover:bg-zinc-100" aria-label="Cart" title="Cart">
                     <x-heroicon-o-shopping-cart class="size-5" />
                     @if ($headerCartCount)
-                        <span class="absolute right-0 top-0 grid size-4 place-items-center rounded-full bg-teal-500 text-[9px] text-zinc-950" aria-label="{{ $headerCartCount }} {{ Str::plural('item type', $headerCartCount) }} in cart">{{ $headerCartCount }}</span>
+                        <span data-cart-count class="absolute right-0 top-0 grid size-4 place-items-center rounded-full bg-teal-500 text-[9px] text-zinc-950" aria-label="{{ $headerCartCount }} {{ Str::plural('item type', $headerCartCount) }} in cart">{{ $headerCartCount }}</span>
+                    @else
+                        <span data-cart-count class="absolute right-0 top-0 hidden size-4 place-items-center rounded-full bg-teal-500 text-[9px] text-zinc-950"></span>
                     @endif
                 </a>
                 @auth
@@ -56,6 +58,7 @@
                             </div>
                             <a href="{{ route('account.purchases') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-key class="size-4" /> Purchases &amp; licenses</a>
                             <a href="{{ route('account.orders') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-gift class="size-4" /> Previous Orders</a>
+                            <a href="{{ route('account.wishlist') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-heart class="size-4" /> Wishlist</a>
                             <a href="{{ route('account.invoices.index') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-document-text class="size-4" /> Invoices</a>
                             <a href="{{ route('account.billing') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-credit-card class="size-4" /> Billing details</a>
                             <a href="{{ route('account.security') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-shield-check class="size-4" /> Security &amp; sessions</a>
@@ -107,9 +110,9 @@
         </div>
     @endif
 
-    <main>@yield('content')</main>
+    <main class="flex-1">@yield('content')</main>
 
-    <footer class="mt-16 border-t border-zinc-200 bg-zinc-950 text-zinc-300">
+    <footer class="mt-auto border-t border-zinc-200 bg-zinc-950 text-zinc-300">
         <div class="mx-auto grid max-w-[1500px] gap-8 px-5 py-10 sm:grid-cols-2 lg:grid-cols-4 lg:px-8">
             <div>
                 <div class="flex items-center gap-2 text-white">
@@ -120,7 +123,7 @@
             </div>
             <div><strong class="text-sm text-white">Marketplace</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('store.index') }}">Browse all</a><a href="{{ route('store.newarrivals') }}">New arrivals</a><a href="{{ route('store.deals') }}">Deals</a></div></div>
             <div><strong class="text-sm text-white">Developers</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('vendors.index') }}">Browse developers</a><a href="{{ route('store.index') }}">Browse software</a></div></div>
-            <div><strong class="text-sm text-white">Your account</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('account.purchases') }}">Purchases &amp; licenses</a><a href="{{ route('account.orders') }}">Previous orders</a><a href="{{ route('account.invoices.index') }}">Invoices</a><a href="{{ route('account.billing') }}">Billing details</a><a href="{{ route('account.security') }}">Security &amp; sessions</a><a href="{{ route('account.support.index') }}">Support requests</a><a href="{{ route('account.settings') }}">Settings</a><a href="{{ route('cart.index') }}">Cart</a></div></div>
+            <div><strong class="text-sm text-white">Your account</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('account.purchases') }}">Purchases &amp; licenses</a><a href="{{ route('account.orders') }}">Previous orders</a><a href="{{ route('account.wishlist') }}">Wishlist</a><a href="{{ route('account.invoices.index') }}">Invoices</a><a href="{{ route('account.billing') }}">Billing details</a><a href="{{ route('account.security') }}">Security &amp; sessions</a><a href="{{ route('account.support.index') }}">Support requests</a><a href="{{ route('account.settings') }}">Settings</a><a href="{{ route('cart.index') }}">Cart</a></div></div>
         </div>
     </footer>
 

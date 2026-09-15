@@ -48,9 +48,13 @@ class StorefrontController extends Controller
             ->where('element_type', (new Product)->getMorphClass())
             ->value('element_id');
         $product = $this->products()->findOrFail($productId);
+        $wishlistItem = auth()->user()?->wishlistItems()
+            ->where('product_id', $product->getKey())
+            ->first();
 
         return view('storefront.product', [
             'product' => $product,
+            'wishlistItem' => $wishlistItem,
             'relatedProducts' => $this->products()
                 ->whereKeyNot($product)
                 ->catalogAttributeContains('attribute_data', $product->category)

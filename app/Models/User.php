@@ -78,6 +78,11 @@ class User extends Authenticatable implements FilamentUser, LunarUserInterface, 
         return $this->hasMany(SupportTicket::class);
     }
 
+    public function wishlistItems(): HasMany
+    {
+        return $this->hasMany(WishlistItem::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *

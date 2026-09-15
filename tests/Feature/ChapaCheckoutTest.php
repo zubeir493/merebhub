@@ -11,7 +11,7 @@ test('a Lunar variant can be added to the storefront cart', function () {
 
     $this->post(route('cart.store', $product), [
         'variant_id' => $product->variants->first()->id,
-    ])->assertRedirect(route('cart.index'));
+    ])->assertRedirect(route('products.show', $product));
 
     $this->get(route('cart.index'))
         ->assertSuccessful()

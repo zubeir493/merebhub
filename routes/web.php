@@ -35,6 +35,7 @@ Route::get('/apps/{slug}', [StorefrontController::class, 'product'])->name('prod
 Route::get('/vendors', [StorefrontController::class, 'vendors'])->name('vendors.index');
 Route::get('/vendors/{slug}', [StorefrontController::class, 'vendor'])->name('vendors.show');
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::get('/cart/mini', [CartController::class, 'mini'])->name('cart.mini');
 Route::post('/cart/{slug}', [CartController::class, 'store'])->name('cart.store');
 Route::patch('/cart/{cartLine}', [CartController::class, 'update'])->whereNumber('cartLine')->name('cart.update');
 Route::delete('/cart/{cartLine}', [CartController::class, 'destroy'])->whereNumber('cartLine')->name('cart.destroy');

@@ -36,7 +36,7 @@
                 <span id="search-shortcut-desktop" role="button" tabindex="0" aria-label="Focus search (shortcut)" style="position: absolute;right: 10px;" class="top-1/2 -translate-y-1/2 rounded-sm bg-zinc-100 px-2 py-1 text-xs text-zinc-600 cursor-pointer select-none">Ctrl+K</span>
             </form>
             <div class="flex shrink-0 items-center">
-                <a href="{{ route('cart.index') }}" class="relative grid size-10 place-items-center rounded-lg hover:bg-zinc-100" aria-label="Cart" title="Cart">
+                <a href="{{ route('cart.index') }}" data-mini-cart-toggle class="relative grid size-10 place-items-center rounded-lg hover:bg-zinc-100" aria-label="Cart" aria-haspopup="dialog" aria-expanded="false" title="Cart">
                     <x-heroicon-o-shopping-cart class="size-5" />
                     @if ($headerCartCount)
                         <span data-cart-count class="absolute right-0 top-0 grid size-4 place-items-center rounded-full bg-teal-500 text-[9px] text-zinc-950" aria-label="{{ $headerCartCount }} {{ Str::plural('item type', $headerCartCount) }} in cart">{{ $headerCartCount }}</span>
@@ -76,6 +76,28 @@
                         <span class="hidden text-sm font-bold sm:inline">Login</span>
                     </a>
                 @endauth
+            </div>
+        </div>
+        <div data-mini-cart data-endpoint="{{ route('cart.mini') }}" hidden role="dialog" aria-label="Mini cart" aria-modal="false" class="fixed right-4 top-[4.75rem] z-50 w-[min(24rem,calc(100vw-2rem))] origin-top-right translate-y-2 scale-[.98] rounded-2xl border border-zinc-200 bg-white opacity-0 shadow-2xl shadow-zinc-950/15 transition-[opacity,transform] duration-200 ease-out sm:right-6">
+            <div class="flex items-center justify-between border-b border-zinc-100 px-5 py-4">
+                <div>
+                    <h2 class="text-base font-extrabold text-zinc-950">Your cart</h2>
+                    <p data-mini-cart-count-label class="mt-0.5 text-xs font-semibold text-zinc-500"></p>
+                </div>
+                <button type="button" data-mini-cart-close class="grid size-9 place-items-center rounded-lg text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-800" aria-label="Close cart">
+                    <x-heroicon-o-x-mark class="size-5" />
+                </button>
+            </div>
+            <div data-mini-cart-items class="max-h-[min(55vh,28rem)] overflow-y-auto p-3"></div>
+            <div class="border-t border-zinc-100 bg-zinc-50/70 p-4">
+                <div class="flex items-center justify-between text-sm">
+                    <span class="font-semibold text-zinc-600">Total</span>
+                    <strong data-mini-cart-total class="text-zinc-950"></strong>
+                </div>
+                <div class="mt-3 grid grid-cols-2 gap-2">
+                    <a href="{{ route('cart.index') }}" class="flex items-center justify-center rounded-lg border border-zinc-300 px-3 py-2.5 text-xs font-extrabold text-zinc-700 transition hover:bg-white">View cart</a>
+                    <a href="{{ route('checkout.show') }}" class="flex items-center justify-center rounded-lg bg-zinc-950 px-3 py-2.5 text-xs font-extrabold text-white transition hover:bg-teal-700">Checkout</a>
+                </div>
             </div>
         </div>
         <div x-cloak x-show="mobileOpen" x-transition class="border-t border-zinc-200 bg-white px-5 py-4 lg:hidden">

@@ -78,7 +78,26 @@ test('adding a product to the cart returns JSON without redirecting', function (
             'message' => 'Added to your cart.',
             'cart_count' => 1,
         ])
+        ->assertJsonPath('items.0.name', $product->name)
         ->assertHeader('content-type', 'application/json');
+});
+
+test('product variants render as visual radio choices with configurable presentation', function (): void {
+    $product = Product::published()->with(['defaultUrl', 'variants'])->firstOrFail();
+    $variant = $product->variants->firstOrFail();
+    $variant->update(['presentation_icon' => 'code']);
+
+    $this->get(route('products.show', $product))
+        ->assertSuccessful()
+        ->assertSee('Choose an option')
+        ->assertSee('type="radio"', false)
+        ->assertDontSee('<select', false)
+        ->assertSee('Digital license');
+
+    $variant->update(['presentation_image' => 'images/marketplace/ledgerly.webp']);
+
+    $this->get(route('products.show', $product))
+        ->assertSee('/images/marketplace/ledgerly.webp');
 });
 
 test('storefront keeps the footer at the bottom of the page layout', function (): void {

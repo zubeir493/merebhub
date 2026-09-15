@@ -36,18 +36,36 @@
                     @if ($product->variants->isNotEmpty())
                         <form method="POST" action="{{ route('cart.store', $product) }}" data-add-to-cart>
                             @csrf
-                            <label class="form-label" for="product-variant">Choose an option</label>
-                            <select id="product-variant" name="variant_id" class="form-input">
+                            <fieldset>
+                                <legend class="form-label">Choose an option</legend>
+                                <div class="grid gap-3">
                                 @foreach ($product->variants as $variant)
-                                    <option value="{{ $variant->id }}">
-                                        {{ $variant->getOption() ?: 'Standard license' }} —
-                                        {{ number_format((float) ($variant->prices->first()?->price ?? 0) / 100, 2) }} ETB
-                                    </option>
+                                    @php
+                                        $optionLabel = $variant->getOption() ?: 'Standard license';
+                                        $presentationImage = $product->variantPresentationImage($variant);
+                                    @endphp
+                                    <label class="group relative block cursor-pointer">
+                                        <input type="radio" name="variant_id" value="{{ $variant->id }}" class="peer sr-only" required @checked($loop->first)>
+                                        <span class="flex items-center gap-3 rounded-xl border border-zinc-200 bg-white p-3 transition duration-150 hover:border-zinc-400 hover:shadow-sm peer-checked:border-teal-500 peer-checked:bg-teal-50/50 peer-checked:ring-2 peer-checked:ring-teal-500/15">
+                                            <span class="grid size-12 shrink-0 place-items-center overflow-hidden rounded-lg bg-zinc-100 text-teal-700 transition group-hover:bg-teal-50">
+                                                @if ($presentationImage)
+                                                    <img src="{{ $presentationImage }}" alt="" class="h-full w-full object-cover">
+                                                @else
+                                                    <x-dynamic-component :component="$product->variantPresentationIcon($variant)" class="size-6" />
+                                                @endif
+                                            </span>
+                                            <span class="min-w-0 flex-1">
+                                                <span class="block truncate text-sm font-extrabold text-zinc-900">{{ $optionLabel }}</span>
+                                                <span class="mt-1 block text-xs font-semibold text-zinc-500">Digital license</span>
+                                            </span>
+                                            <strong class="shrink-0 text-sm font-extrabold text-zinc-950">{{ number_format((float) ($variant->prices->first()?->price ?? 0) / 100, 2) }} ETB</strong>
+                                        </span>
+                                    </label>
                                 @endforeach
-                            </select>
+                                </div>
+                            </fieldset>
                             <button type="submit" class="btn-primary mt-4 w-full"><x-heroicon-o-shopping-cart class="size-5" /> Add to
                                 cart</button>
-                            <p data-cart-feedback class="mt-3 hidden text-center text-sm font-bold" role="status" aria-live="polite"></p>
                         </form>
                     @else
                         <div class="rounded-lg bg-amber-50 px-4 py-3 text-sm font-bold text-amber-800">This product is not

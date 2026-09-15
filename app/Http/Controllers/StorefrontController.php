@@ -106,6 +106,7 @@ class StorefrontController extends Controller
             'media',
             'variants.prices.currency',
             'variants.prices.priceable',
+            'variants.values',
         ]);
     }
 }

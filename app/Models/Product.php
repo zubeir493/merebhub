@@ -15,6 +15,7 @@ use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Lunar\Core\Facades\StorefrontSession;
 use Lunar\Core\Models\Price;
+use Lunar\Core\Models\ProductVariant;
 
 class Product extends \Lunar\Core\Models\Product
 {
@@ -152,6 +153,41 @@ class Product extends \Lunar\Core\Models\Product
         }
 
         return Storage::disk('public')->url($path);
+    }
+
+    public function variantPresentationImage(ProductVariant $variant): ?string
+    {
+        $path = trim((string) $variant->getAttribute('presentation_image'));
+
+        if ($path === '') {
+            return null;
+        }
+
+        if (Str::startsWith($path, ['http://', 'https://'])) {
+            return $path;
+        }
+
+        if (Str::startsWith($path, ['/images/', 'images/'])) {
+            return asset(ltrim($path, '/'));
+        }
+
+        return Storage::disk('public')->url($path);
+    }
+
+    public function variantPresentationIcon(ProductVariant $variant): string
+    {
+        return match (Str::lower(trim((string) $variant->getAttribute('presentation_icon')))) {
+            'academic-cap' => 'heroicon-o-academic-cap',
+            'bolt' => 'heroicon-o-bolt',
+            'briefcase' => 'heroicon-o-briefcase',
+            'chart' => 'heroicon-o-chart-bar',
+            'code' => 'heroicon-o-code-bracket',
+            'cloud' => 'heroicon-o-cloud',
+            'puzzle-piece' => 'heroicon-o-puzzle-piece',
+            'shield' => 'heroicon-o-shield-check',
+            'sparkles' => 'heroicon-o-sparkles',
+            default => 'heroicon-o-cube',
+        };
     }
 
     public function getRouteKey(): mixed

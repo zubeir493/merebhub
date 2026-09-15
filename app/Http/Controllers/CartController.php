@@ -42,6 +42,13 @@ class CartController extends Controller
         ]);
     }
 
+    public function mini(): JsonResponse
+    {
+        $cart = CartSession::current();
+
+        return response()->json($this->miniCartPayload($cart));
+    }
+
     public function store(Request $request, string $slug): RedirectResponse|JsonResponse
     {
         $validated = $request->validate([
@@ -74,11 +81,54 @@ class CartController extends Controller
         if ($request->expectsJson()) {
             return response()->json([
                 'message' => $message,
-                'cart_count' => CartSession::current()?->lines->sum('quantity') ?? 0,
+                ...$this->miniCartPayload(CartSession::current()),
             ]);
         }
 
         return redirect()->route('products.show', $product)->with('status', $message);
+    }
+
+    /**
+     * @return array{cart_count: int, items: array<int, array{id: int, name: string, option: string, quantity: int, total: string, image: ?string, url: string, unit_price: string}>, total: string}
+     */
+    private function miniCartPayload(mixed $cart): array
+    {
+        if ($cart === null) {
+            return [
+                'cart_count' => 0,
+                'items' => [],
+                'total' => '0.00 ETB',
+            ];
+        }
+
+        $cart->loadMissing('lines.purchasable.values');
+        $items = $cart->lines;
+        $productIds = $items->pluck('purchasable.product_id')->filter()->unique();
+        $products = Product::query()
+            ->with(['defaultUrl', 'media'])
+            ->whereKey($productIds)
+            ->get()
+            ->keyBy('id');
+
+        return [
+            'cart_count' => (int) $items->sum('quantity'),
+            'items' => $items->map(function (CartLine $item) use ($products): array {
+                $variant = $item->purchasable;
+                $product = $products->get($variant?->product_id);
+
+                return [
+                    'id' => (int) $item->getKey(),
+                    'name' => (string) ($product?->name ?: $variant?->getDescription() ?: 'Product'),
+                    'option' => (string) ($variant?->getOption() ?: 'Standard license'),
+                    'quantity' => (int) $item->quantity,
+                    'total' => $item->total->format(),
+                    'image' => $product?->coverUrl(),
+                    'url' => $product ? route('products.show', $product) : route('cart.index'),
+                    'unit_price' => $item->unitPrice->format(),
+                ];
+            })->values()->all(),
+            'total' => $cart->total->format(),
+        ];
     }
 
     public function update(Request $request, int $cartLine): RedirectResponse

@@ -1,15 +1,3 @@
-function showCartFeedback(form, message, isError = false) {
-    const feedback = form.querySelector('[data-cart-feedback]');
-
-    if (!feedback) {
-        return;
-    }
-
-    feedback.textContent = message;
-    feedback.classList.remove('hidden', 'text-teal-700', 'text-rose-600');
-    feedback.classList.add(isError ? 'text-rose-600' : 'text-teal-700');
-}
-
 function updateCartCount(count) {
     document.querySelectorAll('[data-cart-count]').forEach((element) => {
         element.textContent = count;
@@ -46,9 +34,9 @@ document.addEventListener('submit', async (event) => {
         }
 
         updateCartCount(Number(payload.cart_count || 0));
-        showCartFeedback(form, payload.message || 'Added to your cart.');
+        window.dispatchEvent(new CustomEvent('merebhub:cart-updated', { detail: payload }));
     } catch (error) {
-        showCartFeedback(form, error.message, true);
+        window.dispatchEvent(new CustomEvent('merebhub:cart-error', { detail: { message: error.message } }));
     } finally {
         button.disabled = false;
     }

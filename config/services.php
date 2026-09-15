@@ -43,4 +43,13 @@ return [
         'connect_timeout' => (int) env('CHAPA_CONNECT_TIMEOUT', 5),
     ],
 
+    'keygen' => [
+        'url' => env('KEYGEN_URL', 'https://keygen.localhost:8443'),
+        'account_id' => env('KEYGEN_ACCOUNT_ID'),
+        'api_token' => env('KEYGEN_API_TOKEN'),
+        'timeout' => (int) env('KEYGEN_TIMEOUT', 10),
+        'connect_timeout' => (int) env('KEYGEN_CONNECT_TIMEOUT', 5),
+        'verify' => filter_var(env('KEYGEN_VERIFY', true), FILTER_VALIDATE_BOOL),
+    ],
+
 ];

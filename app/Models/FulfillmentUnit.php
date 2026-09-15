@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 use Lunar\Core\Models\Order;
 use Lunar\Core\Models\OrderLine;
+use Lunar\Core\Models\ProductVariant;
 
 class FulfillmentUnit extends Model
 {
@@ -18,6 +19,7 @@ class FulfillmentUnit extends Model
         'order_id',
         'order_line_id',
         'product_id',
+        'product_variant_id',
         'quantity',
         'type',
         'provider',
@@ -65,6 +67,11 @@ class FulfillmentUnit extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function productVariant(): BelongsTo
+    {
+        return $this->belongsTo(ProductVariant::class, 'product_variant_id');
     }
 
     public function attempts(): HasMany

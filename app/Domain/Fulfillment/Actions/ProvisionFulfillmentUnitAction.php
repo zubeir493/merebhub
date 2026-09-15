@@ -57,9 +57,16 @@ class ProvisionFulfillmentUnitAction
                         'fulfillment_unit_id' => $unit->getKey(),
                         'order_id' => $unit->order_id,
                     ],
+                    licensePolicyId: isset($summary['keygen_policy_id']) ? (string) $summary['keygen_policy_id'] : null,
                 ));
             } catch (AmbiguousLicenseProvisioningException $exception) {
-                $result = $this->provider->findByIdempotencyKey($unit->idempotency_key);
+                try {
+                    $result = $this->provider->findByIdempotencyKey($unit->idempotency_key);
+                } catch (Throwable $recoveryException) {
+                    $this->markNeedsAttention($unit, $attempt, $recoveryException);
+
+                    throw $recoveryException;
+                }
 
                 if ($result === null) {
                     $this->markNeedsAttention($unit, $attempt, $exception);

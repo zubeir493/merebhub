@@ -4,12 +4,15 @@ namespace App\Providers;
 
 use App\Domain\Fulfillment\Contracts\LicenseProvider;
 use App\Domain\Fulfillment\Providers\FakeKeygenLicenseProvider;
+use App\Domain\Fulfillment\Providers\KeygenLicenseProvider;
 use App\Filament\Admin\Resources\Products\ProductResource as AdminProductResource;
 use App\Integrations\Chapa\ChapaPayment;
+use App\Integrations\Keygen\KeygenClient;
 use App\Models\BillingProfile;
 use App\Models\Credential;
 use App\Models\DownloadableAsset;
 use App\Models\InvoiceSnapshot;
+use App\Models\LicenseMapping;
 use App\Models\SupportTicket;
 use App\Models\SupportTicketAttachment;
 use App\Models\UserSession;
@@ -17,6 +20,7 @@ use App\Policies\BillingProfilePolicy;
 use App\Policies\CredentialPolicy;
 use App\Policies\DownloadableAssetPolicy;
 use App\Policies\InvoiceSnapshotPolicy;
+use App\Policies\LicenseMappingPolicy;
 use App\Policies\SupportTicketAttachmentPolicy;
 use App\Policies\SupportTicketPolicy;
 use App\Policies\UserSessionPolicy;
@@ -60,6 +64,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(LicenseProvider::class, function (): LicenseProvider {
             return match (config('marketplace.fulfillment.license_provider')) {
                 'fake' => new FakeKeygenLicenseProvider,
+                'keygen' => new KeygenLicenseProvider($this->app->make(KeygenClient::class)),
                 default => throw new \LogicException('Unsupported license provider configured.'),
             };
         });
@@ -115,6 +120,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Credential::class, CredentialPolicy::class);
         Gate::policy(BillingProfile::class, BillingProfilePolicy::class);
         Gate::policy(InvoiceSnapshot::class, InvoiceSnapshotPolicy::class);
+        Gate::policy(LicenseMapping::class, LicenseMappingPolicy::class);
         Gate::policy(UserSession::class, UserSessionPolicy::class);
         Gate::policy(SupportTicket::class, SupportTicketPolicy::class);
         Gate::policy(SupportTicketAttachment::class, SupportTicketAttachmentPolicy::class);

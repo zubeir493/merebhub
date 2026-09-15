@@ -13,5 +13,6 @@ class LicenseProvisioningRequest
         public readonly string $orderReference,
         public readonly string $customerEmail,
         public readonly array $metadata = [],
+        public readonly ?string $licensePolicyId = null,
     ) {}
 }

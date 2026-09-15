@@ -20,6 +20,10 @@ return [
         'license_provider' => env('FULFILLMENT_LICENSE_PROVIDER', 'fake'),
     ],
 
+    'keygen' => [
+        'idempotency_metadata_key' => 'merebhub_idempotency_key',
+    ],
+
     'audit' => [
         'sensitive_keys' => [
             'password',

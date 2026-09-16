@@ -50,7 +50,10 @@ class ProvisionFulfillmentUnitAction
                 $summary = (array) $unit->meta;
                 $result = $this->provider->provision(new LicenseProvisioningRequest(
                     idempotencyKey: $unit->idempotency_key,
-                    productIdentifier: (string) ($summary['provider_product_id'] ?? $unit->product?->public_id ?? $unit->product_id),
+                    productIdentifier: (string) ($summary['provider_product_id']
+                        ?? $summary['keygen_product_id']
+                        ?? $unit->product?->public_id
+                        ?? $unit->product_id),
                     orderReference: (string) ($unit->order?->reference ?? $unit->order_id),
                     customerEmail: (string) ($unit->order?->billingAddress?->contact_email ?? $unit->order?->user?->email ?? ''),
                     metadata: [

@@ -8,6 +8,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Collection;
 
@@ -99,6 +100,28 @@ class ProductForm
                             ->disabled()
                             ->dehydrated()
                             ->default('draft'),
+                    ]),
+                Section::make('License fulfillment')
+                    ->description('Enable this for a software product that should deliver a license after payment.')
+                    ->columns(2)
+                    ->schema([
+                        Select::make('fulfillment_summary.type')
+                            ->label('Automatic fulfillment')
+                            ->options([
+                                'none' => 'No automatic fulfillment',
+                                'license' => 'Generate a Keygen license',
+                            ])
+                            ->default('none')
+                            ->required(),
+                        Select::make('fulfillment_summary.provider')
+                            ->label('License provider')
+                            ->options([
+                                'keygen' => 'Keygen CE server',
+                                'fake-keygen' => 'Fake provider (testing only)',
+                            ])
+                            ->default('keygen')
+                            ->visible(fn (Get $get): bool => $get('fulfillment_summary.type') === 'license')
+                            ->required(),
                     ]),
             ]);
     }

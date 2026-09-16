@@ -5,6 +5,9 @@ namespace App\Providers;
 use App\Domain\Fulfillment\Contracts\LicenseProvider;
 use App\Domain\Fulfillment\Providers\FakeKeygenLicenseProvider;
 use App\Domain\Fulfillment\Providers\KeygenLicenseProvider;
+use App\Filament\Admin\Pages\KeygenLicenses;
+use App\Filament\Admin\Pages\KeygenPolicies;
+use App\Filament\Admin\Pages\KeygenProducts;
 use App\Filament\Admin\Resources\Products\ProductResource as AdminProductResource;
 use App\Integrations\Chapa\ChapaPayment;
 use App\Integrations\Keygen\KeygenClient;
@@ -89,6 +92,11 @@ class AppServiceProvider extends ServiceProvider
                 ->colors(['primary' => Color::Teal])
                 ->font('Instrument Sans')
                 ->path('admin')
+                ->pages([
+                    KeygenProducts::class,
+                    KeygenPolicies::class,
+                    KeygenLicenses::class,
+                ])
                 ->discoverResources(
                     in: app_path('Filament/Admin/Resources'),
                     for: 'App\\Filament\\Admin\\Resources',

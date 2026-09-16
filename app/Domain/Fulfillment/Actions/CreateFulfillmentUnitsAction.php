@@ -39,7 +39,7 @@ class CreateFulfillmentUnitsAction
 
                 $summary = json_decode((string) $product->getRawOriginal('fulfillment_summary'), true);
 
-                if (! is_array($summary) || blank($summary['type'] ?? null)) {
+                if (! is_array($summary) || ($summary['type'] ?? null) !== 'license') {
                     continue;
                 }
 

@@ -15,15 +15,57 @@ class KeygenClient
      */
     public function account(): array
     {
-        return $this->decode($this->request()->get('/'));
+        return $this->decode($this->request()->get('/me'));
     }
 
     /**
      * @return array<int, array<string, mixed>>
      */
-    public function products(): array
+    public function products(int $limit = 100): array
     {
-        return $this->data($this->decode($this->request()->get('/products')));
+        return $this->data($this->decode($this->request()->get('/products', ['limit' => $limit])));
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function createProduct(
+        string $name,
+        string $code,
+        ?string $url = null,
+        string $distributionStrategy = 'LICENSED',
+    ): array {
+        return $this->decode($this->request()->post('/products', [
+            'data' => [
+                'type' => 'products',
+                'attributes' => array_filter([
+                    'name' => $name,
+                    'code' => $code,
+                    'url' => $url,
+                    'distributionStrategy' => $distributionStrategy,
+                ], static fn (mixed $value): bool => $value !== null && $value !== ''),
+            ],
+        ]));
+    }
+
+    /**
+     * @param  array<string, mixed>  $attributes
+     * @return array<string, mixed>
+     */
+    public function updateProduct(string $productId, array $attributes): array
+    {
+        return $this->decode($this->request()->patch('/products/'.rawurlencode($productId), [
+            'data' => [
+                'type' => 'products',
+                'id' => $productId,
+                'attributes' => $attributes,
+            ],
+        ]));
+    }
+
+    public function deleteProduct(string $productId): void
+    {
+        $this->delete('/products/'.rawurlencode($productId));
     }
 
     /**
@@ -31,23 +73,102 @@ class KeygenClient
      */
     public function policies(?string $productId = null): array
     {
-        $query = $productId === null ? [] : ['product' => $productId];
+        $query = ['limit' => 100];
+
+        if ($productId !== null) {
+            $query['product'] = $productId;
+        }
 
         return $this->data($this->decode($this->request()->get('/policies', $query)));
     }
 
     /**
+     * @param  array<string, mixed>  $attributes
+     * @return array<string, mixed>
+     */
+    public function createPolicy(string $name, string $productId, array $attributes = []): array
+    {
+        return $this->decode($this->request()->post('/policies', [
+            'data' => [
+                'type' => 'policies',
+                'attributes' => array_merge(['name' => $name], $attributes),
+                'relationships' => [
+                    'product' => [
+                        'data' => [
+                            'type' => 'products',
+                            'id' => $productId,
+                        ],
+                    ],
+                ],
+            ],
+        ]));
+    }
+
+    /**
+     * @param  array<string, mixed>  $attributes
+     * @return array<string, mixed>
+     */
+    public function updatePolicy(string $policyId, array $attributes): array
+    {
+        return $this->decode($this->request()->patch('/policies/'.rawurlencode($policyId), [
+            'data' => [
+                'type' => 'policies',
+                'id' => $policyId,
+                'attributes' => $attributes,
+            ],
+        ]));
+    }
+
+    public function deletePolicy(string $policyId): void
+    {
+        $this->delete('/policies/'.rawurlencode($policyId));
+    }
+
+    /**
      * @return array<int, array<string, mixed>>
      */
-    public function licenses(?string $idempotencyKey = null): array
+    public function licenses(?string $idempotencyKey = null, int $limit = 100): array
     {
-        $query = ['limit' => 1];
+        $query = ['limit' => $limit];
 
         if ($idempotencyKey !== null) {
             $query['metadata['.config('marketplace.keygen.idempotency_metadata_key').']'] = $idempotencyKey;
         }
 
         return $this->data($this->decode($this->request()->get('/licenses', $query)));
+    }
+
+    /**
+     * @param  array<string, mixed>  $attributes
+     * @return array<string, mixed>
+     */
+    public function updateLicense(string $licenseId, array $attributes): array
+    {
+        return $this->decode($this->request()->patch('/licenses/'.rawurlencode($licenseId), [
+            'data' => [
+                'type' => 'licenses',
+                'id' => $licenseId,
+                'attributes' => $attributes,
+            ],
+        ]));
+    }
+
+    public function deleteLicense(string $licenseId): void
+    {
+        $this->delete('/licenses/'.rawurlencode($licenseId));
+    }
+
+    /**
+     * @param  array<string, mixed>  $meta
+     * @return array<string, mixed>
+     */
+    public function licenseAction(string $licenseId, string $action, array $meta = []): array
+    {
+        $uri = '/licenses/'.rawurlencode($licenseId).'/'.$action;
+
+        return $this->decode(blank($meta)
+            ? $this->request()->post($uri)
+            : $this->request()->post($uri, ['meta' => $meta]));
     }
 
     /**
@@ -77,7 +198,14 @@ class KeygenClient
 
     public function issueToken(string $email, string $password): string
     {
-        $payload = $this->decode($this->baseRequest()->withBasicAuth($email, $password)->post('/tokens'));
+        $payload = $this->decode($this->baseRequest()->withBasicAuth($email, $password)->post('/tokens', [
+            'data' => [
+                'type' => 'tokens',
+                'attributes' => [
+                    'name' => 'MerebHub server integration',
+                ],
+            ],
+        ]));
         $token = data_get($payload, 'data.attributes.token');
 
         if (! is_string($token) || blank($token)) {
@@ -120,6 +248,10 @@ class KeygenClient
             ->timeout((int) config('services.keygen.timeout', 10))
             ->connectTimeout((int) config('services.keygen.connect_timeout', 5));
 
+        if (filled($hostHeader = config('services.keygen.host_header'))) {
+            $request = $request->withHeaders(['Host' => (string) $hostHeader]);
+        }
+
         if (! config('services.keygen.verify', true)) {
             $request = $request->withoutVerifying();
         }
@@ -148,6 +280,15 @@ class KeygenClient
         }
 
         return $payload;
+    }
+
+    private function delete(string $uri): void
+    {
+        $response = $this->request()->delete($uri);
+
+        if ($response->failed()) {
+            $this->decode($response);
+        }
     }
 
     /**

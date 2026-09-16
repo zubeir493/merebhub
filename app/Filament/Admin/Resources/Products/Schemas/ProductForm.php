@@ -9,6 +9,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Collection;
 
@@ -102,6 +103,28 @@ class ProductForm
                             ->default('merebhub'),
                         DateTimePicker::make('published_at'),
                         DateTimePicker::make('archived_at'),
+                    ]),
+                Section::make('License fulfillment')
+                    ->description('When enabled, a mapped Keygen policy generates a license after payment is fulfilled.')
+                    ->columns(2)
+                    ->schema([
+                        Select::make('fulfillment_summary.type')
+                            ->label('Automatic fulfillment')
+                            ->options([
+                                'none' => 'No automatic fulfillment',
+                                'license' => 'Generate a Keygen license',
+                            ])
+                            ->default('none')
+                            ->required(),
+                        Select::make('fulfillment_summary.provider')
+                            ->label('License provider')
+                            ->options([
+                                'keygen' => 'Keygen CE server',
+                                'fake-keygen' => 'Fake provider (testing only)',
+                            ])
+                            ->default('keygen')
+                            ->visible(fn (Get $get): bool => $get('fulfillment_summary.type') === 'license')
+                            ->required(),
                     ]),
             ]);
     }

@@ -45,6 +45,7 @@ return [
 
     'keygen' => [
         'url' => env('KEYGEN_URL', 'https://keygen.localhost:8443'),
+        'host_header' => env('KEYGEN_HOST_HEADER'),
         'account_id' => env('KEYGEN_ACCOUNT_ID'),
         'api_token' => env('KEYGEN_API_TOKEN'),
         'timeout' => (int) env('KEYGEN_TIMEOUT', 10),

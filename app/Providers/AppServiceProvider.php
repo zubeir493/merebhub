@@ -99,6 +99,8 @@ class AppServiceProvider extends ServiceProvider
                 ->defaultThemeMode(ThemeMode::Light)
                 ->spa()
                 ->topbar()
+                ->sidebarCollapsibleOnDesktop(false)
+                ->sidebarFullyCollapsibleOnDesktop(false)
                 ->profile(EditProfile::class)
                 ->databaseNotifications()
                 ->defaultAvatarProvider(PrimaryColorAvatarProvider::class)

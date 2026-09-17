@@ -9,6 +9,13 @@ test('the unified admin sidebar is flat and has no navigation groups', function 
         ->and($groups[0]->getLabel())->toBeNull();
 });
 
+test('Filament sidebars cannot be collapsed on desktop', function (): void {
+    expect(Filament::getPanel('lunar')->isSidebarCollapsibleOnDesktop())->toBeFalse()
+        ->and(Filament::getPanel('lunar')->isSidebarFullyCollapsibleOnDesktop())->toBeFalse()
+        ->and(Filament::getPanel('merchant')->isSidebarCollapsibleOnDesktop())->toBeFalse()
+        ->and(Filament::getPanel('merchant')->isSidebarFullyCollapsibleOnDesktop())->toBeFalse();
+});
+
 test('removed Lunar pages return not found when visited directly', function () {
     foreach ([
         '/lunar/channels',

@@ -28,6 +28,8 @@ class MerchantPanelProvider extends PanelProvider
             ->path('merchant')
             ->authGuard('web')
             ->login()
+            ->sidebarCollapsibleOnDesktop(false)
+            ->sidebarFullyCollapsibleOnDesktop(false)
             ->brandName('MerebHub Merchant')
             ->colors([
                 'primary' => Color::Amber,

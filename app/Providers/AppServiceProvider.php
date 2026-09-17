@@ -9,6 +9,8 @@ use App\Filament\Admin\Pages\KeygenLicenses;
 use App\Filament\Admin\Pages\KeygenPolicies;
 use App\Filament\Admin\Pages\KeygenProducts;
 use App\Filament\Admin\Resources\Products\ProductResource as AdminProductResource;
+use App\Filament\AvatarProviders\PrimaryColorAvatarProvider;
+use App\Filament\Pages\Auth\EditProfile;
 use App\Integrations\Chapa\ChapaPayment;
 use App\Integrations\Keygen\KeygenClient;
 use App\Models\BillingProfile;
@@ -28,6 +30,7 @@ use App\Policies\SupportTicketAttachmentPolicy;
 use App\Policies\SupportTicketPolicy;
 use App\Policies\UserSessionPolicy;
 use App\Support\DashboardExtension;
+use Filament\Enums\ThemeMode;
 use Filament\Navigation\NavigationBuilder;
 use Filament\Panel;
 use Filament\Support\Colors\Color;
@@ -89,8 +92,20 @@ class AppServiceProvider extends ServiceProvider
         ])->withoutInventoryControls()
             ->panel(fn (Panel $panel): Panel => $panel
                 ->brandName('MerebHub')
-                ->colors(['primary' => Color::Teal])
-                ->font('Instrument Sans')
+                ->viteTheme('resources/css/filament/admin/theme.css')
+                ->font('Plus Jakarta Sans')
+                ->darkMode(false)
+                ->defaultThemeMode(ThemeMode::Light)
+                ->spa()
+                ->topbar()
+                ->profile(EditProfile::class)
+                ->databaseNotifications()
+                ->defaultAvatarProvider(PrimaryColorAvatarProvider::class)
+                ->brandLogo(asset('images/marketplace/logo.svg'))
+                ->favicon(asset('favicon.ico'))
+                ->brandLogoHeight('2rem')
+                ->colors(['primary' => Color::Indigo])
+                ->globalSearch(true)
                 ->path('admin')
                 ->pages([
                     KeygenProducts::class,
@@ -104,7 +119,14 @@ class AppServiceProvider extends ServiceProvider
                 ->navigation(function (NavigationBuilder $builder): NavigationBuilder {
                     $items = [];
 
-                    foreach ([...LunarPanel::getPages(), ...LunarPanel::getActiveResources(), AdminProductResource::class] as $component) {
+                    foreach ([
+                        ...LunarPanel::getPages(),
+                        KeygenProducts::class,
+                        KeygenPolicies::class,
+                        KeygenLicenses::class,
+                        ...LunarPanel::getActiveResources(),
+                        AdminProductResource::class,
+                    ] as $component) {
                         $items = [...$items, ...$component::getNavigationItems()];
                     }
 

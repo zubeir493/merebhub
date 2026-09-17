@@ -27,7 +27,7 @@ class KeygenProducts extends KeygenTablePage
     public function table(Table $table): Table
     {
         return $table
-            ->records(fn (): array => collect($this->keygen()->products())
+            ->records(fn (): array => collect($this->safeRecords(fn (): array => $this->keygen()->products()))
                 ->mapWithKeys(fn (array $record): array => [(string) $record['id'] => $this->record($record)])
                 ->all())
             ->columns([
@@ -125,11 +125,5 @@ class KeygenProducts extends KeygenTablePage
                 'LICENSED' => 'Licensed', 'OPEN' => 'Open',
             ])->default('LICENSED')->required(),
         ];
-    }
-
-    private function notifyFailure(string $title, Throwable $exception): void
-    {
-        report($exception);
-        Notification::make()->title($title)->body($exception->getMessage())->danger()->send();
     }
 }

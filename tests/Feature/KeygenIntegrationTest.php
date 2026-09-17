@@ -14,6 +14,7 @@ use App\Models\Staff;
 use Filament\Facades\Filament;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Http;
+use Livewire\Livewire;
 
 beforeEach(function (): void {
     config()->set('services.keygen.url', 'https://keygen.localhost:8443');
@@ -181,4 +182,18 @@ test('the admin panel registers the licenses module', function (): void {
         ->toContain(KeygenProducts::class)
         ->toContain(KeygenPolicies::class)
         ->toContain(KeygenLicenses::class);
+});
+
+test('the keygen admin page shows an actionable unavailable state when the server is down', function (): void {
+    $staff = Staff::factory()->create(['admin' => true]);
+
+    Filament::setCurrentPanel(Filament::getPanel('lunar'));
+    Filament::bootCurrentPanel();
+    $this->actingAs($staff, 'staff');
+    Http::preventStrayRequests();
+    Http::fake(['https://keygen.localhost:8443/*' => Http::failedConnection()]);
+
+    Livewire::test(KeygenPolicies::class)
+        ->assertSee('Keygen is unavailable')
+        ->assertDontSee('cURL error 7');
 });

@@ -27,7 +27,7 @@ class KeygenPolicies extends KeygenTablePage
     public function table(Table $table): Table
     {
         return $table
-            ->records(fn (): array => collect($this->keygen()->policies())
+            ->records(fn (): array => collect($this->safeRecords(fn (): array => $this->keygen()->policies()))
                 ->mapWithKeys(fn (array $record): array => [(string) $record['id'] => $this->record($record)])
                 ->all())
             ->columns([
@@ -118,7 +118,7 @@ class KeygenPolicies extends KeygenTablePage
             TextInput::make('name')->required()->maxLength(255),
             ...($includeProduct ? [Select::make('product_id')
                 ->label('Keygen product')
-                ->options(fn (): array => collect($this->keygen()->products())->mapWithKeys(fn (array $record): array => [
+                ->options(fn (): array => collect($this->safeRecords(fn (): array => $this->keygen()->products()))->mapWithKeys(fn (array $record): array => [
                     (string) $record['id'] => (string) data_get($record, 'attributes.name', $record['id']),
                 ])->all())
                 ->searchable()->required()] : []),
@@ -148,11 +148,5 @@ class KeygenPolicies extends KeygenTablePage
             'protected' => filter_var($data['protected'] ?? false, FILTER_VALIDATE_BOOLEAN),
             'requireProductScope' => filter_var($data['requireProductScope'] ?? false, FILTER_VALIDATE_BOOLEAN),
         ];
-    }
-
-    private function notifyFailure(string $title, Throwable $exception): void
-    {
-        report($exception);
-        Notification::make()->title($title)->body($exception->getMessage())->danger()->send();
     }
 }

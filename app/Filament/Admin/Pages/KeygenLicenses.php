@@ -27,7 +27,7 @@ class KeygenLicenses extends KeygenTablePage
     public function table(Table $table): Table
     {
         return $table
-            ->records(fn (): array => collect($this->keygen()->licenses())
+            ->records(fn (): array => collect($this->safeRecords(fn (): array => $this->keygen()->licenses()))
                 ->mapWithKeys(fn (array $record): array => [(string) $record['id'] => $this->record($record)])
                 ->all())
             ->columns([
@@ -133,7 +133,7 @@ class KeygenLicenses extends KeygenTablePage
         return [
             Select::make('policy_id')
                 ->label('Keygen policy')
-                ->options(fn (): array => collect($this->keygen()->policies())->mapWithKeys(fn (array $record): array => [
+                ->options(fn (): array => collect($this->safeRecords(fn (): array => $this->keygen()->policies()))->mapWithKeys(fn (array $record): array => [
                     (string) $record['id'] => sprintf(
                         '%s (%s)',
                         data_get($record, 'attributes.name', $record['id']),
@@ -154,11 +154,5 @@ class KeygenLicenses extends KeygenTablePage
         } catch (Throwable $exception) {
             $this->notifyFailure(ucfirst($action).' failed', $exception);
         }
-    }
-
-    private function notifyFailure(string $title, Throwable $exception): void
-    {
-        report($exception);
-        Notification::make()->title($title)->body($exception->getMessage())->danger()->send();
     }
 }

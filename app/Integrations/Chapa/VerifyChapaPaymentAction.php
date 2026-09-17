@@ -36,6 +36,10 @@ class VerifyChapaPaymentAction
             $response = $this->client->verify($transactionReference);
             $this->assertSuccessfulResponse($response, $transactionReference, $order);
         } catch (ChapaPaymentVerificationException $exception) {
+            if (isset($response) && $this->isExplicitFailure($response)) {
+                $this->recordFailedPayment($order, $transactionReference, $response);
+            }
+
             throw $exception;
         } catch (Throwable $exception) {
             throw new ChapaPaymentVerificationException('Chapa payment verification failed.', previous: $exception);
@@ -77,6 +81,53 @@ class VerifyChapaPaymentAction
         $this->invoiceSnapshots->handle($verifiedOrder);
 
         return $verifiedOrder;
+    }
+
+    /**
+     * @param  array<string, mixed>  $response
+     */
+    private function recordFailedPayment(Order $order, string $transactionReference, array $response): void
+    {
+        DB::transaction(function () use ($order, $transactionReference, $response): void {
+            $lockedOrder = Order::query()->lockForUpdate()->findOrFail($order->getKey());
+
+            if (! $lockedOrder->transactions()->where('reference', $transactionReference)->exists()) {
+                $lockedOrder->transactions()->create([
+                    'success' => false,
+                    'driver' => 'chapa',
+                    'amount' => $lockedOrder->total,
+                    'reference' => $transactionReference,
+                    'status' => 'failed',
+                    'type' => 'capture',
+                    'meta' => [
+                        'chapa_status' => data_get($response, 'data.status', data_get($response, 'status')),
+                        'provider_reference' => data_get($response, 'data.reference'),
+                    ],
+                ]);
+            }
+
+            $meta = (array) $lockedOrder->meta;
+            $meta['chapa'] = [
+                ...(array) ($meta['chapa'] ?? []),
+                'status' => 'failed',
+                'failed_at' => now()->toISOString(),
+            ];
+
+            $lockedOrder->forceFill(['meta' => $meta])->save();
+        });
+    }
+
+    /**
+     * @param  array<string, mixed>  $response
+     */
+    private function isExplicitFailure(array $response): bool
+    {
+        $statuses = [
+            strtolower((string) data_get($response, 'status')),
+            strtolower((string) data_get($response, 'data.status')),
+        ];
+
+        return count(array_intersect($statuses, ['failed', 'cancelled', 'canceled'])) > 0;
     }
 
     /**

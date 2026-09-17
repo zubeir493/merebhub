@@ -2,12 +2,15 @@
 
 namespace App\Integrations\Chapa;
 
+use App\Support\IntegrationSettingsStore;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
 
 class ChapaClient
 {
+    public function __construct(private ?IntegrationSettingsStore $settings = null) {}
+
     /**
      * @return array<string, mixed>
      */
@@ -26,7 +29,7 @@ class ChapaClient
 
     private function request(): PendingRequest
     {
-        $secretKey = config('services.chapa.secret_key');
+        $secretKey = $this->setting('secret_key', config('services.chapa.secret_key'));
 
         if (blank($secretKey)) {
             throw new ChapaException('Chapa is not configured.');
@@ -35,10 +38,15 @@ class ChapaClient
         return Http::acceptJson()
             ->asJson()
             ->withToken($secretKey)
-            ->baseUrl((string) config('services.chapa.base_url', 'https://api.chapa.co/v1'))
-            ->timeout((int) config('services.chapa.timeout', 10))
-            ->connectTimeout((int) config('services.chapa.connect_timeout', 5))
+            ->baseUrl((string) $this->setting('base_url', config('services.chapa.base_url', 'https://api.chapa.co/v1')))
+            ->timeout((int) $this->setting('timeout', config('services.chapa.timeout', 10)))
+            ->connectTimeout((int) $this->setting('connect_timeout', config('services.chapa.connect_timeout', 5)))
             ->retry(2, 200);
+    }
+
+    private function setting(string $key, mixed $default = null): mixed
+    {
+        return ($this->settings ??= app(IntegrationSettingsStore::class))->get('chapa', $key, $default);
     }
 
     /**

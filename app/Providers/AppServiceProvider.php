@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Domain\Fulfillment\Contracts\LicenseProvider;
 use App\Domain\Fulfillment\Providers\FakeKeygenLicenseProvider;
 use App\Domain\Fulfillment\Providers\KeygenLicenseProvider;
+use App\Filament\Admin\Pages\IntegrationSettings;
 use App\Filament\Admin\Pages\KeygenLicenses;
 use App\Filament\Admin\Pages\KeygenPolicies;
 use App\Filament\Admin\Pages\KeygenProducts;
@@ -108,6 +109,7 @@ class AppServiceProvider extends ServiceProvider
                 ->globalSearch(true)
                 ->path('admin')
                 ->pages([
+                    IntegrationSettings::class,
                     KeygenProducts::class,
                     KeygenPolicies::class,
                     KeygenLicenses::class,
@@ -121,6 +123,7 @@ class AppServiceProvider extends ServiceProvider
 
                     foreach ([
                         ...LunarPanel::getPages(),
+                        IntegrationSettings::class,
                         KeygenProducts::class,
                         KeygenPolicies::class,
                         KeygenLicenses::class,

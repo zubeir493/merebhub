@@ -11,6 +11,7 @@ use App\Models\Entitlement;
 use App\Models\FulfillmentAttempt;
 use App\Models\FulfillmentUnit;
 use App\Models\ProviderMirror;
+use App\Notifications\LicenseProvisionedNotification;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -82,7 +83,7 @@ class ProvisionFulfillmentUnitAction
                 throw $exception;
             }
 
-            return DB::transaction(function () use ($unit, $attempt, $result): Entitlement {
+            $entitlement = DB::transaction(function () use ($unit, $attempt, $result): Entitlement {
                 $lockedUnit = FulfillmentUnit::query()->lockForUpdate()->with('order')->findOrFail($unit->getKey());
                 $entitlement = $lockedUnit->entitlement()->first();
 
@@ -135,6 +136,13 @@ class ProvisionFulfillmentUnitAction
 
                 return $entitlement->load('credential');
             });
+
+            if ($entitlement->wasRecentlyCreated) {
+                $entitlement->load('user');
+                $entitlement->user?->notify(new LicenseProvisionedNotification($entitlement->getKey()));
+            }
+
+            return $entitlement;
         });
     }
 

@@ -2,6 +2,7 @@
 
 use App\Domain\Fulfillment\Data\LicenseProvisioningRequest;
 use App\Domain\Fulfillment\Providers\KeygenLicenseProvider;
+use App\Filament\Admin\Pages\IntegrationSettings;
 use App\Filament\Admin\Pages\KeygenLicenses;
 use App\Filament\Admin\Pages\KeygenPolicies;
 use App\Filament\Admin\Pages\KeygenProducts;
@@ -176,6 +177,7 @@ test('only admin staff can access the license mapping policy', function (): void
 test('the admin panel registers the licenses module', function (): void {
     expect(Filament::getPanel('lunar')->getResources())->toContain(LicenseMappingResource::class);
     expect(Filament::getPanel('lunar')->getPages())
+        ->toContain(IntegrationSettings::class)
         ->toContain(KeygenProducts::class)
         ->toContain(KeygenPolicies::class)
         ->toContain(KeygenLicenses::class);

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Integrations\Chapa\ChapaPaymentVerificationException;
 use App\Integrations\Chapa\VerifyChapaPaymentAction;
+use App\Support\IntegrationSettingsStore;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -41,13 +42,17 @@ class ChapaPaymentController extends Controller
         return redirect()->route('checkout.complete', $order);
     }
 
-    public function webhook(Request $request, VerifyChapaPaymentAction $verify): JsonResponse
+    public function webhook(Request $request, VerifyChapaPaymentAction $verify, IntegrationSettingsStore $settings): JsonResponse
     {
-        $secret = (string) config('services.chapa.webhook_secret');
-        $signature = (string) $request->header('x-chapa-signature');
+        $secret = (string) $settings->get('chapa', 'webhook_secret', config('services.chapa.webhook_secret'));
+        $signatures = array_filter([
+            $request->header('x-chapa-signature'),
+            $request->header('chapa-signature'),
+        ]);
+        $expectedSignature = hash_hmac('sha256', $request->getContent(), $secret);
 
-        if (blank($secret) || blank($signature)
-            || ! hash_equals(hash_hmac('sha256', $request->getContent(), $secret), $signature)) {
+        if (blank($secret) || $signatures === []
+            || ! collect($signatures)->contains(fn (string $signature): bool => hash_equals($expectedSignature, $signature))) {
             return response()->json(['message' => 'Invalid signature.'], 401);
         }
 

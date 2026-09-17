@@ -16,7 +16,9 @@ use App\Models\FulfillmentUnit;
 use App\Models\OutboxMessage;
 use App\Models\Product;
 use App\Models\User;
+use App\Notifications\LicenseProvisionedNotification;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
 use Lunar\Core\Models\Country;
@@ -108,6 +110,20 @@ test('a verified payment creates one idempotent entitlement through the fulfillm
     expect(FulfillmentUnit::query()->count())->toBe(1)
         ->and(Entitlement::query()->whereBelongsTo($user)->count())->toBe(1)
         ->and($provider->provisioned)->toHaveCount(1);
+});
+
+test('a provisioned license is emailed to the purchasing customer', function (): void {
+    [$user, $order] = createPaidFulfillmentOrder();
+    $unit = app(CreateFulfillmentUnitsAction::class)->handle($order)->firstOrFail();
+    $provider = new FakeKeygenLicenseProvider;
+    app()->instance(LicenseProvider::class, $provider);
+    Notification::fake();
+
+    app(ProvisionFulfillmentUnitAction::class)->handle($unit);
+
+    Notification::assertSentTo($user, LicenseProvisionedNotification::class, function (LicenseProvisionedNotification $notification) use ($unit): bool {
+        return $notification->entitlementId === $unit->fresh()->entitlement?->getKey();
+    });
 });
 
 test('an ambiguous provider create recovers without creating a second license', function (): void {

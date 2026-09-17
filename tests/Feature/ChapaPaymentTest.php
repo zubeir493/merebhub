@@ -125,6 +125,37 @@ test('a Chapa amount mismatch does not place the order', function (): void {
     $this->assertDatabaseCount('lunar_transactions', 0);
 });
 
+test('a provider-reported Chapa failure is recorded without placing the order', function (): void {
+    [$user, $order, $transactionReference] = startChapaCheckout();
+
+    Http::fake([
+        'https://api.chapa.co/v1/transaction/verify/*' => Http::response([
+            'status' => 'failed',
+            'data' => [
+                'status' => 'failed',
+                'tx_ref' => $transactionReference,
+                'amount' => '2590.00',
+                'currency' => 'ETB',
+            ],
+        ]),
+    ]);
+
+    $this->actingAs($user)
+        ->get(route('payments.chapa.return', ['tx_ref' => $transactionReference]))
+        ->assertRedirect(route('cart.index'))
+        ->assertSessionHasErrors('payment');
+
+    expect($order->fresh()->placed_at)->toBeNull()
+        ->and($order->fresh()->meta['chapa']['status'])->toBe('failed');
+    $this->assertDatabaseHas('lunar_transactions', [
+        'order_id' => $order->id,
+        'driver' => 'chapa',
+        'reference' => $transactionReference,
+        'success' => false,
+        'status' => 'failed',
+    ]);
+});
+
 test('the Chapa webhook requires a valid signature', function (): void {
     $this->postJson(route('payments.chapa.webhook'), ['tx_ref' => 'unknown'])
         ->assertUnauthorized();
@@ -148,6 +179,36 @@ test('the Chapa webhook verifies a signed payment without CSRF', function (): vo
 
     $this->withHeader(
         'x-chapa-signature',
+        hash_hmac('sha256', json_encode($payload), 'webhook-secret'),
+    )->postJson(route('payments.chapa.webhook'), $payload)
+        ->assertOk()
+        ->assertJson(['status' => 'ok']);
+
+    $this->assertDatabaseHas('lunar_transactions', [
+        'order_id' => $order->id,
+        'reference' => $transactionReference,
+        'success' => true,
+    ]);
+});
+
+test('the Chapa webhook accepts the documented chapa-signature header', function (): void {
+    [$user, $order, $transactionReference] = startChapaCheckout();
+    $payload = ['tx_ref' => $transactionReference];
+
+    Http::fake([
+        'https://api.chapa.co/v1/transaction/verify/*' => Http::response([
+            'status' => 'success',
+            'data' => [
+                'status' => 'success',
+                'tx_ref' => $transactionReference,
+                'amount' => '2590.00',
+                'currency' => 'ETB',
+            ],
+        ]),
+    ]);
+
+    $this->withHeader(
+        'chapa-signature',
         hash_hmac('sha256', json_encode($payload), 'webhook-secret'),
     )->postJson(route('payments.chapa.webhook'), $payload)
         ->assertOk()

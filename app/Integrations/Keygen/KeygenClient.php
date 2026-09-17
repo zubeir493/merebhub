@@ -3,6 +3,7 @@
 namespace App\Integrations\Keygen;
 
 use App\Exceptions\Integrations\Keygen\KeygenException;
+use App\Support\IntegrationSettingsStore;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Http\Client\Response;
 use Illuminate\Support\Facades\Http;
@@ -10,6 +11,8 @@ use Illuminate\Support\Str;
 
 class KeygenClient
 {
+    public function __construct(private ?IntegrationSettingsStore $settings = null) {}
+
     /**
      * @return array<string, mixed>
      */
@@ -217,7 +220,7 @@ class KeygenClient
 
     private function request(): PendingRequest
     {
-        $token = config('services.keygen.api_token');
+        $token = $this->setting('api_token', config('services.keygen.api_token'));
 
         if (blank($token)) {
             throw new KeygenException('Keygen is not configured with an API token.');
@@ -228,13 +231,13 @@ class KeygenClient
 
     private function baseRequest(): PendingRequest
     {
-        $accountId = config('services.keygen.account_id');
+        $accountId = $this->setting('account_id', config('services.keygen.account_id'));
 
         if (blank($accountId)) {
             throw new KeygenException('Keygen is not configured with an account ID.');
         }
 
-        $baseUrl = rtrim((string) config('services.keygen.url', 'https://keygen.localhost:8443'), '/');
+        $baseUrl = rtrim((string) $this->setting('url', config('services.keygen.url', 'https://keygen.localhost:8443')), '/');
 
         if (! Str::endsWith($baseUrl, '/v1')) {
             $baseUrl .= '/v1';
@@ -248,15 +251,20 @@ class KeygenClient
             ->timeout((int) config('services.keygen.timeout', 10))
             ->connectTimeout((int) config('services.keygen.connect_timeout', 5));
 
-        if (filled($hostHeader = config('services.keygen.host_header'))) {
+        if (filled($hostHeader = $this->setting('host_header', config('services.keygen.host_header')))) {
             $request = $request->withHeaders(['Host' => (string) $hostHeader]);
         }
 
-        if (! config('services.keygen.verify', true)) {
+        if (! filter_var($this->setting('verify', config('services.keygen.verify', true)), FILTER_VALIDATE_BOOL)) {
             $request = $request->withoutVerifying();
         }
 
         return $request;
+    }
+
+    private function setting(string $key, mixed $default = null): mixed
+    {
+        return ($this->settings ??= app(IntegrationSettingsStore::class))->get('keygen', $key, $default);
     }
 
     /**

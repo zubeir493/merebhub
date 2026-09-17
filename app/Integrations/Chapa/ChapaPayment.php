@@ -35,7 +35,7 @@ class ChapaPayment extends AbstractPayment
             $factor = (int) ($currency?->factor ?? 100);
             $address = $order->billingAddress;
 
-            $response = $this->client->initialize([
+            $payload = [
                 'amount' => number_format($order->total / $factor, $decimalPlaces, '.', ''),
                 'currency' => strtoupper((string) ($currency?->code ?? 'ETB')),
                 'email' => $this->data['contact_email'] ?? $address?->contact_email,
@@ -48,7 +48,13 @@ class ChapaPayment extends AbstractPayment
                     'title' => 'MerebHub',
                     'description' => 'MerebHub marketplace purchase',
                 ],
-            ]);
+            ];
+
+            if (filled($phoneNumber = $this->data['contact_phone'] ?? $address?->contact_phone)) {
+                $payload['phone_number'] = $phoneNumber;
+            }
+
+            $response = $this->client->initialize($payload);
 
             $checkoutUrl = data_get($response, 'data.checkout_url');
 

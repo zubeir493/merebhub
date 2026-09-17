@@ -174,6 +174,25 @@ class KeygenClient
             : $this->request()->post($uri, ['meta' => $meta]));
     }
 
+    public function checkoutLicenseFile(string $licenseId, int $ttl = 2592000): string
+    {
+        $response = $this->request()->get('/licenses/'.rawurlencode($licenseId).'/actions/check-out', [
+            'ttl' => $ttl,
+        ]);
+
+        if ($response->failed()) {
+            $this->decode($response);
+        }
+
+        $contents = $response->body();
+
+        if (blank($contents)) {
+            throw new KeygenException('Keygen returned an empty offline license file.');
+        }
+
+        return $contents;
+    }
+
     /**
      * @param  array<string, mixed>  $metadata
      * @return array<string, mixed>

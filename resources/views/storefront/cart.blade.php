@@ -61,6 +61,8 @@
                     <div class="mt-5 flex items-center justify-between text-sm text-zinc-600"><span>Subtotal</span><strong class="text-zinc-950">{{ $cart->subTotal->format() }}</strong></div>
                     <div class="mt-4 flex items-center justify-between border-b border-zinc-200 pb-5 text-sm text-zinc-600"><span>Commerce engine</span><span>Lunar</span></div>
                     <div class="mt-5 flex items-end justify-between"><strong>Total</strong><strong class="text-md">{{ $cart->total->format() }}</strong></div>
+                    <button type="button" data-share-cart="{{ route('cart.share') }}" class="mt-5 flex w-full items-center justify-center gap-2 rounded-lg border border-zinc-300 px-4 py-3 text-sm font-extrabold text-zinc-700 transition hover:border-teal-300 hover:bg-teal-50 hover:text-teal-800"><x-heroicon-o-share class="size-4" /> Share cart</button>
+                    <p class="mt-2 hidden text-center text-xs font-semibold text-emerald-700" data-share-cart-status role="status"></p>
                     <form method="POST" action="{{ route('checkout.store') }}" class="mt-6">
                         @csrf
                         <button type="submit" class="btn-primary w-full"><x-heroicon-o-lock-closed class="size-4" /> Checkout with Chapa</button>

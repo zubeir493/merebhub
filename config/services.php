@@ -46,6 +46,8 @@ return [
 
     'keygen' => [
         'url' => env('KEYGEN_URL', 'https://keygen.localhost:8443'),
+        'middleware_url' => env('KEYGEN_MIDDLEWARE_URL', 'http://127.0.0.1:8000'),
+        'admin_token' => env('KEYGEN_MIDDLEWARE_ADMIN_TOKEN'),
         'host_header' => env('KEYGEN_HOST_HEADER'),
         'account_id' => env('KEYGEN_ACCOUNT_ID'),
         'api_token' => env('KEYGEN_API_TOKEN'),

@@ -10,6 +10,7 @@ use App\Http\Controllers\CredentialController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\OfflineLicenseController;
 use App\Http\Controllers\SecuritySessionController;
 use App\Http\Controllers\StaffSupportController;
 use App\Http\Controllers\StoreController;
@@ -36,6 +37,8 @@ Route::get('/vendors', [StorefrontController::class, 'vendors'])->name('vendors.
 Route::get('/vendors/{slug}', [StorefrontController::class, 'vendor'])->name('vendors.show');
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::get('/cart/mini', [CartController::class, 'mini'])->name('cart.mini');
+Route::post('/cart/share', [CartController::class, 'share'])->name('cart.share');
+Route::get('/cart/shared', [CartController::class, 'shared'])->middleware('signed')->name('cart.shared');
 Route::post('/cart/{slug}', [CartController::class, 'store'])->name('cart.store');
 Route::patch('/cart/{cartLine}', [CartController::class, 'update'])->whereNumber('cartLine')->name('cart.update');
 Route::delete('/cart/{cartLine}', [CartController::class, 'destroy'])->whereNumber('cartLine')->name('cart.destroy');
@@ -92,6 +95,15 @@ Route::middleware('auth')->group(function (): void {
     Route::post('/account/credentials/{credential}/reveal', [CredentialController::class, 'reveal'])
         ->middleware(['verified', 'throttle:credential-reveal'])
         ->name('credentials.reveal');
+    Route::get('/account/credentials/{credential}/license.txt', [CredentialController::class, 'downloadText'])
+        ->middleware(['verified', 'throttle:credential-reveal'])
+        ->name('credentials.license-text');
+    Route::post('/account/credentials/offline-file', [OfflineLicenseController::class, 'generate'])
+        ->middleware(['verified', 'throttle:credential-reveal'])
+        ->name('credentials.offline-file');
+    Route::get('/account/credentials/{credential}/offline-file', [OfflineLicenseController::class, 'download'])
+        ->middleware(['verified', 'throttle:credential-reveal'])
+        ->name('credentials.offline-file.direct');
 
     Route::middleware('verified')->group(function (): void {
         Route::get('/checkout', [CheckoutController::class, 'show'])->name('checkout.show');

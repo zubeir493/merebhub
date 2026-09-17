@@ -14,9 +14,9 @@
             <p class="mt-2 text-sm text-zinc-600">Invoices for placed orders will appear here.</p>
         </section>
     @else
-        <div class="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+        <div class="account-table-wrap overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
             <div class="overflow-x-auto">
-                <table class="min-w-full">
+                <table class="account-table min-w-full">
                     <thead class="border-b border-zinc-100 bg-zinc-50">
                         <tr class="text-left text-xs uppercase tracking-wide text-zinc-500">
                             <th class="px-5 py-3">Invoice</th>
@@ -29,13 +29,13 @@
                     <tbody class="divide-y divide-zinc-100">
                         @foreach ($invoices as $invoice)
                             <tr>
-                                <td class="px-5 py-4">
+                                <td data-label="Invoice" class="px-5 py-4">
                                     <a href="{{ route('account.invoices.show', ['invoiceOrder' => $invoice->order->public_id]) }}" class="font-mono text-sm font-bold text-teal-800 underline decoration-teal-300 underline-offset-4">{{ $invoice->invoice_number }}</a>
                                 </td>
-                                <td class="px-5 py-4 font-mono text-sm">{{ $invoice->order->reference }}</td>
-                                <td class="px-5 py-4 text-sm">{{ str($invoice->payment_status)->replace('_', ' ')->title() }}</td>
-                                <td class="px-5 py-4 text-sm font-bold">{{ number_format($invoice->total / $invoice->currency_factor, $invoice->currency_decimal_places, '.', ',') }} {{ $invoice->currency_code }}</td>
-                                <td class="px-5 py-4 text-sm text-zinc-600">{{ $invoice->issued_at->format('M j, Y') }}</td>
+                                <td data-label="Order" class="px-5 py-4 font-mono text-sm">{{ $invoice->order->reference }}</td>
+                                <td data-label="Payment" class="px-5 py-4 text-sm">{{ str($invoice->payment_status)->replace('_', ' ')->title() }}</td>
+                                <td data-label="Total" class="px-5 py-4 text-sm font-bold">{{ number_format($invoice->total / $invoice->currency_factor, $invoice->currency_decimal_places, '.', ',') }} {{ $invoice->currency_code }}</td>
+                                <td data-label="Issued" class="px-5 py-4 text-sm text-zinc-600">{{ $invoice->issued_at->format('M j, Y') }}</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -43,6 +43,6 @@
             </div>
         </div>
 
-        <div class="mt-6">{{ $orders->links() }}</div>
+        <div class="mt-6">{{ $invoices->links() }}</div>
     @endif
 @endsection

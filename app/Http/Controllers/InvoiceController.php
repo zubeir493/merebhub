@@ -28,9 +28,10 @@ class InvoiceController extends Controller
                 return $invoice;
             });
 
+        $orders->setCollection($invoices);
+
         return view('storefront.account.invoices', [
-            'invoices' => $invoices,
-            'orders' => $orders,
+            'invoices' => $orders,
         ]);
     }
 

@@ -106,6 +106,19 @@ test('customers can view their invoices but cannot access another customer order
     expect(InvoiceSnapshot::query()->count())->toBe(1);
 });
 
+test('customers can browse their paginated invoice list', function (): void {
+    $customer = User::factory()->create();
+    $order = createInvoiceTestOrder($customer);
+    $invoice = app(EnsureInvoiceSnapshotAction::class)->handle($order);
+
+    $this->actingAs($customer)
+        ->get(route('account.invoices.index'))
+        ->assertSuccessful()
+        ->assertSee('Invoices')
+        ->assertSee($invoice->invoice_number)
+        ->assertSee('account-table');
+});
+
 test('draft orders cannot generate customer invoices', function (): void {
     $order = Order::factory()->create(['user_id' => User::factory()]);
 

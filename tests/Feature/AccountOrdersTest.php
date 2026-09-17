@@ -49,7 +49,9 @@ test('customers can view completed orders', function () {
     $this->get(route('account.orders'))
         ->assertSuccessful()
         ->assertSee('Paid')
-        ->assertSee('ETB');
+        ->assertSee('ETB')
+        ->assertSee('mh-account-mobile-nav', false)
+        ->assertSee('Previous orders');
 
     expect($order->lines()->firstOrFail()->option)
         ->toBe($product->variants->firstOrFail()->variant_name);

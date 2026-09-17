@@ -78,6 +78,20 @@ test('the Keygen client can exchange administrator credentials for a token', fun
         && $request->hasHeader('Authorization', 'Basic '.base64_encode('admin@example.test:test-password')));
 });
 
+test('the Keygen client can check out a license file for offline activation', function (): void {
+    Http::preventStrayRequests();
+    Http::fake([
+        'https://keygen.localhost:8443/v1/accounts/account-123/licenses/license-123/actions/check-out*' => Http::response("-----BEGIN LICENSE FILE-----\nlicense-data\n-----END LICENSE FILE-----", 200),
+    ]);
+
+    $contents = (new KeygenClient)->checkoutLicenseFile('license-123');
+
+    expect($contents)->toContain('BEGIN LICENSE FILE');
+    Http::assertSent(fn ($request): bool => $request->method() === 'GET'
+        && str_contains($request->url(), '/licenses/license-123/actions/check-out')
+        && $request['ttl'] === 2592000);
+});
+
 test('the Keygen client supports dashboard product policy and license management', function (): void {
     Http::preventStrayRequests();
     Http::fake(function ($request) {

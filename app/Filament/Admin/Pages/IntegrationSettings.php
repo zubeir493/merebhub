@@ -41,6 +41,7 @@ class IntegrationSettings extends Page implements HasForms
             'chapa_public_key' => $settings->get('chapa', 'public_key', config('services.chapa.public_key')),
             'chapa_base_url' => $settings->get('chapa', 'base_url', config('services.chapa.base_url')),
             'keygen_url' => $settings->get('keygen', 'url', config('services.keygen.url')),
+            'keygen_middleware_url' => $settings->get('keygen', 'middleware_url', config('services.keygen.middleware_url')),
             'keygen_host_header' => $settings->get('keygen', 'host_header', config('services.keygen.host_header')),
             'keygen_account_id' => $settings->get('keygen', 'account_id', config('services.keygen.account_id')),
             'keygen_verify' => filter_var($settings->get('keygen', 'verify', config('services.keygen.verify', true)), FILTER_VALIDATE_BOOL),
@@ -78,12 +79,17 @@ class IntegrationSettings extends Page implements HasForms
                     ])
                     ->columns(2),
                 Section::make('Keygen licensing')
-                    ->description('The API token is used for server-side license management. Administrator credentials are optional and are stored only for future token exchange tooling.')
+                    ->description('The API token is used for server-side license management. The middleware connection powers offline activation file generation.')
                     ->schema([
                         TextInput::make('keygen_url')
                             ->label('Server URL')
                             ->url()
                             ->required(),
+                        TextInput::make('keygen_middleware_url')
+                            ->label('Offline activation middleware URL')
+                            ->url()
+                            ->helperText('The bridge endpoint that accepts .lreq files and returns generated .lic files.')
+                            ->nullable(),
                         TextInput::make('keygen_host_header')
                             ->label('Host header')
                             ->helperText('Only needed when the local Keygen proxy requires a specific host.')
@@ -96,6 +102,12 @@ class IntegrationSettings extends Page implements HasForms
                             ->password()
                             ->revealable()
                             ->helperText('Leave blank to keep the current token.')
+                            ->dehydrated(),
+                        TextInput::make('keygen_admin_token')
+                            ->label('Offline middleware admin token')
+                            ->password()
+                            ->revealable()
+                            ->helperText('Optional for a local bridge; leave blank to keep the current token.')
                             ->dehydrated(),
                         TextInput::make('keygen_admin_email')
                             ->label('Administrator email')
@@ -128,14 +140,16 @@ class IntegrationSettings extends Page implements HasForms
                 'chapa_webhook_secret' => ['chapa', 'webhook_secret'],
                 'chapa_base_url' => ['chapa', 'base_url'],
                 'keygen_url' => ['keygen', 'url'],
+                'keygen_middleware_url' => ['keygen', 'middleware_url'],
                 'keygen_host_header' => ['keygen', 'host_header'],
                 'keygen_account_id' => ['keygen', 'account_id'],
                 'keygen_api_token' => ['keygen', 'api_token'],
+                'keygen_admin_token' => ['keygen', 'admin_token'],
                 'keygen_admin_email' => ['keygen', 'admin_email'],
                 'keygen_admin_password' => ['keygen', 'admin_password'],
                 'keygen_verify' => ['keygen', 'verify'],
             ] as $field => [$provider, $key]) {
-                if (in_array($field, ['chapa_public_key', 'chapa_secret_key', 'chapa_webhook_secret', 'keygen_api_token', 'keygen_admin_password'], true)
+                if (in_array($field, ['chapa_public_key', 'chapa_secret_key', 'chapa_webhook_secret', 'keygen_api_token', 'keygen_admin_password', 'keygen_admin_token'], true)
                     && blank($data[$field] ?? null)) {
                     continue;
                 }

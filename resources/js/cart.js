@@ -7,6 +7,80 @@ function updateCartCount(count) {
     });
 }
 
+async function copyCartLink(value) {
+    if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(value);
+
+        return;
+    }
+
+    const field = document.createElement('textarea');
+    field.value = value;
+    field.setAttribute('readonly', '');
+    field.style.position = 'fixed';
+    field.style.opacity = '0';
+    document.body.appendChild(field);
+    field.focus();
+    field.select();
+
+    if (!document.execCommand('copy')) {
+        throw new Error('copy-failed');
+    }
+
+    field.remove();
+}
+
+document.addEventListener('click', async (event) => {
+    const button = event.target.closest('[data-share-cart]');
+
+    if (!button) {
+        return;
+    }
+
+    const status = document.querySelector('[data-share-cart-status]');
+    const originalLabel = button.innerHTML;
+    button.disabled = true;
+    status?.classList.add('hidden');
+
+    try {
+        const response = await fetch(button.dataset.shareCart, {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                Accept: 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
+            },
+        });
+        const payload = await response.json();
+
+        if (!response.ok) {
+            throw new Error(payload.message || 'Unable to create a shared cart link.');
+        }
+
+        await copyCartLink(payload.url);
+        button.innerHTML = '✓ Link copied';
+
+        if (status) {
+            status.textContent = 'Anyone with this link can add these items to their cart for 7 days.';
+            status.classList.remove('hidden', 'text-rose-700');
+            status.classList.add('text-emerald-700');
+        }
+
+        window.setTimeout(() => {
+            button.innerHTML = originalLabel;
+            status?.classList.add('hidden');
+        }, 2600);
+    } catch (error) {
+        if (status) {
+            status.textContent = error.message || 'Unable to create a shared cart link.';
+            status.classList.remove('hidden', 'text-emerald-700');
+            status.classList.add('text-rose-700');
+        }
+    } finally {
+        button.disabled = false;
+    }
+});
+
 document.addEventListener('submit', async (event) => {
     const form = event.target.closest('form[data-add-to-cart]');
 

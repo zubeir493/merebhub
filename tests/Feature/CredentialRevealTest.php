@@ -60,7 +60,25 @@ test('a customer sees only their purchases and license records', function (): vo
         ->assertSuccessful()
         ->assertSee('Customer Product')
         ->assertDontSee('Other Customer Product')
+        ->assertSee('Software licenses')
+        ->assertSee('data-mh-copy-license', false)
+        ->assertSee('data-reveal-credential', false)
+        ->assertSee('Offline .lic activation')
         ->assertDontSee('MH-TEST-LICENSE-KEY');
+});
+
+test('an entitled customer can download a license text file with product and variant details', function (): void {
+    $customer = User::factory()->create();
+    $credential = createCredentialEntitlement($customer, 'Owned Product');
+
+    $this->actingAs($customer)
+        ->get(route('credentials.license-text', $credential->public_id))
+        ->assertSuccessful()
+        ->assertHeader('content-type', 'text/plain; charset=utf-8')
+        ->assertHeader('content-disposition', 'attachment; filename="owned-product-license.txt"')
+        ->assertSee('Product: Owned Product')
+        ->assertSee('Variant: Standard license')
+        ->assertSee('License key: MH-TEST-LICENSE-KEY');
 });
 
 test('an active purchase lists only downloadable assets that passed scanning', function (): void {

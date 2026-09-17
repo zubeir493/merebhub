@@ -99,6 +99,26 @@ test('adding a product to the cart returns JSON without redirecting', function (
         ->assertHeader('content-type', 'application/json');
 });
 
+test('customers can create a signed shared cart link', function (): void {
+    $product = Product::published()->with(['defaultUrl', 'variants'])->firstOrFail();
+    $variant = $product->variants->firstOrFail();
+
+    $this->postJson(route('cart.store', $product), ['variant_id' => $variant->getKey()])
+        ->assertSuccessful();
+
+    $shareResponse = $this->postJson(route('cart.share'))
+        ->assertSuccessful()
+        ->assertJsonStructure(['url', 'expires_at']);
+
+    $sharedUrl = $shareResponse->json('url');
+
+    expect($sharedUrl)->toContain('signature=');
+
+    $this->get($sharedUrl)
+        ->assertRedirect(route('cart.index'))
+        ->assertSessionHas('status');
+});
+
 test('product variants render as visual radio choices with configurable presentation', function (): void {
     $product = Product::published()->with(['defaultUrl', 'variants'])->firstOrFail();
     $variant = $product->variants->firstOrFail();

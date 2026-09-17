@@ -6,8 +6,8 @@
             <p class="mt-2 text-sm text-zinc-600">Start browsing and purchase some software.</p>
         </div>
     @else
-        <div class="overflow-x-auto">
-            <table class="min-w-full">
+        <div class="account-table-wrap overflow-x-auto">
+            <table class="account-table min-w-full">
                 <thead class="border-b border-zinc-100 bg-zinc-50">
                     <tr class="text-left text-xs uppercase tracking-wide text-zinc-500">
                         <th class="px-6 py-3">Products</th>
@@ -21,7 +21,7 @@
                 <tbody class="divide-y divide-zinc-100">
                     @foreach ($orders as $order)
                         <tr>
-                            <td class="px-6 py-4">
+                            <td data-label="Products" class="px-6 py-4">
                                 <div class="grid gap-1 text-sm font-semibold text-zinc-900">
                                     @foreach ($order->productLines as $line)
                                         @php($variant = $line->purchasable)
@@ -29,14 +29,14 @@
                                     @endforeach
                                 </div>
                             </td>
-                            <td class="px-6 py-4 font-mono text-sm text-zinc-900">{{ $order->reference }}</td>
-                            <td class="px-6 py-4">
-                                @php($paymentStatus = $order->payment_status?->label() ?? 'Payment pending')
-                                <span class="inline-flex rounded-full bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-700 ring-1 ring-teal-100">{{ $paymentStatus }}</span>
+                            <td data-label="Order" class="px-6 py-4 font-mono text-sm text-zinc-900">{{ $order->reference }}</td>
+                            <td data-label="Status" class="px-6 py-4">
+                                @php($paymentStatus = $order->payment_status?->label() ?: 'Payment pending')
+                                <span class="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-100"><span class="size-1.5 rounded-full bg-emerald-500"></span>{{ $paymentStatus }}</span>
                             </td>
-                            <td class="px-6 py-4 text-sm font-semibold text-zinc-900">{{ $order->format('total') }}</td>
-                            <td class="px-6 py-4 text-sm text-zinc-500">{{ $order->placed_at->format('M j, Y') }}</td>
-                            <td class="px-6 py-4">
+                            <td data-label="Amount" class="px-6 py-4 text-sm font-semibold text-zinc-900">{{ $order->format('total') }}</td>
+                            <td data-label="Date" class="px-6 py-4 text-sm text-zinc-500">{{ $order->placed_at->format('M j, Y') }}</td>
+                            <td data-label="Invoice" class="px-6 py-4">
                                 <a href="{{ route('account.invoices.show', ['invoiceOrder' => $order->public_id]) }}" class="text-sm font-bold text-teal-800 underline decoration-teal-300 underline-offset-4">View invoice</a>
                             </td>
                         </tr>

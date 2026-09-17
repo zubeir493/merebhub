@@ -20,7 +20,8 @@
         cursor: pointer;
     }
 
-    [x-cloak] {
+    [x-cloak],
+    [data-mh-hidden] {
         display: none !important;
     }
 
@@ -49,5 +50,100 @@
 
     .btn-dark {
         @apply inline-flex items-center justify-center gap-2 rounded-lg bg-zinc-950 px-5 py-3 text-sm font-extrabold text-white transition hover:bg-teal-700;
+    }
+
+    .mh-license-copy-button {
+        @apply inline-flex size-9 items-center justify-center rounded-lg border border-zinc-200 bg-white text-teal-800 transition hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700 focus:outline-none focus:ring-4 focus:ring-teal-500/10 disabled:cursor-wait disabled:opacity-60;
+    }
+
+    .mh-account-mobile-nav {
+        margin: -0.5rem 0 1.75rem;
+        overflow-x: auto;
+        overscroll-behavior-inline: contain;
+        scrollbar-width: none;
+    }
+
+    .mh-account-mobile-nav::-webkit-scrollbar {
+        display: none;
+    }
+
+    .mh-account-mobile-nav nav {
+        min-width: max-content;
+    }
+
+    .mh-account-mobile-nav nav > ul {
+        display: flex;
+        gap: 0.35rem;
+        padding-bottom: 0.25rem;
+    }
+
+    .mh-account-mobile-nav nav a,
+    .mh-account-mobile-nav nav button {
+        min-height: 2.75rem;
+        white-space: nowrap;
+        padding: 0.7rem 0.85rem;
+        font-size: 0.78rem;
+    }
+
+    .mh-account-mobile-nav nav a svg,
+    .mh-account-mobile-nav nav button svg {
+        width: 1rem;
+        height: 1rem;
+    }
+}
+
+@media (max-width: 1023px) {
+    .account-table-wrap > div {
+        overflow-x: visible;
+    }
+
+    .account-table {
+        width: 100%;
+        table-layout: auto;
+    }
+
+    .account-table thead {
+        display: none;
+    }
+
+    .account-table tbody,
+    .account-table tr,
+    .account-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .account-table tr {
+        padding: 0.9rem 1rem;
+    }
+
+    .account-table td {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.35rem 0 !important;
+        text-align: right;
+    }
+
+    .account-table td::before {
+        content: attr(data-label);
+        flex: 0 0 auto;
+        color: #71717a;
+        font-size: 0.68rem;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        text-align: left;
+    }
+
+    .account-table td:first-child {
+        justify-content: flex-start;
+        text-align: left;
+        padding-top: 0 !important;
+    }
+
+    .account-table td:last-child {
+        text-align: left;
     }
 }

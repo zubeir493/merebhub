@@ -137,6 +137,7 @@ class DatabaseSeeder extends Seeder
             ]]);
             $variant = $product->variants()->create([
                 'tax_class_id' => $taxClass->id,
+                'variant_name' => 'Standard license',
                 'sku' => strtoupper($slug),
                 'shippable' => false,
                 'selling_policy' => 'always',

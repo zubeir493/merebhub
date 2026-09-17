@@ -3,7 +3,6 @@
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
-use Lunar\Core\Models\Country;
 use Lunar\Core\Models\Order;
 
 beforeEach(function () {
@@ -11,7 +10,7 @@ beforeEach(function () {
     config()->set('services.chapa.secret_key', 'test-secret');
 });
 
-test('verified customers can reach Lunar checkout with an active cart', function () {
+test('verified customers can start headless Chapa checkout with an active cart', function () {
     $user = User::query()->where('email', 'buyer@merebhub.test')->firstOrFail();
     $product = Product::published()->with(['defaultUrl', 'variants'])->firstOrFail();
 
@@ -19,11 +18,7 @@ test('verified customers can reach Lunar checkout with an active cart', function
         ->post(route('cart.store', $product), ['variant_id' => $product->variants->first()->id])
         ->assertRedirect(route('products.show', $product));
 
-    $this->get(route('checkout.show'))
-        ->assertSuccessful()
-        ->assertSee('Billing details');
-
-    $country = Country::query()->where('iso3', 'ETH')->firstOrFail();
+    $this->get(route('checkout.show'))->assertRedirect(route('cart.index'));
 
     Http::fake([
         'https://api.chapa.co/v1/transaction/initialize' => Http::response([
@@ -32,16 +27,7 @@ test('verified customers can reach Lunar checkout with an active cart', function
         ]),
     ]);
 
-    $response = $this->post(route('checkout.store'), [
-        'first_name' => 'Demo',
-        'last_name' => 'Buyer',
-        'contact_email' => $user->email,
-        'line_one' => 'Bole Road',
-        'city' => 'Addis Ababa',
-        'postcode' => '1000',
-        'country_id' => $country->id,
-        'payment_method' => 'chapa',
-    ]);
+    $response = $this->post(route('checkout.store'));
 
     $this->assertDatabaseCount('lunar_orders', 1);
     $order = Order::query()->firstOrFail();

@@ -4,7 +4,7 @@
     <header class="mb-8">
         <p class="text-sm font-bold uppercase tracking-[0.16em] text-teal-700">Billing history</p>
         <h1 class="mt-2 text-4xl font-extrabold tracking-tight">Invoices</h1>
-        <p class="mt-2 max-w-2xl text-zinc-600">View printable order invoices and the billing details recorded for each order.</p>
+        <p class="mt-2 max-w-2xl text-zinc-600">View printable invoices for your completed orders.</p>
     </header>
 
     @if ($invoices->isEmpty())

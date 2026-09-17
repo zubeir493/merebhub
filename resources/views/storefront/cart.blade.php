@@ -29,7 +29,7 @@
                             <div class="min-w-0">
                                 <a href="{{ route('products.show', $product) }}" class="mt-1 block text-lg font-extrabold hover:text-teal-700">{{ $product->name }}</a>
                                 <p class="text-xs font-bold text-zinc-500">{{ $product->author?->name ?? 'Independent' }}</p>
-                                <p class="mt-2 text-sm font-semibold text-zinc-600 tabular-nums">{{ $item->unitPrice->format() }} · {{ $variant->getOption() ?: 'Standard license' }}</p>
+                        <p class="mt-2 text-sm font-semibold text-zinc-600 tabular-nums">{{ $item->unitPrice->format() }} · {{ $product->variantDisplayName($variant) }}</p>
                                 <form method="POST" action="{{ route('cart.destroy', $item->id) }}" class="mt-3">
                                     @csrf
                                     @method('DELETE')
@@ -61,7 +61,10 @@
                     <div class="mt-5 flex items-center justify-between text-sm text-zinc-600"><span>Subtotal</span><strong class="text-zinc-950">{{ $cart->subTotal->format() }}</strong></div>
                     <div class="mt-4 flex items-center justify-between border-b border-zinc-200 pb-5 text-sm text-zinc-600"><span>Commerce engine</span><span>Lunar</span></div>
                     <div class="mt-5 flex items-end justify-between"><strong>Total</strong><strong class="text-md">{{ $cart->total->format() }}</strong></div>
-                    <a href="{{ route('checkout.show') }}" class="btn-primary mt-6 w-full"><x-heroicon-o-lock-closed class="size-4" /> Continue to checkout</a>
+                    <form method="POST" action="{{ route('checkout.store') }}" class="mt-6">
+                        @csrf
+                        <button type="submit" class="btn-primary w-full"><x-heroicon-o-lock-closed class="size-4" /> Checkout with Chapa</button>
+                    </form>
                     <p class="mt-4 text-center text-xs leading-5 text-zinc-500">Taxes and totals are calculated by Lunar.</p>
                 </aside>
             </div>

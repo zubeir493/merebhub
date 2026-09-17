@@ -48,6 +48,7 @@ class SyncProductConfigurationAction
             foreach ($variantRows as $row) {
                 $variant = $this->resolveVariant($product, $row);
                 $variant->fill([
+                    'variant_name' => trim((string) ($row['name'] ?? '')) ?: 'Standard license',
                     'sku' => filled($row['sku'] ?? null) ? (string) $row['sku'] : null,
                     'tax_class_id' => (int) (($row['tax_class_id'] ?? null) ?: $taxClassId),
                     'shippable' => (bool) ($row['shippable'] ?? false),

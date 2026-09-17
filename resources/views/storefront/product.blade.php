@@ -41,7 +41,7 @@
                                 <div class="grid gap-3">
                                 @foreach ($product->variants as $variant)
                                     @php
-                                        $optionLabel = $variant->getOption() ?: 'Standard license';
+                                        $optionLabel = $product->variantDisplayName($variant);
                                         $presentationImage = $product->variantPresentationImage($variant);
                                     @endphp
                                     <label class="group relative block cursor-pointer">

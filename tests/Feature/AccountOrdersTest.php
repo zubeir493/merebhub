@@ -3,7 +3,6 @@
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
-use Lunar\Core\Models\Country;
 use Lunar\Core\Models\Order;
 
 beforeEach(function () {
@@ -28,16 +27,7 @@ test('customers can view completed orders', function () {
         ]),
     ]);
 
-    $this->post(route('checkout.store'), [
-        'first_name' => 'Demo',
-        'last_name' => 'Buyer',
-        'contact_email' => $user->email,
-        'line_one' => 'Bole Road',
-        'city' => 'Addis Ababa',
-        'postcode' => '1000',
-        'country_id' => Country::query()->where('iso3', 'ETH')->firstOrFail()->id,
-        'payment_method' => 'chapa',
-    ])->assertRedirect('https://checkout.chapa.co/test-payment');
+    $this->post(route('checkout.store'))->assertRedirect('https://checkout.chapa.co/test-payment');
 
     $order = Order::query()->latest('id')->firstOrFail();
     $transactionReference = (string) data_get($order->meta, 'chapa.tx_ref');
@@ -60,4 +50,7 @@ test('customers can view completed orders', function () {
         ->assertSuccessful()
         ->assertSee('Paid')
         ->assertSee('ETB');
+
+    expect($order->lines()->firstOrFail()->option)
+        ->toBe($product->variants->firstOrFail()->variant_name);
 });

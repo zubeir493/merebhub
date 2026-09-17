@@ -119,7 +119,9 @@ class CartController extends Controller
                 return [
                     'id' => (int) $item->getKey(),
                     'name' => (string) ($product?->name ?: $variant?->getDescription() ?: 'Product'),
-                    'option' => (string) ($variant?->getOption() ?: 'Standard license'),
+                    'option' => $product instanceof Product && $variant instanceof ProductVariant
+                        ? $product->variantDisplayName($variant)
+                        : 'Standard license',
                     'quantity' => (int) $item->quantity,
                     'total' => $item->total->format(),
                     'image' => $product?->coverUrl(),

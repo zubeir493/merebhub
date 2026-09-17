@@ -14,11 +14,28 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Lunar\Core\Facades\StorefrontSession;
+use Lunar\Core\Models\Concerns\HasUrls;
 use Lunar\Core\Models\Price;
 use Lunar\Core\Models\ProductVariant;
 
 class Product extends \Lunar\Core\Models\Product
 {
+    use HasUrls;
+
+    protected static function booted(): void
+    {
+        static::saved(function (Product $product): void {
+            $generator = config('lunar.urls.generator');
+
+            if ($generator === null) {
+                return;
+            }
+
+            $product->setRawAttributes($product->getAttributes(), true);
+            app($generator)->handle($product);
+        });
+    }
+
     protected $fillable = [
         'attribute_data',
         'public_id',
@@ -174,6 +191,18 @@ class Product extends \Lunar\Core\Models\Product
         return Storage::disk('public')->url($path);
     }
 
+    public function variantDisplayName(ProductVariant $variant): string
+    {
+        return static::displayVariantName($variant);
+    }
+
+    public static function displayVariantName(ProductVariant $variant): string
+    {
+        $name = trim((string) $variant->getAttribute('variant_name'));
+
+        return $name !== '' ? $name : ($variant->getOption() ?: 'Standard license');
+    }
+
     public function variantPresentationIcon(ProductVariant $variant): string
     {
         return match (Str::lower(trim((string) $variant->getAttribute('presentation_icon')))) {
@@ -190,9 +219,9 @@ class Product extends \Lunar\Core\Models\Product
         };
     }
 
-    public function getRouteKey(): mixed
+    public function getRouteKey(): string
     {
-        return $this->defaultUrl?->slug ?? $this->getKey();
+        return $this->defaultUrl?->slug ?? Str::slug($this->name);
     }
 
     public function scopePublished(Builder $query): Builder

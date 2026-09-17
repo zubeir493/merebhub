@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Domain\Fulfillment\Contracts\LicenseProvider;
 use App\Domain\Fulfillment\Providers\FakeKeygenLicenseProvider;
 use App\Domain\Fulfillment\Providers\KeygenLicenseProvider;
+use App\Filament\Admin\Extensions\OrderTableExtension;
 use App\Filament\Admin\Pages\IntegrationSettings;
 use App\Filament\Admin\Pages\KeygenLicenses;
 use App\Filament\Admin\Pages\KeygenPolicies;
@@ -50,6 +51,7 @@ use Lunar\Admin\Filament\Resources\CurrencyResource;
 use Lunar\Admin\Filament\Resources\CustomerGroupResource;
 use Lunar\Admin\Filament\Resources\LanguageResource;
 use Lunar\Admin\Filament\Resources\LocationResource;
+use Lunar\Admin\Filament\Resources\OrderResource\Pages\Components\OrderItemsTable;
 use Lunar\Admin\Filament\Resources\ProductOptionResource;
 use Lunar\Admin\Filament\Resources\ProductResource as LunarProductResource;
 use Lunar\Admin\Filament\Resources\ProductTypeResource;
@@ -60,6 +62,8 @@ use Lunar\Admin\Filament\Resources\TaxZoneResource;
 use Lunar\Admin\Support\Facades\LunarPanel;
 use Lunar\Core\Facades\CartSession;
 use Lunar\Core\Facades\Payments;
+use Lunar\Filament\Support\Facades\LunarFilament;
+use Lunar\Filament\Tables\Order\OrderTable;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -150,6 +154,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Payments::extend('chapa', fn ($app): ChapaPayment => $app->make(ChapaPayment::class));
+        LunarFilament::extensions([
+            OrderTable::class => new OrderTableExtension,
+            OrderItemsTable::class => new OrderTableExtension,
+        ]);
 
         Gate::policy(DownloadableAsset::class, DownloadableAssetPolicy::class);
         Gate::policy(Credential::class, CredentialPolicy::class);

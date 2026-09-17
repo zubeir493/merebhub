@@ -1,5 +1,6 @@
 <?php
 
+use App\Domain\Checkout\Validators\ValidateCartForOrderCreation;
 use Lunar\Core\Pipelines\Cart\ApplyDiscounts;
 use Lunar\Core\Pipelines\Cart\ApplyShipping;
 use Lunar\Core\Pipelines\Cart\Calculate;
@@ -11,7 +12,6 @@ use Lunar\Core\Pipelines\CartPrune\PruneAfter;
 use Lunar\Core\Pipelines\CartPrune\WhereNotMerged;
 use Lunar\Core\Pipelines\CartPrune\WithoutOrders;
 use Lunar\Core\Validation\Cart\ShippingOptionValidator;
-use Lunar\Core\Validation\Cart\ValidateCartForOrderCreation;
 use Lunar\Core\Validation\CartLine\CartLineAvailability;
 use Lunar\Core\Validation\CartLine\CartLineQuantity;
 use Lunar\Core\Validation\CartLine\CartLineStock;

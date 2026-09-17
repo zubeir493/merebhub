@@ -3,13 +3,14 @@
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
-use Lunar\Core\Models\Country;
+use Lunar\Core\Models\Order;
 
 beforeEach(function () {
     $this->seed();
+    config()->set('services.chapa.secret_key', 'test-secret');
 });
 
-test('checkout shows localized cart item names and creates the order', function () {
+test('checkout starts Chapa directly from the cart', function () {
     $user = User::query()->where('email', 'buyer@merebhub.test')->firstOrFail();
     $product = Product::published()->with(['defaultUrl', 'variants'])->firstOrFail();
 
@@ -19,10 +20,7 @@ test('checkout shows localized cart item names and creates the order', function 
         ])
         ->assertRedirect(route('products.show', $product));
 
-    $this->get(route('checkout.show'))
-        ->assertSuccessful()
-        ->assertSee($product->name)
-        ->assertDontSee('{"en":');
+    $this->get(route('checkout.show'))->assertRedirect(route('cart.index'));
 
     Http::fake([
         'https://api.chapa.co/v1/transaction/initialize' => Http::response([
@@ -31,40 +29,59 @@ test('checkout shows localized cart item names and creates the order', function 
         ]),
     ]);
 
-    $this->post(route('checkout.store'), [
-        'first_name' => 'Demo',
-        'last_name' => 'Buyer',
-        'contact_email' => $user->email,
-        'line_one' => 'Bole Road',
-        'city' => 'Addis Ababa',
-        'postcode' => '1000',
-        'country_id' => Country::query()->where('iso3', 'ETH')->firstOrFail()->id,
-        'payment_method' => 'chapa',
-    ])->assertRedirect();
+    $this->post(route('checkout.store'))->assertRedirect('https://checkout.chapa.co/test-payment');
 
     $this->assertDatabaseCount('lunar_orders', 1);
 });
 
-test('checkout requires an explicit payment method before creating an order', function (): void {
+test('headless checkout uses the account identity without billing fields', function (): void {
     $user = User::query()->where('email', 'buyer@merebhub.test')->firstOrFail();
     $product = Product::published()->with(['defaultUrl', 'variants'])->firstOrFail();
 
-    $this->actingAs($user)->postJson(route('cart.store', $product), [
+    $this->actingAs($user)->post(route('cart.store', $product), [
         'variant_id' => $product->variants->first()->id,
-    ])->assertSuccessful();
+    ])->assertRedirect();
 
-    $response = $this->actingAs($user)->post(route('checkout.store'), [
-        'first_name' => 'Demo',
-        'last_name' => 'Buyer',
-        'contact_email' => $user->email,
-        'line_one' => 'Bole Road',
-        'city' => 'Addis Ababa',
-        'postcode' => '1000',
-        'country_id' => Country::query()->where('iso3', 'ETH')->firstOrFail()->id,
+    Http::fake([
+        'https://api.chapa.co/v1/transaction/initialize' => Http::response([
+            'status' => 'success',
+            'data' => ['checkout_url' => 'https://checkout.chapa.co/test-payment'],
+        ]),
     ]);
 
-    $response->assertSessionHasErrors('payment_method');
-    $this->assertDatabaseCount('lunar_orders', 0);
+    $this->actingAs($user)
+        ->post(route('checkout.store'))
+        ->assertRedirect('https://checkout.chapa.co/test-payment');
+
+    $order = Order::query()->sole();
+
+    expect($order->billingAddress()->exists())->toBeFalse();
+    Http::assertSent(fn ($request): bool => $request['email'] === $user->email
+        && ! array_key_exists('line_one', $request->data())
+        && ! array_key_exists('phone_number', $request->data()));
+});
+
+test('checkout sends a normalized authenticated account email to Chapa', function (): void {
+    $user = User::query()->where('email', 'buyer@merebhub.test')->firstOrFail();
+    $user->update(['email' => 'Buyer@Example.com ']);
+    $product = Product::published()->with(['defaultUrl', 'variants'])->firstOrFail();
+
+    $this->actingAs($user)->post(route('cart.store', $product), [
+        'variant_id' => $product->variants->first()->id,
+    ])->assertRedirect();
+
+    Http::fake([
+        'https://api.chapa.co/v1/transaction/initialize' => Http::response([
+            'status' => 'success',
+            'data' => ['checkout_url' => 'https://checkout.chapa.co/test-payment'],
+        ]),
+    ]);
+
+    $this->actingAs($user)
+        ->post(route('checkout.store'))
+        ->assertRedirect('https://checkout.chapa.co/test-payment');
+
+    Http::assertSent(fn ($request): bool => $request['email'] === 'buyer@example.com');
 });
 
 test('adding a product to the cart returns JSON without redirecting', function (): void {
@@ -98,6 +115,22 @@ test('product variants render as visual radio choices with configurable presenta
 
     $this->get(route('products.show', $product))
         ->assertSee('/images/marketplace/ledgerly.webp');
+});
+
+test('the configured variant name is shown in product and cart presentation', function (): void {
+    $product = Product::published()->with(['defaultUrl', 'variants'])->firstOrFail();
+    $variant = $product->variants->firstOrFail();
+    $variant->update(['variant_name' => 'Professional license']);
+
+    $this->get(route('products.show', $product))
+        ->assertSuccessful()
+        ->assertSee('Professional license');
+
+    $this->postJson(route('cart.store', $product), [
+        'variant_id' => $variant->getKey(),
+    ])
+        ->assertSuccessful()
+        ->assertJsonPath('items.0.option', 'Professional license');
 });
 
 test('storefront keeps the footer at the bottom of the page layout', function (): void {

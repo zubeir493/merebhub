@@ -27,21 +27,29 @@ class LicenseProvisionedNotification extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         $entitlement = Entitlement::query()
-            ->with(['credential', 'product'])
+            ->with(['credential', 'product', 'orderLine.purchasable.product', 'fulfillmentUnit'])
             ->find($this->entitlementId);
 
         if ($entitlement === null || $entitlement->credential === null) {
+            if ($entitlement === null) {
+                return (new MailMessage)
+                    ->subject('Your MerebHub license is being prepared')
+                    ->greeting('Your purchase is confirmed')
+                    ->line('We are still preparing your license. You can find it in your MerebHub account shortly.')
+                    ->action('Open your licenses', route('account.purchases'));
+            }
+
             return (new MailMessage)
                 ->subject('Your MerebHub license is being prepared')
                 ->greeting('Your purchase is confirmed')
-                ->line('We are still preparing your license. You can find it in your MerebHub account shortly.')
+                ->line('We are still preparing your '.$entitlement->product?->name.' — '.$entitlement->variantDisplayName().' license. You can find it in your MerebHub account shortly.')
                 ->action('Open your licenses', route('account.purchases'));
         }
 
         return (new MailMessage)
             ->subject('Your MerebHub license is ready')
             ->greeting('Your license is ready')
-            ->line('Your license for '.($entitlement->product?->name ?? 'your purchased product').' is now available.')
+            ->line('Your license for '.($entitlement->product?->name ?? 'your purchased product').' — '.$entitlement->variantDisplayName().' is now available.')
             ->line('License key: '.$entitlement->credential->secret)
             ->action('View your licenses', route('account.purchases'))
             ->line('Keep this key private and do not share it publicly.');

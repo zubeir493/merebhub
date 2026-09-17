@@ -38,6 +38,7 @@ class IntegrationSettings extends Page implements HasForms
         $settings = app(IntegrationSettingsStore::class);
 
         $this->form->fill([
+            'chapa_public_key' => $settings->get('chapa', 'public_key', config('services.chapa.public_key')),
             'chapa_base_url' => $settings->get('chapa', 'base_url', config('services.chapa.base_url')),
             'keygen_url' => $settings->get('keygen', 'url', config('services.keygen.url')),
             'keygen_host_header' => $settings->get('keygen', 'host_header', config('services.keygen.host_header')),
@@ -54,6 +55,10 @@ class IntegrationSettings extends Page implements HasForms
                 Section::make('Chapa checkout')
                     ->description('These values are encrypted in the application database and are never sent to the storefront.')
                     ->schema([
+                        TextInput::make('chapa_public_key')
+                            ->label('Public key')
+                            ->helperText('Used by Chapa client-side integrations and kept here with the rest of the account credentials.')
+                            ->dehydrated(),
                         TextInput::make('chapa_secret_key')
                             ->label('Secret key')
                             ->password()
@@ -118,6 +123,7 @@ class IntegrationSettings extends Page implements HasForms
             $settings = app(IntegrationSettingsStore::class);
 
             foreach ([
+                'chapa_public_key' => ['chapa', 'public_key'],
                 'chapa_secret_key' => ['chapa', 'secret_key'],
                 'chapa_webhook_secret' => ['chapa', 'webhook_secret'],
                 'chapa_base_url' => ['chapa', 'base_url'],
@@ -129,7 +135,7 @@ class IntegrationSettings extends Page implements HasForms
                 'keygen_admin_password' => ['keygen', 'admin_password'],
                 'keygen_verify' => ['keygen', 'verify'],
             ] as $field => [$provider, $key]) {
-                if (in_array($field, ['chapa_secret_key', 'chapa_webhook_secret', 'keygen_api_token', 'keygen_admin_password'], true)
+                if (in_array($field, ['chapa_public_key', 'chapa_secret_key', 'chapa_webhook_secret', 'keygen_api_token', 'keygen_admin_password'], true)
                     && blank($data[$field] ?? null)) {
                     continue;
                 }

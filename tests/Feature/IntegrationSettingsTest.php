@@ -2,6 +2,7 @@
 
 use App\Filament\Admin\Pages\IntegrationSettings;
 use App\Integrations\Chapa\ChapaClient;
+use App\Integrations\Chapa\ChapaException;
 use App\Integrations\Keygen\KeygenClient;
 use App\Models\IntegrationSetting;
 use App\Models\Staff;
@@ -54,6 +55,7 @@ test('an administrator can save Chapa and Keygen settings from the admin panel',
 
     Livewire::test(IntegrationSettings::class)
         ->fillForm([
+            'chapa_public_key' => 'chapa-admin-public',
             'chapa_secret_key' => 'chapa-admin-secret',
             'chapa_webhook_secret' => 'chapa-webhook-secret',
             'chapa_base_url' => 'https://api.chapa.co/v1',
@@ -70,7 +72,24 @@ test('an administrator can save Chapa and Keygen settings from the admin panel',
 
     $settings = app(IntegrationSettingsStore::class);
 
-    expect($settings->get('chapa', 'secret_key'))->toBe('chapa-admin-secret')
+    expect($settings->get('chapa', 'public_key'))->toBe('chapa-admin-public')
+        ->and($settings->get('chapa', 'secret_key'))->toBe('chapa-admin-secret')
         ->and($settings->get('keygen', 'api_token'))->toBe('keygen-admin-token')
         ->and($settings->get('keygen', 'verify'))->toBe('0');
+});
+
+test('Chapa validation responses remain actionable and are not retried', function (): void {
+    config()->set('services.chapa.secret_key', 'test-secret');
+
+    Http::fake([
+        'https://api.chapa.co/v1/transaction/initialize' => Http::response([
+            'status' => 'failed',
+            'message' => ['Invalid API key', 'Check the configured project credentials'],
+        ], 401),
+    ]);
+
+    expect(fn (): array => (new ChapaClient)->initialize(['amount' => '10']))
+        ->toThrow(ChapaException::class, 'Invalid API key; Check the configured project credentials');
+
+    Http::assertSentCount(1);
 });

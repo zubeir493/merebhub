@@ -28,19 +28,23 @@ class ChapaPayment extends AbstractPayment
         }
 
         try {
-            $order->loadMissing(['billingAddress', 'currency']);
+            $order->loadMissing(['currency', 'user']);
             $transactionReference = 'mh_'.Str::lower($order->public_id.'_'.Str::random(12));
             $currency = $order->currency;
             $decimalPlaces = $currency?->decimal_places ?? 2;
             $factor = (int) ($currency?->factor ?? 100);
-            $address = $order->billingAddress;
+            $email = Str::lower(trim((string) ($order->user?->email ?? $this->data['contact_email'] ?? '')));
 
-            $payload = [
+            if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                throw new ChapaException('The account email is invalid.');
+            }
+
+            $payload = array_filter([
                 'amount' => number_format($order->total / $factor, $decimalPlaces, '.', ''),
                 'currency' => strtoupper((string) ($currency?->code ?? 'ETB')),
-                'email' => $this->data['contact_email'] ?? $address?->contact_email,
-                'first_name' => $this->data['first_name'] ?? $address?->first_name,
-                'last_name' => $this->data['last_name'] ?? $address?->last_name,
+                'email' => $email,
+                'first_name' => $this->data['first_name'] ?? null,
+                'last_name' => $this->data['last_name'] ?? null,
                 'tx_ref' => $transactionReference,
                 'callback_url' => route('payments.chapa.callback'),
                 'return_url' => route('payments.chapa.return', ['tx_ref' => $transactionReference]),
@@ -48,11 +52,7 @@ class ChapaPayment extends AbstractPayment
                     'title' => 'MerebHub',
                     'description' => 'MerebHub marketplace purchase',
                 ],
-            ];
-
-            if (filled($phoneNumber = $this->data['contact_phone'] ?? $address?->contact_phone)) {
-                $payload['phone_number'] = $phoneNumber;
-            }
+            ], static fn (mixed $value): bool => filled($value));
 
             $response = $this->client->initialize($payload);
 
@@ -79,10 +79,13 @@ class ChapaPayment extends AbstractPayment
             Log::warning('Chapa payment initialization failed.', [
                 'order_id' => $order->getKey(),
                 'exception' => $exception::class,
+                'message' => Str::limit($exception->getMessage(), 240),
             ]);
 
             return new PaymentAuthorize(
-                message: 'The payment service is temporarily unavailable. Please try again.',
+                message: $exception instanceof ChapaException
+                    ? $exception->getMessage()
+                    : 'The payment service is temporarily unavailable. Please try again.',
             );
         }
     }

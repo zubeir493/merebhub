@@ -14,7 +14,7 @@ class AccountController extends Controller
     {
         $orders = $request->user()->orders()
             ->whereNotNull('placed_at')
-            ->with('productLines')
+            ->with('productLines.purchasable.product')
             ->latest('placed_at')
             ->get();
 
@@ -27,6 +27,8 @@ class AccountController extends Controller
             ->with([
                 'credential',
                 'order',
+                'orderLine.purchasable.product',
+                'fulfillmentUnit',
                 'product.downloadableAssets' => fn (HasMany $query) => $query->where('scan_status', 'clean'),
             ])
             ->latest()

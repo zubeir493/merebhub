@@ -3,9 +3,12 @@
 namespace App\Domain\Billing\Actions;
 
 use App\Models\InvoiceSnapshot;
+use App\Models\Product;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use LogicException;
 use Lunar\Core\Models\Order;
+use Lunar\Core\Models\ProductVariant;
 
 class EnsureInvoiceSnapshotAction
 {
@@ -27,20 +30,29 @@ class EnsureInvoiceSnapshotAction
                 throw new LogicException('Only a placed customer order can have an invoice snapshot.');
             }
 
-            $lockedOrder->loadMissing(['billingAddress.country', 'currency', 'lines', 'user']);
+            $lockedOrder->loadMissing(['billingAddress.country', 'currency', 'lines.purchasable.product', 'user']);
             $currency = $lockedOrder->currency;
             $billingAddress = $lockedOrder->billingAddress;
-            $lineItems = $lockedOrder->lines->map(fn ($line): array => [
-                'description' => (string) $line->description,
-                'option' => $line->option,
-                'identifier' => $line->identifier,
-                'quantity' => (int) $line->quantity,
-                'unit_price' => (int) $line->unit_price,
-                'subtotal' => (int) $line->sub_total,
-                'discount_total' => (int) $line->discount_total,
-                'tax_total' => (int) $line->tax_total,
-                'total' => (int) $line->total,
-            ])->values()->all();
+            $name = Str::of((string) ($lockedOrder->user?->name ?? ''))->squish();
+            $firstName = $name->before(' ')->toString();
+            $lastName = $name->contains(' ') ? $name->after(' ')->toString() : '';
+            $lineItems = $lockedOrder->lines->map(function ($line): array {
+                $variant = $line->purchasable;
+
+                return [
+                    'description' => (string) $line->description,
+                    'option' => $variant instanceof ProductVariant
+                        ? Product::displayVariantName($variant)
+                        : $line->option,
+                    'identifier' => $line->identifier,
+                    'quantity' => (int) $line->quantity,
+                    'unit_price' => (int) $line->unit_price,
+                    'subtotal' => (int) $line->sub_total,
+                    'discount_total' => (int) $line->discount_total,
+                    'tax_total' => (int) $line->tax_total,
+                    'total' => (int) $line->total,
+                ];
+            })->values()->all();
 
             if ($lineItems === []) {
                 throw new LogicException('An invoice snapshot requires at least one order line.');
@@ -64,8 +76,8 @@ class EnsureInvoiceSnapshotAction
                 'shipping_total' => (int) $lockedOrder->shipping_total,
                 'total' => (int) $lockedOrder->total,
                 'billing_snapshot' => [
-                    'first_name' => $billingAddress?->first_name,
-                    'last_name' => $billingAddress?->last_name,
+                    'first_name' => $billingAddress?->first_name ?: $firstName,
+                    'last_name' => $billingAddress?->last_name ?: $lastName,
                     'company_name' => $billingAddress?->company_name,
                     'tax_identifier' => $billingAddress?->tax_identifier,
                     'contact_email' => $billingAddress?->contact_email ?? $lockedOrder->user?->email,

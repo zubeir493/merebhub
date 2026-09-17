@@ -30,6 +30,10 @@ class FulfillmentUnitsTable
                 TextColumn::make('product.name')
                     ->label('Product')
                     ->searchable(),
+                TextColumn::make('meta.variant_name')
+                    ->label('Variant')
+                    ->placeholder('Standard license')
+                    ->searchable(),
                 TextColumn::make('provider')
                     ->badge(),
                 TextColumn::make('status')

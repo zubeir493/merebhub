@@ -68,6 +68,9 @@ class CreateFulfillmentUnitsAction
                                 'keygen_product_id' => $mapping?->keygen_product_id,
                                 'keygen_policy_id' => $mapping?->keygen_policy_id,
                                 'license_mapping_id' => $mapping?->getKey(),
+                                'variant_name' => $variant instanceof ProductVariant
+                                    ? \App\Models\Product::displayVariantName($variant)
+                                    : null,
                             ],
                         ],
                     );

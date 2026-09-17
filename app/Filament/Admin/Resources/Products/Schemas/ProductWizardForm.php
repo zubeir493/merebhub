@@ -120,6 +120,7 @@ class ProductWizardForm
                             ->icon(Heroicon::OutlinedSquares2x2)
                             ->schema([
                                 Repeater::make('variants_data')
+                                    ->columns(2)
                                     ->label('Product variants')
                                     ->collapsible()
                                     ->addable(false)

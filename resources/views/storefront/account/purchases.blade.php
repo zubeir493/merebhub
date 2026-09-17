@@ -28,6 +28,8 @@
                         <div>
                             <h2 class="text-lg font-extrabold">{{ $purchase->product?->name ?? 'Digital product' }}</h2>
                             <p class="mt-1 text-sm text-zinc-600">
+                                Variant <span class="font-semibold text-zinc-800">{{ $purchase->variantDisplayName() }}</span>
+                                <span class="px-1 text-zinc-400" aria-hidden="true">·</span>
                                 Order <span class="font-mono font-semibold text-zinc-800">{{ $purchase->order?->reference ?? '—' }}</span>
                                 <span class="px-1 text-zinc-400" aria-hidden="true">·</span>
                                 {{ $purchase->created_at->format('M j, Y') }}

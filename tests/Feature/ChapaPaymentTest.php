@@ -4,7 +4,6 @@ use App\Models\InvoiceSnapshot;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
-use Lunar\Core\Models\Country;
 use Lunar\Core\Models\Order;
 
 beforeEach(function (): void {
@@ -30,16 +29,9 @@ function startChapaCheckout(): array
         ]),
     ]);
 
-    test()->actingAs($user)->post(route('checkout.store'), [
-        'first_name' => 'Demo',
-        'last_name' => 'Buyer',
-        'contact_email' => $user->email,
-        'line_one' => 'Bole Road',
-        'city' => 'Addis Ababa',
-        'postcode' => '1000',
-        'country_id' => Country::query()->where('iso3', 'ETH')->firstOrFail()->id,
-        'payment_method' => 'chapa',
-    ])->assertRedirect('https://checkout.chapa.co/test-payment');
+    test()->actingAs($user)
+        ->post(route('checkout.store'))
+        ->assertRedirect('https://checkout.chapa.co/test-payment');
 
     $order = Order::query()->latest('id')->firstOrFail();
 

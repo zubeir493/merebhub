@@ -5,6 +5,7 @@ use App\Domain\Merchants\Enums\MerchantMembershipStatus;
 use App\Domain\Merchants\Enums\MerchantStatus;
 use App\Filament\Admin\Resources\Products\Pages\CreateProduct as AdminCreateProduct;
 use App\Filament\Admin\Resources\Products\Pages\EditProduct as AdminEditProduct;
+use App\Filament\Admin\Resources\Products\ProductResource as AdminProductResource;
 use App\Filament\Merchant\Resources\Products\Pages\CreateProduct as MerchantCreateProduct;
 use App\Filament\Merchant\Resources\Products\Pages\EditProduct as MerchantEditProduct;
 use App\Models\Merchant;
@@ -78,6 +79,29 @@ test('staff can update a product whose translated values are hydrated as locale 
 
     expect($product->refresh()->name)->toBe('Updated product')
         ->and($product->description)->toBe('Updated description.');
+});
+
+test('Filament product edit URLs use numeric records while storefront URLs use slugs', function () {
+    $staff = FilamentStaff::forceCreate([
+        'first_name' => 'Catalog',
+        'last_name' => 'Admin',
+        'email' => 'catalog-route@example.test',
+        'password' => 'password',
+        'admin' => true,
+    ]);
+    $product = Product::factory()->create([
+        'name' => collect(['en' => 'Windows 11']),
+    ]);
+
+    Filament::setCurrentPanel(Filament::getPanel('lunar'));
+    Filament::bootCurrentPanel();
+    $this->actingAs($staff, 'staff');
+
+    $editUrl = AdminProductResource::getUrl('edit', ['record' => $product]);
+
+    expect($editUrl)->toEndWith('/admin/products/'.$product->getKey().'/edit');
+
+    $this->get($editUrl)->assertSuccessful();
 });
 
 test('a merchant can create a product with translated form values', function () {

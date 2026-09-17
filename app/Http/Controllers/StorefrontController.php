@@ -43,11 +43,9 @@ class StorefrontController extends Controller
 
     public function product(string $slug): View
     {
-        $productId = Url::query()
-            ->where('slug', $slug)
-            ->where('element_type', (new Product)->getMorphClass())
-            ->value('element_id');
-        $product = $this->products()->findOrFail($productId);
+        $product = $this->products()
+            ->whereHas('defaultUrl', fn (Builder $query): Builder => $query->where('slug', $slug))
+            ->firstOrFail();
         $wishlistItem = auth()->user()?->wishlistItems()
             ->where('product_id', $product->getKey())
             ->first();

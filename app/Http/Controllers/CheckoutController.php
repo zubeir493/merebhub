@@ -2,60 +2,40 @@
 
 namespace App\Http\Controllers;
 
-use App\Domain\Billing\Actions\EnsureInvoiceSnapshotAction;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Lunar\Core\Facades\CartSession;
 use Lunar\Core\Facades\Payments;
-use Lunar\Core\Models\Country;
 use Lunar\Core\Models\Customer;
 use Lunar\Core\Models\Order;
 
 class CheckoutController extends Controller
 {
-    public function show(Request $request): View|RedirectResponse
+    public function show(): RedirectResponse
     {
-        $cart = CartSession::current();
-
-        if (! $cart || $cart->lines->isEmpty()) {
-            return redirect()->route('cart.index');
-        }
-
-        $billingProfile = $request->user()->billingProfile()->first();
-
-        return view('storefront.checkout', [
-            'cart' => $cart,
-            'country' => Country::query()->where('iso3', $billingProfile?->country_iso3 ?? 'ETH')->firstOrFail(),
-            'billingProfile' => $billingProfile,
-            'user' => $request->user(),
-        ]);
+        return redirect()->route('cart.index');
     }
 
-    public function store(Request $request, EnsureInvoiceSnapshotAction $invoiceSnapshots): RedirectResponse
+    public function store(Request $request): RedirectResponse
     {
-        $validated = $request->validate([
-            'first_name' => ['required', 'string', 'max:255'],
-            'last_name' => ['nullable', 'string', 'max:255'],
-            'company_name' => ['nullable', 'string', 'max:255'],
-            'tax_identifier' => ['nullable', 'string', 'max:255'],
-            'contact_email' => ['required', 'email', 'max:255'],
-            'contact_phone' => ['nullable', 'string', 'max:60'],
-            'line_one' => ['required', 'string', 'max:255'],
-            'line_two' => ['nullable', 'string', 'max:255'],
-            'city' => ['required', 'string', 'max:255'],
-            'state' => ['nullable', 'string', 'max:255'],
-            'postcode' => ['required', 'string', 'max:50'],
-            'country_id' => ['required', 'integer', 'exists:lunar_countries,id'],
-            'payment_method' => ['required', 'string', 'in:chapa'],
-        ]);
         $cart = CartSession::current();
 
         abort_unless($cart && $cart->lines->isNotEmpty(), 404);
 
+        $name = Str::of($request->user()->name)->squish();
+        $email = Str::lower(trim((string) $request->user()->email));
+
+        if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return back()->withErrors([
+                'checkout' => 'Please update your account with a valid email address before checking out.',
+            ]);
+        }
+
         $customer = $request->user()->latestCustomer() ?? Customer::create([
-            'first_name' => $validated['first_name'],
-            'last_name' => $validated['last_name'] ?? '',
+            'first_name' => $name->before(' ')->toString(),
+            'last_name' => $name->contains(' ') ? $name->after(' ')->toString() : '',
         ]);
 
         if (! $customer->users()->whereKey($request->user()->getKey())->exists()) {
@@ -63,30 +43,23 @@ class CheckoutController extends Controller
         }
 
         $cart->setCustomer($customer);
-        $cart->setBillingAddress($validated);
-        $paymentDriver = $validated['payment_method'];
-        $payment = Payments::driver($paymentDriver)->withData($validated)->cart($cart)->authorize();
+        $payment = Payments::driver('chapa')->withData([
+            'contact_email' => $email,
+            'first_name' => $name->before(' ')->toString(),
+            'last_name' => $name->contains(' ') ? $name->after(' ')->toString() : '',
+        ])->cart($cart)->authorize();
 
         if (! $payment->success || ! $payment->orderId) {
             return back()->withErrors(['checkout' => $payment->message ?: 'The order could not be placed.']);
         }
 
-        if ($paymentDriver === 'chapa') {
-            $checkoutUrl = data_get(Order::query()->find($payment->orderId)?->meta, 'chapa.checkout_url');
+        $checkoutUrl = data_get(Order::query()->find($payment->orderId)?->meta, 'chapa.checkout_url');
 
-            if (blank($checkoutUrl)) {
-                return back()->withErrors(['checkout' => 'The payment checkout could not be started.']);
-            }
-
-            return redirect()->away($checkoutUrl);
+        if (blank($checkoutUrl)) {
+            return back()->withErrors(['checkout' => 'The payment checkout could not be started.']);
         }
 
-        $order = Order::query()->findOrFail($payment->orderId);
-        $invoiceSnapshots->handle($order);
-
-        CartSession::forget(delete: false);
-
-        return redirect()->route('checkout.complete', $payment->orderId);
+        return redirect()->away($checkoutUrl);
     }
 
     public function complete(Request $request, Order $order): View

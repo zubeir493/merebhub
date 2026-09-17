@@ -24,7 +24,8 @@
                             <td class="px-6 py-4">
                                 <div class="grid gap-1 text-sm font-semibold text-zinc-900">
                                     @foreach ($order->productLines as $line)
-                                        <span>{{ $line->description }} × {{ $line->quantity }}</span>
+                                        @php($variant = $line->purchasable)
+                                        <span>{{ $line->description }} · {{ $variant instanceof \Lunar\Core\Models\ProductVariant ? \App\Models\Product::displayVariantName($variant) : ($line->option ?: 'Standard license') }} × {{ $line->quantity }}</span>
                                     @endforeach
                                 </div>
                             </td>

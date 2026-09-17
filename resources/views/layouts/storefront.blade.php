@@ -60,7 +60,6 @@
                             <a href="{{ route('account.orders') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-gift class="size-4" /> Previous Orders</a>
                             <a href="{{ route('account.wishlist') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-heart class="size-4" /> Wishlist</a>
                             <a href="{{ route('account.invoices.index') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-document-text class="size-4" /> Invoices</a>
-                            <a href="{{ route('account.billing') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-credit-card class="size-4" /> Billing details</a>
                             <a href="{{ route('account.security') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-shield-check class="size-4" /> Security &amp; sessions</a>
                             <a href="{{ route('account.support.index') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-chat-bubble-left-right class="size-4" /> Support requests</a>
                             <a href="{{ route('account.settings') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-cog-6-tooth class="size-4" /> Account settings</a>
@@ -88,15 +87,18 @@
                     <x-heroicon-o-x-mark class="size-5" />
                 </button>
             </div>
-            <div data-mini-cart-items class="max-h-[min(55vh,28rem)] overflow-y-auto p-3"></div>
+            <div data-mini-cart-items class="max-h-[min(55vh,28rem)] overflow-y-auto"></div>
             <div class="border-t border-zinc-100 bg-zinc-50/70 p-4">
                 <div class="flex items-center justify-between text-sm">
                     <span class="font-semibold text-zinc-600">Total</span>
                     <strong data-mini-cart-total class="text-zinc-950"></strong>
                 </div>
-                <div class="mt-3 grid grid-cols-2 gap-2">
+                <div class="mt-3 grid grid-cols-1 gap-2">
                     <a href="{{ route('cart.index') }}" class="flex items-center justify-center rounded-lg border border-zinc-300 px-3 py-2.5 text-xs font-extrabold text-zinc-700 transition hover:bg-white">View cart</a>
-                    <a href="{{ route('checkout.show') }}" class="flex items-center justify-center rounded-lg bg-zinc-950 px-3 py-2.5 text-xs font-extrabold text-white transition hover:bg-teal-700">Checkout</a>
+                    <form method="POST" action="{{ route('checkout.store') }}">
+                        @csrf
+                        <button type="submit" class="flex w-full items-center justify-center rounded-lg bg-zinc-950 px-3 py-2.5 text-xs font-extrabold text-white transition hover:bg-teal-700">Checkout</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -145,7 +147,7 @@
             </div>
             <div><strong class="text-sm text-white">Marketplace</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('store.index') }}">Browse all</a><a href="{{ route('store.newarrivals') }}">New arrivals</a><a href="{{ route('store.deals') }}">Deals</a></div></div>
             <div><strong class="text-sm text-white">Developers</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('vendors.index') }}">Browse developers</a><a href="{{ route('store.index') }}">Browse software</a></div></div>
-            <div><strong class="text-sm text-white">Your account</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('account.purchases') }}">Purchases &amp; licenses</a><a href="{{ route('account.orders') }}">Previous orders</a><a href="{{ route('account.wishlist') }}">Wishlist</a><a href="{{ route('account.invoices.index') }}">Invoices</a><a href="{{ route('account.billing') }}">Billing details</a><a href="{{ route('account.security') }}">Security &amp; sessions</a><a href="{{ route('account.support.index') }}">Support requests</a><a href="{{ route('account.settings') }}">Settings</a><a href="{{ route('cart.index') }}">Cart</a></div></div>
+            <div><strong class="text-sm text-white">Your account</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('account.purchases') }}">Purchases &amp; licenses</a><a href="{{ route('account.orders') }}">Previous orders</a><a href="{{ route('account.wishlist') }}">Wishlist</a><a href="{{ route('account.invoices.index') }}">Invoices</a><a href="{{ route('account.security') }}">Security &amp; sessions</a><a href="{{ route('account.support.index') }}">Support requests</a><a href="{{ route('account.settings') }}">Settings</a><a href="{{ route('cart.index') }}">Cart</a></div></div>
         </div>
     </footer>
 

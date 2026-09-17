@@ -39,7 +39,7 @@ class EditProduct extends EditRecord
 
                 return [
                     'id' => $variant->getKey(),
-                    'name' => $variantMapping?->label ?: ($variant->sku ?: 'Variant'),
+                    'name' => $variant->variant_name ?: ($variantMapping?->label ?: ($variant->getOption() ?: 'Standard license')),
                     'sku' => $variant->sku,
                     'price' => $price ? $price->decimal('price', rounding: false) : null,
                     'compare_at_price' => $price?->list_price === null ? null : $price->decimal('list_price', rounding: false),

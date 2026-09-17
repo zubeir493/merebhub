@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Str;
 use Lunar\Core\Models\Order;
 use Lunar\Core\Models\OrderLine;
+use Lunar\Core\Models\ProductVariant;
 
 class Entitlement extends Model
 {
@@ -70,5 +71,15 @@ class Entitlement extends Model
     public function credential(): HasOne
     {
         return $this->hasOne(Credential::class);
+    }
+
+    public function variantDisplayName(): string
+    {
+        $variant = $this->orderLine?->purchasable;
+        if ($variant instanceof ProductVariant) {
+            return Product::displayVariantName($variant);
+        }
+
+        return trim((string) ($this->orderLine?->option ?: data_get($this->fulfillmentUnit?->meta, 'variant_name'))) ?: 'Standard license';
     }
 }

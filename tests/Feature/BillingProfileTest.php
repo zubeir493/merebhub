@@ -81,34 +81,15 @@ test('billing profiles are only available to authenticated customers', function 
     $this->get(route('account.billing'))->assertRedirect(route('login'));
 });
 
-test('saved billing details flow through checkout into the immutable invoice snapshot', function (): void {
+test('headless checkout creates an invoice snapshot from the account identity', function (): void {
     $customer = User::query()->where('email', 'buyer@merebhub.test')->firstOrFail();
     $product = Product::published()->with(['defaultUrl', 'variants'])->firstOrFail();
-    $customer->billingProfile()->create([
-        'billing_type' => 'business',
-        'company_name' => 'Acme Ethiopia PLC',
-        'tax_identifier' => 'TIN-7654321',
-        'first_name' => 'Mimi',
-        'last_name' => 'Tesfaye',
-        'contact_email' => $customer->email,
-        'contact_phone' => '+251911000000',
-        'line_one' => 'Bole Road',
-        'line_two' => 'Suite 3',
-        'city' => 'Addis Ababa',
-        'state' => 'Addis Ababa',
-        'postcode' => '1000',
-        'country_iso3' => 'ETH',
-    ]);
 
     $this->actingAs($customer)
         ->post(route('cart.store', $product), ['variant_id' => $product->variants->first()->id])
         ->assertRedirect(route('products.show', $product));
 
-    $this->get(route('checkout.show'))
-        ->assertSuccessful()
-        ->assertSee('Acme Ethiopia PLC')
-        ->assertSee('TIN-7654321')
-        ->assertSee('Suite 3');
+    $this->get(route('checkout.show'))->assertRedirect(route('cart.index'));
 
     Http::fake([
         'https://api.chapa.co/v1/transaction/initialize' => Http::response([
@@ -117,21 +98,7 @@ test('saved billing details flow through checkout into the immutable invoice sna
         ]),
     ]);
 
-    $this->post(route('checkout.store'), [
-        'first_name' => 'Mimi',
-        'last_name' => 'Tesfaye',
-        'company_name' => 'Acme Ethiopia PLC',
-        'tax_identifier' => 'TIN-7654321',
-        'contact_email' => $customer->email,
-        'contact_phone' => '+251911000000',
-        'line_one' => 'Bole Road',
-        'line_two' => 'Suite 3',
-        'city' => 'Addis Ababa',
-        'state' => 'Addis Ababa',
-        'postcode' => '1000',
-        'country_id' => Country::query()->where('iso3', 'ETH')->firstOrFail()->id,
-        'payment_method' => 'chapa',
-    ])->assertRedirect('https://checkout.chapa.co/test-payment');
+    $this->post(route('checkout.store'))->assertRedirect('https://checkout.chapa.co/test-payment');
 
     $order = Order::query()->sole();
     $transactionReference = (string) data_get($order->meta, 'chapa.tx_ref');
@@ -151,13 +118,20 @@ test('saved billing details flow through checkout into the immutable invoice sna
         ->assertRedirect(route('checkout.complete', $order));
 
     $order->refresh();
-    $billingAddress = $order->billingAddress()->firstOrFail();
     $snapshot = $order->user->invoiceSnapshots()->sole();
 
-    expect($billingAddress->company_name)->toBe('Acme Ethiopia PLC')
-        ->and($billingAddress->tax_identifier)->toBe('TIN-7654321')
-        ->and($billingAddress->line_two)->toBe('Suite 3')
-        ->and($snapshot->billing_snapshot['company_name'])->toBe('Acme Ethiopia PLC')
-        ->and($snapshot->billing_snapshot['tax_identifier'])->toBe('TIN-7654321')
-        ->and($snapshot->billing_snapshot['line_two'])->toBe('Suite 3');
+    expect($order->billingAddress()->exists())->toBeFalse()
+        ->and($snapshot->billing_snapshot['first_name'])->toBe('Demo')
+        ->and($snapshot->billing_snapshot['last_name'])->toBe('Buyer')
+        ->and($snapshot->billing_snapshot['contact_email'])->toBe($customer->email)
+        ->and($snapshot->billing_snapshot['line_one'])->toBeNull();
+});
+
+test('billing details are not shown in account navigation', function (): void {
+    $customer = User::query()->where('email', 'buyer@merebhub.test')->firstOrFail();
+
+    $this->actingAs($customer)
+        ->get(route('account.settings'))
+        ->assertSuccessful()
+        ->assertDontSee('Billing details');
 });

@@ -36,13 +36,13 @@ function renderMiniCart(payload) {
     }
 
     miniCartItems.innerHTML = items.map((item) => `
-        <a href="${escapeHtml(item.url)}" class="flex items-center gap-3 rounded-xl p-2 transition hover:bg-zinc-50">
+        <a href="${escapeHtml(item.url)}" class="flex items-center gap-3 p-2 transition hover:bg-zinc-50">
             <span class="grid size-14 shrink-0 place-items-center overflow-hidden rounded-lg bg-zinc-100 text-lg">
                 ${item.image ? `<img src="${escapeHtml(item.image)}" alt="" class="h-full w-full object-cover">` : '🧩'}
             </span>
             <span class="min-w-0 flex-1">
-                <span class="block truncate text-sm font-extrabold text-zinc-900">${escapeHtml(item.name)}</span>
-                <span class="mt-0.5 block truncate text-xs font-semibold text-zinc-500">${escapeHtml(item.option)} · ${item.quantity} × ${escapeHtml(item.unit_price)}</span>
+                <span class="block truncate text-sm font-extrabold text-zinc-900">${escapeHtml(item.option)}</span>
+                <span class="mt-0.5 block truncate text-xs font-semibold text-zinc-500">${item.quantity} × ${escapeHtml(item.unit_price)}</span>
             </span>
             <strong class="shrink-0 text-xs font-extrabold text-zinc-900">${escapeHtml(item.total)}</strong>
         </a>

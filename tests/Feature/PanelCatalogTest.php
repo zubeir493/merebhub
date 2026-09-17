@@ -2,6 +2,7 @@
 
 use App\Domain\Merchants\Enums\MerchantMembershipRole;
 use App\Domain\Merchants\Enums\MerchantMembershipStatus;
+use App\Filament\Admin\Extensions\OrderTableExtension;
 use App\Filament\Admin\Resources\FulfillmentUnits\FulfillmentUnitResource;
 use App\Filament\Admin\Resources\Products\ProductResource as AdminProductResource;
 use App\Filament\Merchant\Resources\Products\ProductResource as MerchantProductResource;
@@ -9,6 +10,8 @@ use App\Models\Merchant;
 use App\Models\Product;
 use App\Models\User;
 use Filament\Facades\Filament;
+use Lunar\Filament\Support\Facades\LunarFilament;
+use Lunar\Filament\Tables\Order\OrderTable;
 
 test('merchant panel registers a tenant-scoped product resource', function () {
     expect(Filament::getPanel('merchant')->getResources())
@@ -23,6 +26,12 @@ test('admin panel registers the catalog review resource', function () {
 test('admin panel registers the fulfillment recovery resource', function () {
     expect(Filament::getPanel('lunar')->getResources())
         ->toContain(FulfillmentUnitResource::class);
+});
+
+test('the admin order table registers license regeneration', function (): void {
+    expect(collect(LunarFilament::for(OrderTable::class))
+        ->first(fn (object $extension): bool => $extension instanceof OrderTableExtension))
+        ->toBeInstanceOf(OrderTableExtension::class);
 });
 
 test('merchant product resource excludes products from other merchants', function () {

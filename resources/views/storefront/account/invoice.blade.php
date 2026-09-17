@@ -15,23 +15,14 @@
                 <p class="mt-1 text-sm text-zinc-600">Order {{ $invoice->order->reference }} · {{ str($invoice->payment_status)->replace('_', ' ')->title() }}</p>
             </div>
             <div class="text-sm text-zinc-700 sm:text-right">
-                <h2 class="font-bold text-zinc-950">Billing details</h2>
+                <h2 class="font-bold text-zinc-950">Customer</h2>
                 @if ($invoice->billing_snapshot['company_name'])
                     <p class="mt-2 font-semibold">{{ $invoice->billing_snapshot['company_name'] }}</p>
                 @endif
-                <p class="mt-2">{{ trim(($invoice->billing_snapshot['first_name'] ?? '').' '.($invoice->billing_snapshot['last_name'] ?? '')) }}</p>
-                @if ($invoice->billing_snapshot['tax_identifier'])
-                    <p>Tax ID: {{ $invoice->billing_snapshot['tax_identifier'] }}</p>
-                @endif
+                <p class="{{ $invoice->billing_snapshot['company_name'] ? 'mt-1' : 'mt-2' }}">{{ trim(($invoice->billing_snapshot['first_name'] ?? '').' '.($invoice->billing_snapshot['last_name'] ?? '')) }}</p>
                 @if ($invoice->billing_snapshot['contact_email'])
                     <p>{{ $invoice->billing_snapshot['contact_email'] }}</p>
                 @endif
-                <p>{{ $invoice->billing_snapshot['line_one'] }}</p>
-                @if ($invoice->billing_snapshot['line_two'])
-                    <p>{{ $invoice->billing_snapshot['line_two'] }}</p>
-                @endif
-                <p>{{ collect([$invoice->billing_snapshot['city'], $invoice->billing_snapshot['state'], $invoice->billing_snapshot['postcode']])->filter()->implode(', ') }}</p>
-                <p>{{ $invoice->billing_snapshot['country_name'] ?? $invoice->billing_snapshot['country_iso3'] }}</p>
             </div>
         </header>
 

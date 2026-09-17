@@ -2,6 +2,7 @@
 
 use App\Domain\Fulfillment\Actions\CreateFulfillmentUnitsAction;
 use App\Domain\Fulfillment\Actions\ProvisionFulfillmentUnitAction;
+use App\Domain\Fulfillment\Actions\RegenerateOrderLicensesAction;
 use App\Domain\Fulfillment\Contracts\LicenseProvider;
 use App\Domain\Fulfillment\Enums\AssetScanStatus;
 use App\Domain\Fulfillment\Enums\FulfillmentUnitStatus;
@@ -115,6 +116,8 @@ test('a verified payment creates one idempotent entitlement through the fulfillm
 test('a provisioned license is emailed to the purchasing customer', function (): void {
     [$user, $order] = createPaidFulfillmentOrder();
     $unit = app(CreateFulfillmentUnitsAction::class)->handle($order)->firstOrFail();
+    $unit->load('product');
+    $variantName = $unit->meta['variant_name'];
     $provider = new FakeKeygenLicenseProvider;
     app()->instance(LicenseProvider::class, $provider);
     Notification::fake();
@@ -124,6 +127,10 @@ test('a provisioned license is emailed to the purchasing customer', function ():
     Notification::assertSentTo($user, LicenseProvisionedNotification::class, function (LicenseProvisionedNotification $notification) use ($unit): bool {
         return $notification->entitlementId === $unit->fresh()->entitlement?->getKey();
     });
+
+    $mail = (new LicenseProvisionedNotification($unit->fresh()->entitlement->getKey()))->toMail($user);
+
+    expect($mail->introLines)->toContain('Your license for '.$unit->product->name.' — '.$variantName.' is now available.');
 });
 
 test('an ambiguous provider create recovers without creating a second license', function (): void {
@@ -155,6 +162,28 @@ test('a provider failure records needs attention without failing the paid order'
         ->and($unit->fresh()->status)->toBe(FulfillmentUnitStatus::NeedsAttention)
         ->and(FulfillmentAttempt::query()->whereBelongsTo($unit)->value('status'))->toBe('failed');
     $this->assertDatabaseCount('entitlements', 0);
+});
+
+test('missing licenses can be regenerated from a paid order', function (): void {
+    [, $order] = createPaidFulfillmentOrder();
+    $unit = app(CreateFulfillmentUnitsAction::class)->handle($order)->firstOrFail();
+    $failedProvider = new FakeKeygenLicenseProvider;
+    $failedProvider->failedIdempotencyKeys[$unit->idempotency_key] = true;
+    app()->instance(LicenseProvider::class, $failedProvider);
+
+    expect(fn () => app(ProvisionFulfillmentUnitAction::class)->handle($unit))
+        ->toThrow(LicenseProviderException::class);
+
+    $recoveryProvider = new FakeKeygenLicenseProvider;
+    app()->instance(LicenseProvider::class, $recoveryProvider);
+
+    $result = app(RegenerateOrderLicensesAction::class)->handle($order);
+
+    expect($result['attempted'])->toBe(1)
+        ->and($result['succeeded'])->toBe(1)
+        ->and($result['failed'])->toBe([])
+        ->and(Entitlement::query()->count())->toBe(1)
+        ->and($unit->fresh()->status)->toBe(FulfillmentUnitStatus::Completed);
 });
 
 test('only an entitled customer can receive a signed download for a clean asset', function (): void {

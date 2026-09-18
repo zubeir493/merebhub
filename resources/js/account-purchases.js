@@ -21,6 +21,8 @@ const copyToClipboard = async (value) => {
     field.remove();
 };
 
+const credentialSecrets = new WeakMap();
+
 const showError = (message) => {
     const errorMessage = document.querySelector('[data-account-action-error]');
 
@@ -100,8 +102,8 @@ document.addEventListener('click', async (event) => {
     button.disabled = true;
 
     try {
-        if (button.dataset.licenseKey) {
-            await copyToClipboard(button.dataset.licenseKey);
+        if (credentialSecrets.has(button)) {
+            await copyToClipboard(credentialSecrets.get(button));
             setCopiedState(button);
 
             return;
@@ -126,16 +128,9 @@ document.addEventListener('click', async (event) => {
         const result = await response.json();
 
         if (isCredentialReveal) {
-            const output = button.closest('td')?.querySelector('[data-license-value]');
             const secret = result.credential.secret;
 
-            if (output) {
-                output.textContent = secret;
-                output.title = secret;
-                output.classList.add('break-all');
-            }
-
-            button.dataset.licenseKey = secret;
+            credentialSecrets.set(button, secret);
             button.removeAttribute('data-reveal-credential');
             button.setAttribute('data-copy-credential', '');
             button.setAttribute('aria-label', 'Copy license key');
@@ -145,7 +140,7 @@ document.addEventListener('click', async (event) => {
                 await copyToClipboard(secret);
                 setCopiedState(button);
             } catch {
-                showError('The license key was revealed but could not be copied automatically. Please copy it manually.');
+                showError('The license key could not be copied automatically. Please try again.');
             }
 
             return;

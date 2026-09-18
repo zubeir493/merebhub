@@ -64,6 +64,7 @@ test('a customer sees only their purchases and license records', function (): vo
         ->assertSee('data-mh-copy-license', false)
         ->assertSee('data-reveal-credential', false)
         ->assertSee('Offline .lic activation')
+        ->assertDontSee('data-license-key', false)
         ->assertDontSee('MH-TEST-LICENSE-KEY');
 });
 

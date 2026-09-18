@@ -45,10 +45,10 @@
                                 <td data-label="License key" class="max-w-xs px-5 py-4">
                                     @if ($purchase->credential && $purchase->status === 'active')
                                         @if (auth()->user()->hasVerifiedEmail())
-                                            <div class="flex w-fit min-w-0 items-center overflow-hidden rounded-md border border-zinc-200">
+                                            <div class="flex w-fit min-w-0 items-center border border-zinc-200  rounded-md overflow-hidden">
                                                 <span data-license-value class="min-w-0 truncate px-3 font-mono text-xs font-bold text-zinc-800" title="License key preview">{{ $licensePreview }}</span>
-                                                <button type="button" data-mh-copy-license data-reveal-credential="{{ route('credentials.reveal', $credentialId) }}" class="mh-license-copy-button" aria-label="Reveal and copy license key" title="Copy license key">
-                                                    <x-heroicon-o-clipboard-document class="size-5" aria-hidden="true" />
+                                                <button type="button" data-mh-copy-license data-reveal-credential="{{ route('credentials.reveal', $credentialId) }}" class="mh-license-copy-button" aria-label="Copy license key" title="Copy license key">
+                                                    <x-heroicon-o-document-duplicate class="size-5" aria-hidden="true" />
                                                 </button>
                                             </div>
                                         @else

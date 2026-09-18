@@ -22,6 +22,23 @@ class KeygenClient
     }
 
     /**
+     * Validate a license key without API authentication, scoped to a product,
+     * policy, and optionally a device fingerprint.
+     *
+     * @param  array<string, string>  $scope
+     * @return array<string, mixed>
+     */
+    public function validateLicenseKey(string $key, array $scope = []): array
+    {
+        return $this->decode($this->baseRequest()->post('/licenses/actions/validate-key', [
+            'meta' => [
+                'key' => $key,
+                'scope' => $scope,
+            ],
+        ]));
+    }
+
+    /**
      * @return array<int, array<string, mixed>>
      */
     public function products(int $limit = 100): array
@@ -188,6 +205,55 @@ class KeygenClient
 
         if (blank($contents)) {
             throw new KeygenException('Keygen returned an empty offline license file.');
+        }
+
+        return $contents;
+    }
+
+    /**
+     * Create a machine for a license key. The key is only used server-side by
+     * the activation portal and is never shipped to the desktop app by this
+     * method.
+     *
+     * @return array<string, mixed>
+     */
+    public function activateMachine(string $licenseId, string $fingerprint, string $name): array
+    {
+        return $this->decode($this->request()->post('/machines', [
+            'data' => [
+                'type' => 'machines',
+                'attributes' => [
+                    'fingerprint' => $fingerprint,
+                    'name' => $name,
+                    'platform' => 'Linux',
+                ],
+                'relationships' => [
+                    'license' => [
+                        'data' => [
+                            'type' => 'licenses',
+                            'id' => $licenseId,
+                        ],
+                    ],
+                ],
+            ],
+        ]));
+    }
+
+    public function checkoutMachineFile(string $machineId, int $ttl = 2592000): string
+    {
+        $response = $this->request()->get('/machines/'.rawurlencode($machineId).'/actions/check-out', [
+            'ttl' => $ttl,
+            'include' => 'license,license.product,license.policy',
+        ]);
+
+        if ($response->failed()) {
+            $this->decode($response);
+        }
+
+        $contents = $response->body();
+
+        if (blank($contents)) {
+            throw new KeygenException('Keygen returned an empty offline machine file.');
         }
 
         return $contents;

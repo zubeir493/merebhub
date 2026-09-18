@@ -8,6 +8,7 @@ use App\Http\Controllers\ChapaPaymentController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CredentialController;
 use App\Http\Controllers\DownloadController;
+use App\Http\Controllers\DemoOfflineActivationController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\OfflineLicenseController;
@@ -26,6 +27,10 @@ Route::get('/health', [HealthController::class, 'shallow'])->name('health');
 Route::middleware('auth')->get('/health/deep', [HealthController::class, 'deep'])->name('health.deep');
 Route::get('/app-shell', fn () => Inertia::render('PlatformShell'))->name('app-shell');
 Route::get('/search', [StorefrontController::class, 'search'])->name('search');
+Route::get('/offline-activation', [DemoOfflineActivationController::class, 'show'])->name('offline-activation.show');
+Route::post('/offline-activation', [DemoOfflineActivationController::class, 'generate'])
+    ->middleware('throttle:10,1')
+    ->name('offline-activation.generate');
 Route::prefix('store')->name('store.')->controller(StoreController::class)->group(function (): void {
     Route::get('/', 'index')->name('index');
     Route::get('/new-arrivals', 'newArrivals')->name('newarrivals');

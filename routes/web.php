@@ -7,8 +7,8 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\ChapaPaymentController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CredentialController;
-use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\DemoOfflineActivationController;
+use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\OfflineLicenseController;
@@ -72,6 +72,9 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/account/wishlist', [WishlistController::class, 'index'])->name('account.wishlist');
     Route::post('/account/wishlist/{slug}', [WishlistController::class, 'store'])->name('wishlist.store');
     Route::delete('/account/wishlist/{wishlistItem}', [WishlistController::class, 'destroy'])->name('wishlist.destroy');
+    Route::post('/apps/{slug}/reviews', [StorefrontController::class, 'storeReview'])
+        ->middleware('throttle:public-form')
+        ->name('products.reviews.store');
     Route::get('/account/purchases', [AccountController::class, 'purchases'])->name('account.purchases');
     Route::get('/account/invoices', [InvoiceController::class, 'index'])->name('account.invoices.index');
     Route::get('/account/invoices/{invoiceOrder}', [InvoiceController::class, 'show'])->name('account.invoices.show');

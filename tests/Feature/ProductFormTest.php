@@ -31,6 +31,7 @@ test('staff can create a product with scalar translated form values', function (
     $this->actingAs($staff, 'staff');
 
     Livewire::test(AdminCreateProduct::class)
+        ->assertSee('Gallery images')
         ->fillForm([
             'name' => 'Created product',
             'product_type_id' => $productType->getKey(),
@@ -119,6 +120,7 @@ test('a merchant can create a product with translated form values', function () 
     $this->actingAs($user);
 
     Livewire::test(MerchantCreateProduct::class)
+        ->assertSee('Gallery images')
         ->fillForm([
             'name' => 'Merchant product',
             'product_type_id' => $productType->getKey(),

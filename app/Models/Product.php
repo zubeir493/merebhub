@@ -15,6 +15,7 @@ use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Lunar\Core\Facades\StorefrontSession;
 use Lunar\Core\Models\Concerns\HasUrls;
+use Lunar\Core\Models\OrderLine;
 use Lunar\Core\Models\Price;
 use Lunar\Core\Models\ProductVariant;
 
@@ -133,6 +134,30 @@ class Product extends \Lunar\Core\Models\Product
     public function downloadableAssets(): HasMany
     {
         return $this->hasMany(DownloadableAsset::class);
+    }
+
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(ProductReview::class);
+    }
+
+    public function publishedReviews(): HasMany
+    {
+        return $this->reviews()->published();
+    }
+
+    public function wasPurchasedBy(User $user): bool
+    {
+        $variant = new ProductVariant;
+
+        return OrderLine::query()
+            ->where('purchasable_type', $variant->getMorphClass())
+            ->whereIn('purchasable_id', $this->variants()->select('id'))
+            ->whereHas('order', fn (Builder $query): Builder => $query
+                ->whereBelongsTo($user)
+                ->whereNotNull('placed_at')
+                ->whereNull('cancelled_at'))
+            ->exists();
     }
 
     public function scopeForMerchant(Builder $query, Merchant $merchant): Builder

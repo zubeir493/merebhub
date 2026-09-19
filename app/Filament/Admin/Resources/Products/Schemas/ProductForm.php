@@ -9,6 +9,7 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -107,6 +108,26 @@ class ProductForm
                             ->required()
                             ->formatStateUsing($toEnglish)
                             ->dehydrateStateUsing(fn (mixed $state): array => ['en' => $toEnglish($state)]),
+                    ]),
+                Section::make('Product gallery')
+                    ->description('Upload screenshots or product artwork. Drag to reorder; the first image is the cover.')
+                    ->schema([
+                        SpatieMediaLibraryFileUpload::make('product_gallery')
+                            ->label('Gallery images')
+                            ->collection(config('lunar.media.collection'))
+                            ->multiple()
+                            ->reorderable()
+                            ->image()
+                            ->imageEditor()
+                            ->imageEditorAspectRatios([
+                                null,
+                                '16:10',
+                                '4:3',
+                                '1:1',
+                            ])
+                            ->maxFiles(8)
+                            ->maxSize(10240)
+                            ->columnSpanFull(),
                     ]),
                 Section::make('Review and publication')
                     ->columns(2)

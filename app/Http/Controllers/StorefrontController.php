@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreProductReviewRequest;
 use App\Models\Author;
 use App\Models\Product;
+use App\Models\ProductReview;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -44,21 +48,58 @@ class StorefrontController extends Controller
     public function product(string $slug): View
     {
         $product = $this->products()
+            ->with('publishedReviews.user')
             ->whereHas('defaultUrl', fn (Builder $query): Builder => $query->where('slug', $slug))
             ->firstOrFail();
         $wishlistItem = auth()->user()?->wishlistItems()
             ->where('product_id', $product->getKey())
             ->first();
+        $galleryMedia = $product->media
+            ->where('collection_name', config('lunar.media.collection'))
+            ->sortBy('order_column')
+            ->values();
+        $user = auth()->user();
 
         return view('storefront.product', [
             'product' => $product,
+            'galleryMedia' => $galleryMedia,
             'wishlistItem' => $wishlistItem,
+            'canReview' => $user instanceof User && $product->wasPurchasedBy($user),
             'relatedProducts' => $this->products()
                 ->whereKeyNot($product)
                 ->catalogAttributeContains('attribute_data', $product->category)
                 ->take(4)
                 ->get(),
         ]);
+    }
+
+    public function storeReview(StoreProductReviewRequest $request, string $slug): RedirectResponse
+    {
+        $product = $this->products()
+            ->whereHas('defaultUrl', fn (Builder $query): Builder => $query->where('slug', $slug))
+            ->firstOrFail();
+        $user = $request->user();
+
+        if (! $user instanceof User || ! $product->wasPurchasedBy($user)) {
+            return redirect()
+                ->to(route('products.show', $product).'#product-reviews')
+                ->withErrors(['review' => 'You can only review a product after purchasing it with this account.']);
+        }
+
+        ProductReview::updateOrCreate(
+            [
+                'product_id' => $product->getKey(),
+                'user_id' => $user->getAuthIdentifier(),
+            ],
+            [
+                ...$request->validated(),
+                'status' => 'published',
+            ],
+        );
+
+        return redirect()
+            ->to(route('products.show', $product).'#product-reviews')
+            ->with('status', 'Your review has been published.');
     }
 
     public function vendors(Request $request): View

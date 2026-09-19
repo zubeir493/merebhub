@@ -1,4 +1,9 @@
 *.log
+*.md
+/.agents
+/.kiro
+/.impeccable
+/.github
 .DS_Store
 .env
 .env.backup

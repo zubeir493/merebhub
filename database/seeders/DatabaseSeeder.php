@@ -8,6 +8,7 @@ use App\Domain\Merchants\Enums\MerchantMembershipStatus;
 use App\Domain\Merchants\Enums\MerchantStatus;
 use App\Domain\Merchants\Enums\MerchantType;
 use App\Models\Author;
+use App\Models\Category;
 use App\Models\Merchant;
 use App\Models\MerchantMembership;
 use App\Models\Product;
@@ -16,6 +17,7 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Lunar\Core\FieldTypes\TranslatedText;
 use Lunar\Core\Models\Channel;
 use Lunar\Core\Models\Currency;
@@ -71,6 +73,7 @@ class DatabaseSeeder extends Seeder
                 ]]);
             });
 
+            $this->syncCategories();
             $this->assignDemoMerchantProduct();
 
             return;
@@ -157,6 +160,7 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
+        $this->syncCategories();
         $this->assignDemoMerchantProduct();
     }
 
@@ -224,5 +228,22 @@ class DatabaseSeeder extends Seeder
             'publication_state' => 'draft',
             'source_type' => 'local_developer',
         ])->save();
+    }
+
+    private function syncCategories(): void
+    {
+        Product::query()
+            ->get()
+            ->map(fn (Product $product): string => trim($product->category))
+            ->filter()
+            ->unique()
+            ->each(function (string $name): void {
+                Category::query()->firstOrCreate([
+                    'name' => $name,
+                ], [
+                    'slug' => Str::slug($name),
+                    'icon' => Category::defaultIconFor($name),
+                ]);
+            });
     }
 }

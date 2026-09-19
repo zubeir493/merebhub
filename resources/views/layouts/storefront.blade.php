@@ -13,7 +13,7 @@
 </head>
 <body class="flex min-h-screen flex-col bg-white font-sans text-zinc-900 antialiased">
     <header x-data="{ mobileOpen: false, accountOpen: false }" class="sticky top-0 z-40 border-b border-zinc-200 bg-white/95 backdrop-blur">
-        <div class="mx-auto flex h-18 max-w-[1500px] items-center justify-between gap-5 px-5 lg:px-8">
+        <div class="mx-auto flex h-18 max-w-[1400px] items-center justify-between gap-5 px-5 lg:px-8">
             <button @click="mobileOpen = ! mobileOpen" class="grid size-10 place-items-center lg:hidden" aria-label="Toggle menu">
                 <x-heroicon-o-bars-3 class="size-6" />
             </button>
@@ -39,9 +39,9 @@
                 <a href="{{ route('cart.index') }}" data-mini-cart-toggle class="relative grid size-10 place-items-center rounded-lg hover:bg-zinc-100" aria-label="Cart" aria-haspopup="dialog" aria-expanded="false" title="Cart">
                     <x-heroicon-o-shopping-cart class="size-5" />
                     @if ($headerCartCount)
-                        <span data-cart-count class="absolute right-0 top-0 grid size-4 place-items-center rounded-full bg-teal-500 text-[9px] text-zinc-950" aria-label="{{ $headerCartCount }} {{ Str::plural('item type', $headerCartCount) }} in cart">{{ $headerCartCount }}</span>
+                        <span data-cart-count class="absolute right-0 top-0 grid size-4 place-items-center rounded-full bg-teal-500 text-[9px] text-teal-950" aria-label="{{ $headerCartCount }} {{ Str::plural('item type', $headerCartCount) }} in cart">{{ $headerCartCount }}</span>
                     @else
-                        <span data-cart-count class="absolute right-0 top-0 hidden size-4 place-items-center rounded-full bg-teal-500 text-[9px] text-zinc-950"></span>
+                        <span data-cart-count class="absolute right-0 top-0 hidden size-4 place-items-center rounded-full bg-teal-500 text-[9px] text-teal-950"></span>
                     @endif
                 </a>
                 @auth
@@ -136,18 +136,64 @@
 
     <main class="flex-1">@yield('content')</main>
 
-    <footer class="mt-auto border-t border-zinc-200 bg-zinc-950 text-zinc-300">
-        <div class="mx-auto grid max-w-[1500px] gap-8 px-5 py-10 sm:grid-cols-2 lg:grid-cols-4 lg:px-8">
-            <div>
-                <div class="flex items-center gap-2 text-white">
-                    <img src="/images/marketplace/logo.svg" alt="" width="32" height="32" class="h-8 w-8">
-                    <strong>MerebHub</strong>
+    <footer class="mt-auto relative isolate overflow-hidden border-t border-zinc-800 bg-zinc-950 text-zinc-300">
+        <x-ambient-lines variant="dark" class="absolute -right-24 -top-56 -z-10 h-[42rem] w-[min(68vw,58rem)] opacity-75" />
+        <div class="mx-auto max-w-[1400px] px-5 lg:px-8">
+            <div class="grid gap-10 border-b border-white/10 py-12 lg:grid-cols-[minmax(0,1fr)_minmax(22rem,.7fr)] lg:items-end lg:py-16">
+                <div>
+                    <div class="flex items-center gap-2.5 text-white">
+                        <img src="/images/marketplace/logo.svg" alt="" width="32" height="32" class="size-8">
+                        <strong class="text-lg">MerebHub</strong>
+                    </div>
+                    <p class="mt-8 max-w-[17ch] text-4xl font-extrabold leading-[.98] tracking-[-0.035em] text-white sm:text-5xl">Make room for better tools.</p>
                 </div>
-                <p class="mt-4 text-sm leading-6 text-zinc-400">Independent Ethiopian digital products, reviewed and ready to use.</p>
+                <div class="lg:justify-self-end">
+                    <p class="max-w-lg text-sm leading-7 text-zinc-400">A focused marketplace for discovering and owning independent Ethiopian software—with clear pricing, trusted publishers, and purchases kept in one place.</p>
+                    <div class="mt-7 flex flex-wrap gap-3">
+                        <a href="{{ route('store.index') }}" class="group inline-flex items-center gap-2 rounded-lg bg-teal-300 px-4 py-3 text-sm font-extrabold text-teal-950 transition hover:bg-teal-200">Browse marketplace <x-heroicon-o-arrow-up-right class="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" /></a>
+                        <a href="{{ route('vendors.index') }}" class="inline-flex items-center gap-2 rounded-lg border border-white/15 px-4 py-3 text-sm font-extrabold text-white transition hover:border-teal-300/60 hover:text-teal-200">Meet developers</a>
+                    </div>
+                </div>
             </div>
-            <div><strong class="text-sm text-white">Marketplace</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('store.index') }}">Browse all</a><a href="{{ route('store.newarrivals') }}">New arrivals</a><a href="{{ route('store.deals') }}">Deals</a></div></div>
-            <div><strong class="text-sm text-white">Developers</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('vendors.index') }}">Browse developers</a><a href="{{ route('store.index') }}">Browse software</a></div></div>
-            <div><strong class="text-sm text-white">Your account</strong><div class="mt-3 grid gap-2 text-sm"><a href="{{ route('account.purchases') }}">Purchases &amp; licenses</a><a href="{{ route('account.orders') }}">Previous orders</a><a href="{{ route('account.wishlist') }}">Wishlist</a><a href="{{ route('account.invoices.index') }}">Invoices</a><a href="{{ route('account.security') }}">Security &amp; sessions</a><a href="{{ route('account.support.index') }}">Support requests</a><a href="{{ route('account.settings') }}">Settings</a><a href="{{ route('cart.index') }}">Cart</a></div></div>
+
+            <div class="grid gap-10 border-b border-white/10 py-12 sm:grid-cols-2 lg:grid-cols-[1.35fr_.8fr_.8fr_.8fr]">
+                <div class="max-w-xs">
+                    <span class="text-xs font-extrabold uppercase tracking-[0.16em] text-teal-300">Built for discovery</span>
+                    <p class="mt-4 text-sm leading-7 text-zinc-400">Find practical tools from local makers and teams building for work that happens here.</p>
+                    <span class="mt-6 inline-flex items-center gap-2 text-xs font-bold text-zinc-500"><span class="size-1.5 rounded-full bg-teal-300"></span> Independent software · ETB checkout</span>
+                </div>
+                <div>
+                    <strong class="text-sm text-white">Discover</strong>
+                    <div class="mt-4 grid gap-3 text-sm text-zinc-400">
+                        <a href="{{ route('store.index') }}" class="transition hover:text-white">Browse all</a>
+                        <a href="{{ route('store.newarrivals') }}" class="transition hover:text-white">New arrivals</a>
+                        <a href="{{ route('store.bestsellers') }}" class="transition hover:text-white">Best sellers</a>
+                        <a href="{{ route('store.deals') }}" class="transition hover:text-white">Deals</a>
+                    </div>
+                </div>
+                <div>
+                    <strong class="text-sm text-white">Community</strong>
+                    <div class="mt-4 grid gap-3 text-sm text-zinc-400">
+                        <a href="{{ route('vendors.index') }}" class="transition hover:text-white">Meet developers</a>
+                        <a href="{{ route('home') }}" class="transition hover:text-white">About MerebHub</a>
+                    </div>
+                </div>
+                <div>
+                    <strong class="text-sm text-white">Your account</strong>
+                    <div class="mt-4 grid gap-3 text-sm text-zinc-400">
+                        <a href="{{ route('account.purchases') }}" class="transition hover:text-white">Purchases &amp; licenses</a>
+                        <a href="{{ route('account.orders') }}" class="transition hover:text-white">Previous orders</a>
+                        <a href="{{ route('account.support.index') }}" class="transition hover:text-white">Support requests</a>
+                        <a href="{{ route('account.settings') }}" class="transition hover:text-white">Settings</a>
+                        <a href="{{ route('cart.index') }}" class="transition hover:text-white">Cart</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-3 py-6 text-xs font-medium text-zinc-500 sm:flex-row sm:items-center sm:justify-between">
+                <span>&copy; {{ now()->year }} MerebHub. Built for Ethiopian software.</span>
+                <span class="flex items-center gap-2"><span class="size-1.5 rounded-full bg-teal-400"></span> Digital products · Secure checkout · Addis Ababa</span>
+            </div>
         </div>
     </footer>
 

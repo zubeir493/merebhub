@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Support\Str;
 
@@ -12,7 +13,18 @@ test('the existing storefront renders Lunar catalog products', function () {
 
     $this->get(route('home'))
         ->assertSuccessful()
-        ->assertSee($product->name);
+        ->assertSee($product->name)
+        ->assertSee('Find the software worth keeping.')
+        ->assertSee('Popular right now')
+        ->assertSee('Built here doesn’t mean built small.')
+        ->assertSee(route('store.index'));
+});
+
+test('storefront categories resolve their configured outline icon', function (): void {
+    $category = Category::query()->where('name', 'Business')->firstOrFail();
+
+    expect($category->icon)->toBe('briefcase')
+        ->and($category->iconComponent())->toBe('heroicon-o-briefcase');
 });
 
 test('a Lunar product detail page renders its price and publisher', function () {

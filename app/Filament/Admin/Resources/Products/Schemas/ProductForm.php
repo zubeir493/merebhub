@@ -4,7 +4,7 @@ namespace App\Filament\Admin\Resources\Products\Schemas;
 
 use App\Filament\Admin\Resources\Products\ProductResource;
 use App\Integrations\Keygen\KeygenClient;
-use App\Models\Product;
+use App\Models\Category;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
@@ -53,14 +53,7 @@ class ProductForm
                             ->label('Category')
                             ->options(fn (): array => self::categoryOptions())
                             ->searchable()
-                            ->preload()
-                            ->createOptionForm([
-                                TextInput::make('name')
-                                    ->label('Category name')
-                                    ->required()
-                                    ->maxLength(100),
-                            ])
-                            ->createOptionUsing(fn (array $data): string => trim((string) $data['name'])),
+                            ->preload(),
                         TextInput::make('default_price')
                             ->label('Starting price')
                             ->numeric()
@@ -348,14 +341,7 @@ class ProductForm
     /** @return array<string, string> */
     private static function categoryOptions(): array
     {
-        return Product::query()
-            ->get()
-            ->map(fn (Product $product): string => $product->category)
-            ->filter()
-            ->unique()
-            ->sort()
-            ->mapWithKeys(fn (string $category): array => [$category => $category])
-            ->all();
+        return Category::query()->orderBy('name')->pluck('name', 'name')->all();
     }
 
     /** @return array<string, string> */

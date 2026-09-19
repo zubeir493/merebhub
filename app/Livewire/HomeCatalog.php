@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
@@ -55,7 +56,7 @@ class HomeCatalog extends Component
                 ->take(4),
             'deals' => $allProducts->filter(fn (Product $product): bool => $product->compare_at_price !== null)->take(5),
             'topProducts' => $allProducts->sortByDesc('rating')->take(9),
-            'categories' => $allProducts->pluck('category')->filter()->unique()->sort()->values(),
+            'categories' => Category::query()->orderBy('name')->get(),
             'platforms' => $allProducts->flatMap->platforms->unique('slug')->sortBy('name')->values(),
         ]);
     }

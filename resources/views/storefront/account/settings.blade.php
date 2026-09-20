@@ -1,12 +1,12 @@
 @extends('storefront.account.layout')
 
 @section('account-content')
-    <header class="mb-8">
-        <h1 class="mt-2 text-4xl font-extrabold tracking-tight">Account Settings</h1>
-        <p class="mt-2 text-zinc-600">Manage your profile, email, and password.</p>
+    <header class="account-page-header">
+        <h1 class="account-page-title">Account settings</h1>
+        <p class="account-page-description">Manage your profile, email, and password.</p>
     </header>
 
-    <form method="POST" action="{{ route('account.settings.update') }}" class="bg-white rounded-2xl border border-zinc-200 p-6 sm:p-8 shadow-sm">
+    <form method="POST" action="{{ route('account.settings.update') }}" class="account-form-surface">
         @csrf
         @method('PATCH')
 
@@ -30,9 +30,9 @@
                 </div>
             </section>
 
-            <section class="pt-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-lg font-semibold text-zinc-900">Password</h2>
+            <section class="border-t border-zinc-200 pt-6">
+                <div class="mb-4 flex items-center justify-between">
+                    <h2 class="text-lg font-bold text-zinc-900">Password</h2>
                 </div>
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div>

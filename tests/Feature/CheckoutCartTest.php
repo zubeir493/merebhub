@@ -156,7 +156,7 @@ test('the configured variant name is shown in product and cart presentation', fu
 test('storefront keeps the footer at the bottom of the page layout', function (): void {
     $this->get(route('home'))
         ->assertSuccessful()
-        ->assertSee('<body class="flex min-h-screen flex-col', false)
+        ->assertSee('<body data-public-shell class="flex min-h-screen flex-col', false)
         ->assertSee('<main class="flex-1">', false)
-        ->assertSee('<footer class="mt-auto', false);
+        ->assertSee('<footer class="relative isolate mt-auto', false);
 });

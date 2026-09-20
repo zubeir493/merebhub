@@ -8,6 +8,7 @@ use App\Filament\Admin\Resources\Products\Pages\EditProduct as AdminEditProduct;
 use App\Filament\Admin\Resources\Products\ProductResource as AdminProductResource;
 use App\Filament\Merchant\Resources\Products\Pages\CreateProduct as MerchantCreateProduct;
 use App\Filament\Merchant\Resources\Products\Pages\EditProduct as MerchantEditProduct;
+use App\Models\Category;
 use App\Models\Merchant;
 use App\Models\Product;
 use App\Models\User;
@@ -60,6 +61,7 @@ test('staff can update a product whose translated values are hydrated as locale 
         'password' => 'password',
         'admin' => true,
     ]);
+    Category::query()->create(['name' => 'Software']);
     $product = Product::factory()->create([
         'name' => collect(['en' => 'Original product']),
         'description' => collect(['en' => 'Original description']),

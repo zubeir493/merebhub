@@ -1,10 +1,25 @@
 <?php
 
 use App\Models\MerchantApplication;
+use App\Models\Product;
+use App\Models\ProductReview;
 use App\Models\User;
 use App\Notifications\ContactMessageReceivedNotification;
 use Illuminate\Notifications\AnonymousNotifiable;
 use Illuminate\Support\Facades\Notification;
+
+test('public editorial pages share the storefront shell and page header', function (string $route) {
+    $this->get(route($route))
+        ->assertSuccessful()
+        ->assertSee('data-public-shell', false)
+        ->assertSee('data-public-page-header', false);
+})->with([
+    'home' => 'home',
+    'store' => 'store.index',
+    'developers' => 'developers.index',
+    'contact' => 'contact.index',
+    'developer directory' => 'vendors.index',
+]);
 
 test('public navigation contains the same destinations on desktop and mobile', function () {
     $response = $this->get(route('developers.index'));
@@ -17,6 +32,42 @@ test('public navigation contains the same destinations on desktop and mobile', f
         ->assertSee(route('store.index'))
         ->assertSee(route('developers.index'))
         ->assertSee(route('contact.index'));
+});
+
+test('home page includes the layered marketplace sections', function () {
+    $this->get(route('home'))
+        ->assertSuccessful()
+        ->assertSee('data-home-local-build', false)
+        ->assertSee('Built here doesn’t mean built small.')
+        ->assertSee('data-home-marketplace-cta', false)
+        ->assertSee('Your next essential tool is already here.');
+});
+
+test('home page hero uses featured products and published customer ratings', function () {
+    $this->seed();
+    Product::query()->get()->each(fn (Product $product) => $product->setFeatured(false));
+    $product = Product::published()->with('defaultUrl')->firstOrFail();
+    $product->setFeatured(true);
+    $reviewer = User::factory()->create();
+    ProductReview::query()->create([
+        'product_id' => $product->getKey(),
+        'user_id' => $reviewer->getKey(),
+        'rating' => 3,
+        'body' => 'A solid product with room to grow.',
+        'status' => 'published',
+    ]);
+    ProductReview::query()->create([
+        'product_id' => $product->getKey(),
+        'user_id' => User::factory()->create()->getKey(),
+        'rating' => 5,
+        'body' => 'A polished product that works very well.',
+        'status' => 'published',
+    ]);
+
+    $this->get(route('home'))
+        ->assertSee('Featured products')
+        ->assertSee($product->name)
+        ->assertSee('4.0 rating');
 });
 
 test('developer and contact pages render their public forms', function (string $route, string $heading, string $action) {

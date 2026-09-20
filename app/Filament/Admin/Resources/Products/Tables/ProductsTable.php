@@ -14,6 +14,7 @@ use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Lunar\Core\Models\Staff;
@@ -32,6 +33,15 @@ class ProductsTable
                     ->label('Merchant')
                     ->searchable()
                     ->sortable(),
+                ToggleColumn::make('featured')
+                    ->label('Featured')
+                    ->getStateUsing(fn (Product $record): bool => $record->isFeatured())
+                    ->updateStateUsing(function (Product $record, bool $state): bool {
+                        $record->setFeatured($state);
+
+                        return $state;
+                    })
+                    ->disabled(fn (Product $record): bool => ! ProductResource::canEdit($record)),
                 TextColumn::make('publication_state')
                     ->label('Review state')
                     ->badge()

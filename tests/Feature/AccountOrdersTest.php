@@ -50,7 +50,8 @@ test('customers can view completed orders', function () {
         ->assertSuccessful()
         ->assertSee('Paid')
         ->assertSee('ETB')
-        ->assertSee('mh-account-mobile-nav', false)
+        ->assertSee('data-account-route-select', false)
+        ->assertSee('data-account-content', false)
         ->assertSee('Previous orders');
 
     expect($order->lines()->firstOrFail()->option)

@@ -1,13 +1,13 @@
 @extends('storefront.account.layout')
 
 @section('account-content')
-    <header class="mb-8">
-        <h1 class="text-4xl font-extrabold tracking-tight">Wishlist</h1>
-        <p class="mt-2 text-zinc-600">Save software you want to revisit on any device.</p>
+    <header class="account-page-header">
+        <h1 class="account-page-title">Wishlist</h1>
+        <p class="account-page-description">Save software you want to revisit on any device.</p>
     </header>
 
     @if ($items->isEmpty())
-        <section class="rounded-2xl border border-zinc-200 bg-zinc-50 px-6 py-16 text-center">
+        <section class="account-empty-state">
             <x-heroicon-o-heart class="mx-auto size-12 text-zinc-400" />
             <h2 class="mt-4 text-lg font-semibold">Your wishlist is empty</h2>
             <p class="mt-2 text-sm text-zinc-600">Save products while browsing and they will stay with your account.</p>
@@ -16,7 +16,7 @@
     @else
         <div class="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
             @foreach ($items as $item)
-                <article class="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+                <article class="overflow-hidden border border-zinc-200 bg-white">
                     <a href="{{ route('products.show', $item->product) }}" class="block">
                         <div class="aspect-[16/10] overflow-hidden bg-zinc-100">
                             @if ($item->product->coverUrl())

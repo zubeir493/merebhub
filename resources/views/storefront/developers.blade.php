@@ -1,17 +1,16 @@
 @extends('layouts.storefront')
 
 @section('content')
-    <section class="relative isolate overflow-hidden bg-zinc-50">
-        <x-ambient-lines class="absolute -right-20 -top-28 -z-10 h-[40rem] w-[min(64vw,56rem)] opacity-70" />
-        <div class="mx-auto grid max-w-[1400px] gap-10 px-5 py-16 lg:grid-cols-12 lg:items-end lg:px-8 lg:py-24">
+    <section data-public-page-header class="public-page-header">
+        <div class="mx-auto grid max-w-[1400px] gap-10 px-5 py-14 sm:py-16 lg:grid-cols-12 lg:items-end lg:px-8 lg:py-20">
             <div class="lg:col-span-8">
-                <h1 class="max-w-[11ch] text-[clamp(3.4rem,7vw,6rem)] font-extrabold leading-[.92] tracking-[-0.04em] text-zinc-950 text-balance">Your software deserves a market.</h1>
+                <h1 class="public-page-title">Your software deserves a market.</h1>
             </div>
             <div class="lg:col-span-4 lg:pb-1">
-                <p class="max-w-md text-base font-medium leading-8 text-zinc-600 text-pretty">MerebHub brings Ethiopian software into one focused marketplace—so customers can discover it, understand it, and buy it with confidence.</p>
+                <p class="public-lede">MerebHub brings Ethiopian software into one focused marketplace—so customers can discover it, understand it, and buy it with confidence.</p>
                 <div class="mt-7 flex flex-wrap gap-3">
                     <a href="#apply" class="btn-dark group">Start an application <x-heroicon-o-arrow-down class="size-4 transition-transform group-hover:translate-y-0.5" /></a>
-                    <a href="{{ route('vendors.index') }}" class="inline-flex min-h-11 items-center gap-2 rounded-lg px-4 text-sm font-extrabold text-teal-700 transition hover:bg-teal-50">Meet current developers <x-heroicon-o-arrow-up-right class="size-4" /></a>
+                    <a href="{{ route('vendors.index') }}" class="editorial-link">Meet current developers <x-heroicon-o-arrow-up-right class="size-4" /></a>
                 </div>
             </div>
         </div>
@@ -20,7 +19,7 @@
     <section class="mx-auto max-w-[1400px] px-5 py-16 lg:px-8 lg:py-24">
         <div class="grid gap-12 lg:grid-cols-12">
             <div class="lg:col-span-4">
-                <h2 class="max-w-sm text-4xl font-extrabold leading-[1.02] tracking-[-0.03em] text-zinc-950 text-balance">A direct path from product to shelf.</h2>
+                <h2 class="public-section-title max-w-sm">A direct path from product to shelf.</h2>
                 <p class="mt-5 max-w-md text-sm font-medium leading-7 text-zinc-600">We start with the product itself: what it solves, who it is for, and whether customers can use it reliably.</p>
             </div>
             <div class="lg:col-span-8">
@@ -45,11 +44,10 @@
         </div>
     </section>
 
-    <section class="relative isolate overflow-hidden bg-zinc-950 text-white">
-        <x-ambient-lines variant="dark" class="absolute -right-20 -top-52 -z-10 h-[46rem] w-[min(70vw,60rem)] opacity-80" />
+    <section class="bg-zinc-950 text-white">
         <div class="mx-auto grid max-w-[1400px] gap-12 px-5 py-16 lg:grid-cols-12 lg:px-8 lg:py-24">
             <div class="lg:col-span-7">
-                <h2 class="max-w-[13ch] text-4xl font-extrabold leading-[.98] tracking-[-0.035em] text-balance sm:text-6xl">You keep building. We make it easier to discover and buy.</h2>
+                <h2 class="max-w-[13ch] text-5xl font-extrabold leading-[.92] tracking-[-0.05em] text-balance sm:text-6xl">You keep building. We make it easier to discover and buy.</h2>
             </div>
             <div class="grid gap-6 sm:grid-cols-2 lg:col-span-5 lg:content-end">
                 <div>
@@ -70,13 +68,13 @@
         <div class="mx-auto grid max-w-[1400px] gap-12 px-5 py-16 lg:grid-cols-12 lg:px-8 lg:py-24">
             <div class="lg:col-span-4">
                 <div class="lg:sticky lg:top-28">
-                    <h2 class="text-4xl font-extrabold leading-[1.02] tracking-[-0.03em] text-zinc-950">Tell us what you’re building.</h2>
+                    <h2 class="public-section-title">Tell us what you’re building.</h2>
                     <p class="mt-5 max-w-md text-sm leading-7 text-zinc-600">A concise application is enough. Links are useful when the product is already available, but work in progress is welcome too.</p>
                     <p class="mt-8 flex items-start gap-3 text-sm font-bold leading-6 text-zinc-700"><x-heroicon-o-lock-closed class="mt-0.5 size-5 shrink-0 text-teal-700" />Your application is used only to evaluate a potential MerebHub listing.</p>
                 </div>
             </div>
             <div class="lg:col-span-8 lg:pl-8">
-                <form method="POST" action="{{ route('developers.apply') }}" class="grid gap-6 rounded-xl bg-white p-6 shadow-[0_24px_70px_-40px_rgba(24,24,27,.35)] sm:p-8">
+                <form method="POST" action="{{ route('developers.apply') }}" class="grid gap-6 border border-zinc-200 bg-white p-6 sm:p-8">
                     @csrf
                     <div class="grid gap-6 sm:grid-cols-2">
                         <div>

@@ -111,6 +111,7 @@ class DatabaseSeeder extends Seeder
                 'brand_id' => $author->id,
                 'status' => 'published',
                 'publication_state' => ProductPublicationState::Published->value,
+                'is_featured' => true,
                 'name' => collect(['en' => $name]),
                 'description' => collect(['en' => $tagline]),
                 'attribute_data' => collect([

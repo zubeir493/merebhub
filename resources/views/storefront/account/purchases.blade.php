@@ -1,25 +1,25 @@
 @extends('storefront.account.layout')
 
 @section('account-content')
-    <div class="mb-8 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+    <div class="account-page-header flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
         <header>
-            <h1 class="mt-3 text-4xl font-extrabold tracking-tight text-zinc-950">Software licenses</h1>
-            <p class="mt-3 max-w-2xl text-sm leading-6 text-zinc-600">Manage your purchased licenses, download license files, and keep track of active machines.</p>
+            <h1 class="account-page-title">Software licenses</h1>
+            <p class="account-page-description">Manage your purchased licenses, download license files, and keep track of active machines.</p>
         </header>
         <button type="button" data-offline-open data-kgm-offline-open class="btn-primary">Offline activation</button>
     </div>
 
     @if ($purchases->isEmpty())
-        <section class="rounded-2xl border border-dashed border-zinc-300 bg-zinc-50 p-10 text-center">
+        <section class="account-empty-state">
             <h2 class="text-xl font-extrabold text-zinc-950">No licenses yet</h2>
             <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-zinc-600">Purchase software from the shop to get your first license.</p>
             <a href="{{ route('store.index') }}" class="btn-primary mt-6">Browse software</a>
         </section>
     @else
-        <div class="account-table-wrap overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+        <div class="account-table-shell account-table-wrap">
             <div class="overflow-x-auto">
                 <table class="account-table min-w-full w-full text-left text-sm">
-                    <thead class="border-b border-zinc-200 bg-zinc-50 text-xs font-extrabold uppercase tracking-wider text-zinc-500">
+                    <thead>
                         <tr>
                             <th class="px-5 py-3">Product</th>
                             <th class="px-5 py-3">License key</th>
@@ -28,7 +28,7 @@
                             <th class="px-5 py-3 text-right" aria-label="Actions"></th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-zinc-100">
+                    <tbody>
                         @foreach ($purchases as $purchase)
                             @php
                                 $credentialId = $purchase->credential?->public_id;
@@ -45,14 +45,14 @@
                                 <td data-label="License key" class="max-w-xs px-5 py-4">
                                     @if ($purchase->credential && $purchase->status === 'active')
                                         @if (auth()->user()->hasVerifiedEmail())
-                                            <div class="flex w-fit min-w-0 items-center border border-zinc-200  rounded-md overflow-hidden">
+                                            <div class="flex w-fit min-w-0 items-center overflow-hidden rounded-md border border-zinc-200">
                                                 <span data-license-value class="min-w-0 truncate px-3 font-mono text-xs font-bold text-zinc-800" title="License key preview">{{ $licensePreview }}</span>
                                                 <button type="button" data-mh-copy-license data-reveal-credential="{{ route('credentials.reveal', $credentialId) }}" class="mh-license-copy-button" aria-label="Copy license key" title="Copy license key">
                                                     <x-heroicon-o-document-duplicate class="size-5" aria-hidden="true" />
                                                 </button>
                                             </div>
                                         @else
-                                            <a href="{{ route('verification.notice') }}" class="text-xs font-bold text-teal-800 underline decoration-teal-300 underline-offset-4">Verify your email to reveal this key</a>
+                                            <a href="{{ route('verification.notice') }}" class="text-xs font-bold text-teal-800 transition hover:text-teal-600">Verify your email to reveal this key</a>
                                         @endif
                                     @else
                                         <span class="text-xs font-semibold text-zinc-500">Not available</span>
@@ -71,11 +71,11 @@
                                 <td data-label="" class="px-5 py-4 text-right">
                                     <div class="flex flex-wrap justify-end gap-x-3 gap-y-2">
                                         @if ($purchase->credential && auth()->user()->hasVerifiedEmail() && $purchase->status === 'active')
-                                            <a href="{{ route('credentials.license-text', $credentialId) }}" class="inline-flex items-center gap-1 text-xs font-extrabold text-zinc-700 underline decoration-zinc-300 underline-offset-4 hover:text-teal-700"><x-heroicon-o-document-text class="size-3.5" aria-hidden="true" />License TXT</a>
+                                            <a href="{{ route('credentials.license-text', $credentialId) }}" class="inline-flex items-center gap-1 text-xs font-extrabold text-zinc-700 transition hover:text-teal-700"><x-heroicon-o-document-text class="size-3.5" aria-hidden="true" />License TXT</a>
                                         @endif
                                         @if (auth()->user()->hasVerifiedEmail() && $purchase->status === 'active' && $downloadAssets->isNotEmpty())
                                             @foreach ($downloadAssets as $asset)
-                                                <button type="button" class="inline-flex items-center gap-1 text-xs font-extrabold text-teal-800 underline decoration-teal-300 underline-offset-4 hover:text-teal-950" data-download-asset="{{ route('downloads.url', ['downloadableAsset' => $asset->public_id]) }}"><x-heroicon-o-arrow-down-tray class="size-3.5" aria-hidden="true" />{{ $asset->filename }}</button>
+                                                <button type="button" class="inline-flex items-center gap-1 text-xs font-extrabold text-teal-800 transition hover:text-teal-950" data-download-asset="{{ route('downloads.url', ['downloadableAsset' => $asset->public_id]) }}"><x-heroicon-o-arrow-down-tray class="size-3.5" aria-hidden="true" />{{ $asset->filename }}</button>
                                             @endforeach
                                         @endif
                                         @if ($downloadAssets->isEmpty())
@@ -96,11 +96,10 @@
     <p class="mt-4 hidden rounded-lg bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-800" data-account-action-error role="alert"></p>
 
     <div id="kgm-offline-modal" data-offline-modal data-kgm-offline-modal data-mh-hidden class="fixed inset-0 z-[80] grid place-items-center bg-zinc-950/40 p-4 backdrop-blur-[2px]" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="kgm-offline-title">
-        <div class="w-full max-w-lg rounded-2xl bg-white p-6 shadow-[0_24px_70px_oklch(0_0_0/0.22)] sm:p-7">
+        <div class="w-full max-w-lg rounded-md bg-white p-6 shadow-[0_24px_70px_oklch(0_0_0/0.22)] sm:p-7">
             <div class="flex items-start justify-between gap-4">
                 <div>
-                    <span class="text-xs font-extrabold uppercase tracking-widest text-teal-700">Activation helper</span>
-                    <h2 id="kgm-offline-title" class="mt-2 text-xl font-extrabold text-zinc-950">Offline .lic activation</h2>
+                    <h2 id="kgm-offline-title" class="text-xl font-extrabold text-zinc-950">Offline .lic activation</h2>
                 </div>
                 <button type="button" data-offline-close data-kgm-offline-close class="grid size-9 place-items-center rounded-lg text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-700" aria-label="Close offline activation">×</button>
             </div>

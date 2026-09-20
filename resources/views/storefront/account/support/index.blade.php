@@ -1,13 +1,12 @@
 @extends('storefront.account.layout')
 
 @section('account-content')
-    <header class="mb-8">
-        <p class="text-sm font-bold uppercase tracking-[0.16em] text-teal-700">Customer care</p>
-        <h1 class="mt-2 text-4xl font-extrabold tracking-tight">Support requests</h1>
-        <p class="mt-2 max-w-2xl text-zinc-600">Send our team a message and follow each reply from your account.</p>
+    <header class="account-page-header">
+        <h1 class="account-page-title">Support requests</h1>
+        <p class="account-page-description">Send our team a message and follow each reply from your account.</p>
     </header>
 
-    <section class="mb-8 rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-7">
+    <section class="account-form-surface mb-10">
         <h2 class="text-xl font-extrabold">Start a support request</h2>
         <form method="POST" action="{{ route('account.support.store') }}" enctype="multipart/form-data" class="mt-5 grid gap-4">
             @csrf
@@ -37,14 +36,14 @@
     <section>
         <h2 class="mb-4 text-xl font-extrabold">Your requests</h2>
         @if ($tickets->isEmpty())
-            <div class="rounded-2xl border border-dashed border-zinc-300 bg-zinc-50 px-6 py-10 text-center">
+            <div class="account-empty-state py-10">
                 <x-heroicon-o-chat-bubble-left-right class="mx-auto size-10 text-zinc-400" aria-hidden="true" />
                 <p class="mt-3 font-bold">No support requests yet</p>
             </div>
         @else
-            <div class="grid gap-3">
+            <div class="border-y border-zinc-200">
                 @foreach ($tickets as $ticket)
-                    <a href="{{ route('account.support.show', $ticket) }}" class="flex flex-col gap-3 rounded-2xl border border-zinc-200 bg-white p-5 transition hover:border-teal-300 hover:shadow-sm sm:flex-row sm:items-center sm:justify-between">
+                    <a href="{{ route('account.support.show', $ticket) }}" class="flex flex-col gap-3 border-b border-zinc-200 p-5 transition last:border-b-0 hover:bg-zinc-50 sm:flex-row sm:items-center sm:justify-between">
                         <div>
                             <h3 class="font-bold">{{ $ticket->subject }}</h3>
                             <p class="mt-1 font-mono text-xs text-zinc-500">{{ $ticket->public_id }} · {{ $ticket->last_message_at?->diffForHumans() ?? $ticket->created_at->diffForHumans() }}</p>

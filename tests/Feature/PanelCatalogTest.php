@@ -4,12 +4,15 @@ use App\Domain\Merchants\Enums\MerchantMembershipRole;
 use App\Domain\Merchants\Enums\MerchantMembershipStatus;
 use App\Filament\Admin\Extensions\OrderTableExtension;
 use App\Filament\Admin\Resources\FulfillmentUnits\FulfillmentUnitResource;
+use App\Filament\Admin\Resources\Products\Pages\ListProducts as AdminListProducts;
 use App\Filament\Admin\Resources\Products\ProductResource as AdminProductResource;
 use App\Filament\Merchant\Resources\Products\ProductResource as MerchantProductResource;
 use App\Models\Merchant;
 use App\Models\Product;
 use App\Models\User;
 use Filament\Facades\Filament;
+use Livewire\Livewire;
+use Lunar\Filament\Models\Staff as FilamentStaff;
 use Lunar\Filament\Support\Facades\LunarFilament;
 use Lunar\Filament\Tables\Order\OrderTable;
 
@@ -21,6 +24,27 @@ test('merchant panel registers a tenant-scoped product resource', function () {
 test('admin panel registers the catalog review resource', function () {
     expect(Filament::getPanel('lunar')->getResources())
         ->toContain(AdminProductResource::class);
+});
+
+test('staff can feature a product from the admin product table', function () {
+    $staff = FilamentStaff::forceCreate([
+        'first_name' => 'Catalog',
+        'last_name' => 'Admin',
+        'email' => 'featured-products@example.test',
+        'password' => 'password',
+        'admin' => true,
+    ]);
+    $product = Product::factory()->create();
+
+    Filament::setCurrentPanel(Filament::getPanel('lunar'));
+    Filament::bootCurrentPanel();
+    $this->actingAs($staff, 'staff');
+
+    Livewire::test(AdminListProducts::class)
+        ->call('updateTableColumnState', 'featured', (string) $product->getKey(), true)
+        ->assertHasNoErrors();
+
+    expect($product->refresh()->isFeatured())->toBeTrue();
 });
 
 test('admin panel registers the fulfillment recovery resource', function () {

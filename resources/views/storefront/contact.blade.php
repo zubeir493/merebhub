@@ -1,21 +1,20 @@
 @extends('layouts.storefront')
 
 @section('content')
-    <section class="relative isolate overflow-hidden bg-zinc-50">
-        <x-ambient-lines class="absolute -right-20 -top-28 -z-10 h-[38rem] w-[min(62vw,54rem)] opacity-65" />
-        <div class="mx-auto grid max-w-[1400px] gap-8 px-5 py-16 lg:grid-cols-12 lg:items-end lg:px-8 lg:py-24">
+    <section data-public-page-header class="public-page-header">
+        <div class="mx-auto grid max-w-[1400px] gap-8 px-5 py-14 sm:py-16 lg:grid-cols-12 lg:items-end lg:px-8 lg:py-20">
             <div class="lg:col-span-8">
-                <h1 class="max-w-[10ch] text-[clamp(3.4rem,7vw,6rem)] font-extrabold leading-[.92] tracking-[-0.04em] text-zinc-950 text-balance">Start the right conversation.</h1>
+                <h1 class="public-page-title">Start the right conversation.</h1>
             </div>
             <div class="lg:col-span-4 lg:pb-1">
-                <p class="max-w-md text-base font-medium leading-8 text-zinc-600 text-pretty">Questions about MerebHub, a partnership, or a purchase? Point us in the right direction and tell us what you need.</p>
+                <p class="public-lede">Questions about MerebHub, a partnership, or a purchase? Point us in the right direction and tell us what you need.</p>
             </div>
         </div>
     </section>
 
     <section class="mx-auto grid max-w-[1400px] gap-14 px-5 py-16 lg:grid-cols-12 lg:px-8 lg:py-24">
         <div class="lg:col-span-5">
-            <h2 class="max-w-sm text-3xl font-extrabold tracking-[-0.03em] text-zinc-950">Before you write</h2>
+            <h2 class="max-w-sm text-4xl font-extrabold tracking-[-0.04em] text-zinc-950">Before you write</h2>
             <div class="mt-8 border-t border-zinc-200">
                 <a href="{{ route('account.support.index') }}" class="group flex items-start justify-between gap-6 border-b border-zinc-200 py-6">
                     <span>
@@ -39,7 +38,7 @@
         </div>
 
         <div id="contact-form" class="scroll-mt-24 lg:col-span-7 lg:pl-8">
-            <form method="POST" action="{{ route('contact.store') }}" class="grid gap-6 rounded-xl bg-zinc-50 p-6 sm:p-8">
+            <form method="POST" action="{{ route('contact.store') }}" class="grid gap-6 border border-zinc-200 bg-zinc-50/70 p-6 sm:p-8">
                 @csrf
                 <div class="grid gap-6 sm:grid-cols-2">
                     <div>

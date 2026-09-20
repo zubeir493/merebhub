@@ -16,7 +16,7 @@
         </nav>
         <section class="grid gap-9 lg:grid-cols-[minmax(0,1.25fr)_minmax(340px,.75fr)]">
             <div data-product-gallery tabindex="0" aria-label="{{ $product->name }} product gallery" class="min-w-0 outline-none">
-                <div class="relative aspect-[16/10] overflow-hidden rounded-2xl bg-zinc-100 ring-1 ring-zinc-200">
+                <div class="relative aspect-[16/10] overflow-hidden rounded-sm bg-zinc-100 ring-1 ring-zinc-200">
                     @forelse ($galleryMedia as $media)
                         <div data-gallery-slide @if (! $loop->first) hidden @endif aria-hidden="{{ $loop->first ? 'false' : 'true' }}" class="absolute inset-0">
                             <img src="{{ $media->getUrl() }}" alt="{{ $product->name }} screenshot {{ $loop->iteration }}" class="h-full w-full object-cover">
@@ -34,10 +34,10 @@
                     @endforelse
 
                     @if ($galleryMedia->count() > 1)
-                        <button type="button" data-gallery-prev class="absolute left-4 top-1/2 grid size-10 -translate-y-1/2 place-items-center rounded-full bg-zinc-950/70 text-white shadow-lg transition hover:bg-zinc-950 focus:outline-none focus:ring-4 focus:ring-white/60" aria-label="Previous product image">
+                        <button type="button" data-gallery-prev class="absolute left-4 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full bg-zinc-950/80 text-white transition hover:bg-zinc-950 focus:outline-none focus:ring-4 focus:ring-white/60" aria-label="Previous product image">
                             <x-heroicon-o-chevron-left class="size-5" />
                         </button>
-                        <button type="button" data-gallery-next class="absolute right-4 top-1/2 grid size-10 -translate-y-1/2 place-items-center rounded-full bg-zinc-950/70 text-white shadow-lg transition hover:bg-zinc-950 focus:outline-none focus:ring-4 focus:ring-white/60" aria-label="Next product image">
+                        <button type="button" data-gallery-next class="absolute right-4 top-1/2 grid size-11 -translate-y-1/2 place-items-center rounded-full bg-zinc-950/80 text-white transition hover:bg-zinc-950 focus:outline-none focus:ring-4 focus:ring-white/60" aria-label="Next product image">
                             <x-heroicon-o-chevron-right class="size-5" />
                         </button>
                         <span data-gallery-counter class="absolute bottom-4 right-4 rounded-full bg-zinc-950/75 px-3 py-1 text-xs font-extrabold text-white" aria-live="polite">1 / {{ $galleryMedia->count() }}</span>
@@ -56,19 +56,19 @@
             </div>
             <div class="flex flex-col">
                 <div class="flex justify-between items-start gap-3">
-                    <h1 class="mt-3 text-4xl font-extrabold leading-tight text-zinc-950">{{ $product->name }}</h1>
+                    <h1 class="mt-3 text-5xl font-extrabold leading-[.95] tracking-[-0.05em] text-zinc-950">{{ $product->name }}</h1>
                     @if ($wishlistItem)
                         <form method="POST" action="{{ route('wishlist.destroy', $wishlistItem) }}" class="mt-3">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" title="Remove from wishlist">
+                            <button type="submit" class="grid size-11 place-items-center rounded-full transition hover:bg-amber-50" aria-label="Remove {{ $product->name }} from wishlist" title="Remove from wishlist">
                                 <x-heroicon-s-bookmark class="size-6 text-amber-500" />
                             </button>
                         </form>
                     @else
                         <form method="POST" action="{{ route('wishlist.store', $product) }}" class="mt-3">
                             @csrf
-                            <button type="submit" title="Save to wishlist">
+                            <button type="submit" class="grid size-11 place-items-center rounded-full transition hover:bg-amber-50" aria-label="{{ auth()->check() ? 'Save '.$product->name.' to wishlist' : 'Sign in to save to wishlist' }}" title="{{ auth()->check() ? 'Save to wishlist' : 'Sign in to save to wishlist' }}">
                                 <x-heroicon-o-bookmark class="size-6 text-amber-500" />
                             </button>
                         </form>
@@ -102,7 +102,7 @@
                                     @endphp
                                     <label class="group relative block cursor-pointer">
                                         <input type="radio" name="variant_id" value="{{ $variant->id }}" class="peer sr-only" required @checked($loop->first)>
-                                        <span class="flex items-center gap-3 rounded-xl border border-zinc-200 bg-white p-3 transition duration-150 hover:border-zinc-400 hover:shadow-sm peer-checked:border-teal-500 peer-checked:bg-teal-50/50 peer-checked:ring-2 peer-checked:ring-teal-500/15">
+                                        <span class="flex items-center gap-3 rounded-md border border-zinc-200 bg-white p-3 transition duration-150 hover:border-zinc-400 peer-checked:border-teal-600 peer-checked:bg-teal-50 peer-checked:ring-2 peer-checked:ring-teal-500/15">
                                             <span class="grid size-12 shrink-0 place-items-center overflow-hidden rounded-lg bg-zinc-100 text-teal-700 transition group-hover:bg-teal-50">
                                                 @if ($presentationImage)
                                                     <img src="{{ $presentationImage }}" alt="" class="h-full w-full object-cover">
@@ -127,30 +127,8 @@
                         <div class="rounded-lg bg-amber-50 px-4 py-3 text-sm font-bold text-amber-800">This product is not
                             currently available for purchase.</div>
                     @endif
-                    {{-- @auth
-                        @if ($wishlistItem)
-                            <form method="POST" action="{{ route('wishlist.destroy', $wishlistItem) }}" class="mt-3">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-lg border border-zinc-300 px-4 py-3 text-sm font-bold text-zinc-700 transition hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700">
-                                    <x-heroicon-s-heart class="size-5 text-rose-500" /> Remove from wishlist
-                                </button>
-                            </form>
-                        @else
-                            <form method="POST" action="{{ route('wishlist.store', $product) }}" class="mt-3">
-                                @csrf
-                                <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-lg border border-zinc-300 px-4 py-3 text-sm font-bold text-zinc-700 transition hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700">
-                                    <x-heroicon-o-heart class="size-5 text-rose-500" /> Save to wishlist
-                                </button>
-                            </form>
-                        @endif
-                    @else
-                        <a href="{{ route('login') }}" class="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-zinc-300 px-4 py-3 text-sm font-bold text-zinc-700 transition hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700">
-                            <x-heroicon-o-heart class="size-5 text-rose-500" /> Sign in to save to wishlist
-                        </a>
-                    @endauth --}}
-                    <p class="mt-3 flex items-center justify-center gap-2 text-xs font-semibold text-zinc-500">
-                        <x-heroicon-o-shield-check class="size-4" /> Secure checkout powered by chapa.co
+                    <p class="mt-3 flex items-center justify-center gap-2 text-center text-xs font-semibold text-zinc-500">
+                        <x-heroicon-o-shield-check class="size-4 shrink-0" /> Cart and order processing powered by Lunar · Secure checkout by Chapa
                     </p>
                 </div>
             </div>
@@ -163,7 +141,7 @@
 
             <div id="product-description" data-product-panel="description" role="tabpanel" tabindex="0" @if ($reviewsTabActive) hidden @endif class="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1fr)_300px]">
                 <div>
-                    <h2 class="text-2xl font-extrabold">About this software</h2>
+                    <h2 class="text-3xl font-extrabold tracking-[-0.035em]">About this software</h2>
                     <div class="mt-5 max-w-3xl whitespace-pre-line text-base leading-8 text-zinc-600">{{ $product->description }}</div>
                 </div>
                 <aside class="border-l border-zinc-200 pl-7 text-sm">
@@ -180,7 +158,7 @@
                 <div>
                     <div class="flex items-end justify-between gap-4">
                         <div>
-                            <h2 class="text-2xl font-extrabold">Customer reviews</h2>
+                            <h2 class="text-3xl font-extrabold tracking-[-0.035em]">Customer reviews</h2>
                             <p class="mt-2 text-sm text-zinc-500">See what customers think about {{ $product->name }}.</p>
                         </div>
                         <div class="shrink-0 text-right">
@@ -203,12 +181,12 @@
                                 <p class="mt-2 whitespace-pre-line text-sm leading-7 text-zinc-600">{{ $review->body }}</p>
                             </article>
                         @empty
-                            <div class="rounded-xl bg-zinc-50 px-5 py-6 text-sm text-zinc-600">No written reviews yet. Be the first to share your experience.</div>
+                            <div class="border-y border-zinc-200 bg-zinc-50 px-5 py-6 text-sm text-zinc-600">No written reviews yet. Be the first to share your experience.</div>
                         @endforelse
                     </div>
                 </div>
 
-                <div class="self-start rounded-2xl border border-zinc-200 bg-zinc-50/70 p-5">
+                <div class="self-start border border-zinc-200 bg-zinc-50/70 p-5">
                     @auth
                         @if ($canReview)
                             <h2 class="text-lg font-extrabold">Write a review</h2>
@@ -221,7 +199,7 @@
                                         @for ($rating = 1; $rating <= 5; $rating++)
                                             <label class="group cursor-pointer">
                                                 <input type="radio" name="rating" value="{{ $rating }}" class="peer sr-only" @checked((int) old('rating', 5) === $rating)>
-                                                <span class="grid size-9 place-items-center rounded-lg text-lg text-zinc-300 transition group-hover:bg-amber-50 group-hover:text-amber-400 peer-checked:bg-amber-50 peer-checked:text-amber-500 peer-focus-visible:ring-4 peer-focus-visible:ring-teal-500/15" aria-hidden="true">★</span>
+                                                <span class="grid size-11 place-items-center rounded-md text-lg text-amber-300 transition group-hover:bg-amber-50 group-hover:text-amber-500 peer-checked:bg-amber-50 peer-checked:text-amber-600 peer-focus-visible:ring-4 peer-focus-visible:ring-teal-500/15" aria-hidden="true">★</span>
                                                 <span class="sr-only">{{ $rating }} {{ $rating === 1 ? 'star' : 'stars' }}</span>
                                             </label>
                                         @endfor
@@ -255,7 +233,7 @@
         </section>
         @if ($relatedProducts->isNotEmpty())
             <section class="mt-14">
-                <h2 class="mb-6 text-2xl font-extrabold">More in {{ $product->category }}</h2>
+                <h2 class="mb-6 text-4xl font-extrabold tracking-[-0.04em]">More in {{ $product->category }}</h2>
                 <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
                     @foreach ($relatedProducts as $related)
                         <x-product-card :product="$related" />

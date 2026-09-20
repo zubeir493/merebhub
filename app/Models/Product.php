@@ -55,6 +55,11 @@ class Product extends \Lunar\Core\Models\Product
         'fulfillment_summary',
         'published_at',
         'archived_at',
+        'is_featured',
+    ];
+
+    protected $attributes = [
+        'is_featured' => false,
     ];
 
     protected static function newFactory(): Factory
@@ -100,6 +105,45 @@ class Product extends \Lunar\Core\Models\Product
     protected function ratingsCount(): Attribute
     {
         return Attribute::get(fn (): int => (int) ($this->attr('ratings_count') ?: 0));
+    }
+
+    public function displayRating(): float
+    {
+        if ((int) $this->getAttribute('published_reviews_count') > 0) {
+            return (float) $this->getAttribute('published_reviews_avg_rating');
+        }
+
+        if ($this->relationLoaded('publishedReviews') && $this->publishedReviews->isNotEmpty()) {
+            return (float) $this->publishedReviews->avg('rating');
+        }
+
+        return $this->rating;
+    }
+
+    public function displayRatingsCount(): int
+    {
+        if (array_key_exists('published_reviews_count', $this->getAttributes())) {
+            $publishedReviewCount = (int) $this->getAttribute('published_reviews_count');
+
+            return $publishedReviewCount > 0 ? $publishedReviewCount : $this->ratings_count;
+        }
+
+        if ($this->relationLoaded('publishedReviews') && $this->publishedReviews->isNotEmpty()) {
+            return $this->publishedReviews->count();
+        }
+
+        return $this->ratings_count;
+    }
+
+    public function isFeatured(): bool
+    {
+        return (bool) $this->is_featured;
+    }
+
+    public function setFeatured(bool $featured): void
+    {
+        $this->is_featured = $featured;
+        $this->saveQuietly();
     }
 
     protected function platforms(): Attribute
@@ -169,6 +213,7 @@ class Product extends \Lunar\Core\Models\Product
     {
         return [
             'fulfillment_summary' => 'array',
+            'is_featured' => 'boolean',
         ];
     }
 
@@ -255,6 +300,13 @@ class Product extends \Lunar\Core\Models\Product
             ->where('publication_state', ProductPublicationState::Published->value)
             ->channel(StorefrontSession::getChannel())
             ->customerGroup(StorefrontSession::getCustomerGroups());
+    }
+
+    public function scopeWithPublishedReviewSummary(Builder $query): Builder
+    {
+        return $query
+            ->withCount('publishedReviews')
+            ->withAvg('publishedReviews', 'rating');
     }
 
     public function scopeSearch(Builder $query, string $term): Builder

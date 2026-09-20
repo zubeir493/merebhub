@@ -1,13 +1,12 @@
 @extends('storefront.account.layout')
 
 @section('account-content')
-    <header class="mb-8">
-        <p class="text-sm font-bold uppercase tracking-[0.16em] text-teal-700">Payments</p>
-        <h1 class="mt-2 text-4xl font-extrabold tracking-tight">Billing details</h1>
-        <p class="mt-2 max-w-2xl text-zinc-600">Save the billing details used to prefill your next checkout. Completed orders keep their own billing snapshot.</p>
+    <header class="account-page-header">
+        <h1 class="account-page-title">Billing details</h1>
+        <p class="account-page-description">Save the billing details used to prefill your next checkout. Completed orders keep their own billing snapshot.</p>
     </header>
 
-    <form method="POST" action="{{ route('account.billing.update') }}" class="grid gap-6 rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm sm:grid-cols-2 sm:p-8">
+    <form method="POST" action="{{ route('account.billing.update') }}" class="account-form-surface grid gap-6 sm:grid-cols-2">
         @csrf
         @method('PUT')
 

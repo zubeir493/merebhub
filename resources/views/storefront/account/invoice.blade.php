@@ -2,15 +2,15 @@
 
 @section('account-content')
     <div class="flex flex-wrap items-center justify-between gap-4 print:hidden">
-        <a href="{{ route('account.invoices.index') }}" class="text-sm font-bold text-teal-800 underline decoration-teal-300 underline-offset-4">Back to invoices</a>
-        <button type="button" data-print-invoice class="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-bold hover:bg-zinc-50">Print / Save PDF</button>
+        <a href="{{ route('account.invoices.index') }}" class="text-sm font-bold text-teal-800 transition hover:text-teal-600">← Back to invoices</a>
+        <button type="button" data-print-invoice class="min-h-11 rounded-md border border-zinc-300 px-4 py-2 text-sm font-bold hover:bg-zinc-50">Print / Save PDF</button>
     </div>
 
-    <article class="mt-6 rounded-2xl border border-zinc-200 bg-white p-6 shadow-sm sm:p-10 print:mt-0 print:border-0 print:p-0 print:shadow-none">
+    <article class="mt-8 print:mt-0">
         <header class="flex flex-col gap-6 border-b border-zinc-200 pb-8 sm:flex-row sm:items-start sm:justify-between">
             <div>
-                <p class="text-sm font-bold uppercase tracking-[0.16em] text-teal-700">MerebHub · Invoice</p>
-                <h1 class="mt-2 text-3xl font-extrabold">{{ $invoice->invoice_number }}</h1>
+                <p class="text-sm font-bold text-teal-700">MerebHub invoice</p>
+                <h1 class="mt-2 text-3xl font-extrabold tracking-[-0.035em]">{{ $invoice->invoice_number }}</h1>
                 <p class="mt-2 text-sm text-zinc-600">Issued {{ $invoice->issued_at->format('F j, Y') }}</p>
                 <p class="mt-1 text-sm text-zinc-600">Order {{ $invoice->order->reference }} · {{ str($invoice->payment_status)->replace('_', ' ')->title() }}</p>
             </div>
@@ -29,7 +29,7 @@
         <div class="mt-8 overflow-x-auto">
             <table class="min-w-full">
                 <thead class="border-b border-zinc-200 bg-zinc-50 print:bg-transparent">
-                    <tr class="text-left text-xs uppercase tracking-wide text-zinc-500">
+                    <tr class="text-left text-xs font-bold text-zinc-600">
                         <th class="px-3 py-3">Description</th>
                         <th class="px-3 py-3 text-right">Qty</th>
                         <th class="px-3 py-3 text-right">Unit price</th>

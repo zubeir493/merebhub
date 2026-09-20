@@ -1,10 +1,10 @@
 @extends('storefront.account.layout')
 
 @section('account-content')
-    <header class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <header class="account-page-header flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-            <a href="{{ route('account.support.index') }}" class="text-sm font-bold text-teal-800 underline decoration-teal-300 underline-offset-4">All support requests</a>
-            <h1 class="mt-3 text-3xl font-extrabold tracking-tight">{{ $ticket->subject }}</h1>
+            <a href="{{ route('account.support.index') }}" class="text-sm font-bold text-teal-800 transition hover:text-teal-600">← All support requests</a>
+            <h1 class="mt-3 text-3xl font-extrabold tracking-[-0.035em]">{{ $ticket->subject }}</h1>
             <p class="mt-2 font-mono text-xs text-zinc-500">{{ $ticket->public_id }} · {{ str($ticket->status->value)->replace('_', ' ')->title() }}</p>
         </div>
         @if ($ticket->status->value === 'closed')
@@ -14,7 +14,7 @@
 
     <section class="grid gap-4">
         @foreach ($ticket->messages as $message)
-            <article class="rounded-2xl border {{ $message->user_id === auth()->id() ? 'border-zinc-200 bg-white' : 'border-teal-100 bg-teal-50/60' }} p-5">
+            <article class="rounded-md border {{ $message->user_id === auth()->id() ? 'border-zinc-200 bg-white' : 'border-teal-200 bg-teal-50/60' }} p-5">
                 <header class="flex flex-wrap items-center justify-between gap-2">
                     <h2 class="text-sm font-extrabold">{{ $message->user_id === auth()->id() ? 'You' : 'MerebHub Support' }}</h2>
                     <time class="text-xs text-zinc-500">{{ $message->created_at->format('M j, Y · g:i A') }}</time>
@@ -26,7 +26,7 @@
                             <li class="flex flex-wrap items-center justify-between gap-2 text-sm">
                                 <span class="font-semibold">{{ $attachment->original_name }}</span>
                                 @if ($attachment->scan_status->value === 'clean')
-                                    <a href="{{ route('account.support.attachments.download', $attachment) }}" class="font-bold text-teal-800 underline decoration-teal-300 underline-offset-4">Download</a>
+                                    <a href="{{ route('account.support.attachments.download', $attachment) }}" class="font-bold text-teal-800 transition hover:text-teal-600">Download</a>
                                 @elseif ($attachment->scan_status->value === 'pending')
                                     <span class="text-xs font-semibold text-amber-800">Pending staff review</span>
                                 @else
@@ -40,7 +40,7 @@
         @endforeach
     </section>
 
-    <section class="mt-8 rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm sm:p-7">
+    <section class="account-form-surface mt-8">
         <h2 class="text-xl font-extrabold">Reply to support</h2>
         <form method="POST" action="{{ route('account.support.reply', $ticket) }}" enctype="multipart/form-data" class="mt-5 grid gap-4">
             @csrf

@@ -7,6 +7,7 @@ import './mini-cart.js';
 import './cart.js';
 import './home.js';
 import './product-detail.js';
+import './storefront.js';
 
 createInertiaApp({
     title: (title) => `${title} · MerebHub`,

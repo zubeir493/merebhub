@@ -6,8 +6,10 @@ use App\Http\Controllers\BillingProfileController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ChapaPaymentController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CredentialController;
 use App\Http\Controllers\DemoOfflineActivationController;
+use App\Http\Controllers\DeveloperController;
 use App\Http\Controllers\DownloadController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\InvoiceController;
@@ -26,7 +28,15 @@ Route::get('/', [StorefrontController::class, 'home'])->name('home');
 Route::get('/health', [HealthController::class, 'shallow'])->name('health');
 Route::middleware('auth')->get('/health/deep', [HealthController::class, 'deep'])->name('health.deep');
 Route::get('/app-shell', fn () => Inertia::render('PlatformShell'))->name('app-shell');
-Route::get('/search', [StorefrontController::class, 'search'])->name('search');
+Route::get('/search', [StoreController::class, 'search'])->name('search');
+Route::controller(DeveloperController::class)->group(function (): void {
+    Route::get('/developers', 'index')->name('developers.index');
+    Route::post('/developers/apply', 'store')->middleware('throttle:public-form')->name('developers.apply');
+});
+Route::controller(ContactController::class)->group(function (): void {
+    Route::get('/contact', 'index')->name('contact.index');
+    Route::post('/contact', 'store')->middleware('throttle:public-form')->name('contact.store');
+});
 Route::get('/offline-activation', [DemoOfflineActivationController::class, 'show'])->name('offline-activation.show');
 Route::post('/offline-activation', [DemoOfflineActivationController::class, 'generate'])
     ->middleware('throttle:10,1')

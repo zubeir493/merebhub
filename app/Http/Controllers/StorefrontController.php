@@ -21,30 +21,6 @@ class StorefrontController extends Controller
         return view('storefront.home');
     }
 
-    public function search(Request $request): View
-    {
-        $search = Str::of($request->string('q'))->squish()->limit(100)->toString();
-        $products = $this->products()
-            ->when($search !== '', fn (Builder $query) => $query->search($search), fn (Builder $query) => $query->whereKey([]))
-            ->latest()
-            ->paginate(12)
-            ->withQueryString();
-        $authors = Author::query()
-            ->with(['defaultUrl'])
-            ->withCount(['products' => fn (Builder $query) => $query->where('status', 'published')])
-            ->when($search !== '', fn (Builder $query) => $query->where('name', 'like', "%{$search}%"), fn (Builder $query) => $query->whereKey([]))
-            ->latest()
-            ->limit(6)
-            ->get();
-
-        return view('storefront.search', [
-            'products' => $products,
-            'authors' => $authors,
-            'search' => $search,
-            'title' => $search === '' ? 'Search' : "Search results for {$search}",
-        ]);
-    }
-
     public function product(string $slug): View
     {
         $product = $this->products()

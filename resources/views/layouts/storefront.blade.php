@@ -12,16 +12,34 @@
     @livewireStyles
 </head>
 <body class="flex min-h-screen flex-col bg-white font-sans text-zinc-900 antialiased">
+    @php
+        $publicNavigation = [
+            ['label' => 'Store', 'route' => 'store.index', 'active' => request()->routeIs('store.*')],
+            ['label' => 'Developers', 'route' => 'developers.index', 'active' => request()->routeIs('developers.*')],
+            ['label' => 'Contact', 'route' => 'contact.index', 'active' => request()->routeIs('contact.*')],
+        ];
+    @endphp
+
     <header x-data="{ mobileOpen: false, accountOpen: false }" class="sticky top-0 z-40 border-b border-zinc-200 bg-white/95 backdrop-blur">
         <div class="mx-auto flex h-18 max-w-[1400px] items-center justify-between gap-5 px-5 lg:px-8">
-            <button @click="mobileOpen = ! mobileOpen" class="grid size-10 place-items-center lg:hidden" aria-label="Toggle menu">
-                <x-heroicon-o-bars-3 class="size-6" />
+            <button @click="mobileOpen = ! mobileOpen" :aria-expanded="mobileOpen" class="grid size-10 place-items-center rounded-lg transition hover:bg-zinc-100 lg:hidden" aria-controls="mobile-navigation" aria-label="Toggle menu">
+                <x-heroicon-o-bars-3 x-show="! mobileOpen" class="size-6" />
+                <x-heroicon-o-x-mark x-cloak x-show="mobileOpen" class="size-6" />
             </button>
             <a href="{{ route('home') }}" class="flex shrink-0 items-center gap-2.5">
                 <img src="/images/marketplace/logo.svg" alt="" width="32" height="32" class="h-8 w-8">
                 <span class="text-lg font-extrabold">MerebHub</span>
             </a>
-            <form action="{{ route('search') }}" role="search" class="relative ml-auto hidden max-w-sm flex-1 md:block">
+            <nav data-desktop-public-navigation class="hidden items-center gap-1 lg:flex" aria-label="Primary navigation">
+                @foreach ($publicNavigation as $item)
+                    <a href="{{ route($item['route']) }}" @class([
+                        'rounded-lg px-3 py-2 text-sm font-bold transition',
+                        'bg-teal-50 text-teal-800' => $item['active'],
+                        'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950' => ! $item['active'],
+                    ]) @if ($item['active']) aria-current="page" @endif>{{ $item['label'] }}</a>
+                @endforeach
+            </nav>
+            <form action="{{ route('store.index') }}" role="search" class="relative ml-auto hidden max-w-xs flex-1 md:block xl:max-w-sm">
                 <button type="submit" class="absolute left-0 top-0 grid size-10 place-items-center text-zinc-400 transition-colors hover:text-teal-700" aria-label="Submit search">
                     <x-heroicon-o-magnifying-glass class="size-5" />
                 </button>
@@ -29,8 +47,8 @@
                     id="search-input-desktop"
                     name="q"
                     value="{{ request('q') }}"
-                    aria-label="Search MerebHub"
-                    placeholder="Search..."
+                    aria-label="Search software, makers, or categories"
+                    placeholder="Search software, makers, categories"
                     class="h-10 w-full rounded-lg border border-zinc-300 bg-zinc-50 pl-11 pr-12 text-sm outline-none transition focus:border-teal-500 focus:bg-white focus:ring-4 focus:ring-teal-500/10"
                 >
                 <span id="search-shortcut-desktop" role="button" tabindex="0" aria-label="Focus search (shortcut)" style="position: absolute;right: 10px;" class="top-1/2 -translate-y-1/2 rounded-sm bg-zinc-100 px-2 py-1 text-xs text-zinc-600 cursor-pointer select-none">Ctrl+K</span>
@@ -102,23 +120,23 @@
                 </div>
             </div>
         </div>
-        <div x-cloak x-show="mobileOpen" x-transition class="border-t border-zinc-200 bg-white px-5 py-4 lg:hidden">
-            <form action="{{ route('search') }}" role="search" class="relative mb-4">
-                <button type="submit" class="absolute left-0 top-0 grid size-11 place-items-center text-zinc-400 transition-colors hover:text-teal-700" aria-label="Submit search">
+        <div id="mobile-navigation" x-cloak x-show="mobileOpen" x-transition class="border-t border-zinc-200 bg-white px-5 py-4 lg:hidden">
+            <nav data-mobile-public-navigation class="grid gap-1 text-sm font-bold" aria-label="Mobile navigation">
+                @foreach ($publicNavigation as $item)
+                    <a href="{{ route($item['route']) }}" @click="mobileOpen = false" @class([
+                        'rounded-lg px-3 py-2.5 transition',
+                        'bg-teal-50 text-teal-800' => $item['active'],
+                        'text-zinc-700 hover:bg-zinc-100 hover:text-zinc-950' => ! $item['active'],
+                    ]) @if ($item['active']) aria-current="page" @endif>{{ $item['label'] }}</a>
+                @endforeach
+            </nav>
+            <form action="{{ route('store.index') }}" role="search" class="relative mt-4 border-t border-zinc-100 pt-4">
+                <button type="submit" class="absolute left-0 top-4 grid size-11 place-items-center text-zinc-400 transition-colors hover:text-teal-700" aria-label="Submit search">
                     <x-heroicon-o-magnifying-glass class="size-5" />
                 </button>
-                <input id="search-input-mobile" name="q" value="{{ request('q') }}" aria-label="Search MerebHub" placeholder="Search software" class="h-11 w-full rounded-lg border border-zinc-300 pl-11 pr-12 text-sm">
-                <span id="search-shortcut-mobile" role="button" tabindex="0" aria-label="Focus search (shortcut)" style="position: absolute;right: 10px;" class="top-1/2 -translate-y-1/2 rounded-md bg-zinc-100 px-2 py-1 text-xs text-zinc-600 cursor-pointer select-none">Ctrl+K</span>
+                <input id="search-input-mobile" name="q" value="{{ request('q') }}" aria-label="Search software, makers, or categories" placeholder="Search software, makers, categories" class="h-11 w-full rounded-lg border border-zinc-300 pl-11 pr-12 text-sm">
+                <span id="search-shortcut-mobile" role="button" tabindex="0" aria-label="Focus search (shortcut)" style="position: absolute;right: 10px;" class="bottom-2 rounded-md bg-zinc-100 px-2 py-1 text-xs text-zinc-600 cursor-pointer select-none">Ctrl+K</span>
             </form>
-            <nav class="grid gap-1 text-sm font-bold">
-                <a href="{{ route('home') }}" class="rounded-lg px-3 py-2 hover:bg-zinc-100">Discover</a>
-                <a href="{{ route('store.index') }}" class="rounded-lg px-3 py-2 hover:bg-zinc-100">Store</a>
-                <a href="{{ route('store.newarrivals') }}" class="rounded-lg px-3 py-2 hover:bg-zinc-100">New arrivals</a>
-                <a href="{{ route('store.bestsellers') }}" class="rounded-lg px-3 py-2 hover:bg-zinc-100">Best sellers</a>
-                <a href="{{ route('store.deals') }}" class="rounded-lg px-3 py-2 hover:bg-zinc-100">Deals</a>
-                <a href="{{ route('vendors.index') }}" class="rounded-lg px-3 py-2 hover:bg-zinc-100">Developers</a>
-                <a href="{{ route('cart.index') }}" class="rounded-lg px-3 py-2 hover:bg-zinc-100">Cart</a>
-            </nav>
         </div>
     </header>
 
@@ -151,7 +169,7 @@
                     <p class="max-w-lg text-sm leading-7 text-zinc-400">A focused marketplace for discovering and owning independent Ethiopian software—with clear pricing, trusted publishers, and purchases kept in one place.</p>
                     <div class="mt-7 flex flex-wrap gap-3">
                         <a href="{{ route('store.index') }}" class="group inline-flex items-center gap-2 rounded-lg bg-teal-300 px-4 py-3 text-sm font-extrabold text-teal-950 transition hover:bg-teal-200">Browse marketplace <x-heroicon-o-arrow-up-right class="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" /></a>
-                        <a href="{{ route('vendors.index') }}" class="inline-flex items-center gap-2 rounded-lg border border-white/15 px-4 py-3 text-sm font-extrabold text-white transition hover:border-teal-300/60 hover:text-teal-200">Meet developers</a>
+                        <a href="{{ route('developers.index') }}" class="inline-flex items-center gap-2 rounded-lg border border-white/15 px-4 py-3 text-sm font-extrabold text-white transition hover:border-teal-300/60 hover:text-teal-200">For developers</a>
                     </div>
                 </div>
             </div>
@@ -174,8 +192,9 @@
                 <div>
                     <strong class="text-sm text-white">Community</strong>
                     <div class="mt-4 grid gap-3 text-sm text-zinc-400">
-                        <a href="{{ route('vendors.index') }}" class="transition hover:text-white">Meet developers</a>
-                        <a href="{{ route('home') }}" class="transition hover:text-white">About MerebHub</a>
+                        <a href="{{ route('developers.index') }}" class="transition hover:text-white">Sell on MerebHub</a>
+                        <a href="{{ route('vendors.index') }}" class="transition hover:text-white">Developer directory</a>
+                        <a href="{{ route('contact.index') }}" class="transition hover:text-white">Contact</a>
                     </div>
                 </div>
                 <div>
@@ -197,46 +216,6 @@
         </div>
     </footer>
 
-    <script>
-        (function () {
-            const isMac = (typeof navigator !== 'undefined') && (/Mac|iPhone|iPad|iPod/.test(navigator.platform) || navigator.userAgent.includes('Macintosh'));
-            const label = isMac ? '⌘+K' : 'Ctrl+K';
-
-            const pairs = [
-                { inputId: 'search-input-desktop', badgeId: 'search-shortcut-desktop' },
-                { inputId: 'search-input-mobile', badgeId: 'search-shortcut-mobile' }
-            ];
-
-            pairs.forEach(({ inputId, badgeId }) => {
-                const input = document.getElementById(inputId);
-                const badge = document.getElementById(badgeId);
-                if (!badge) return;
-                badge.textContent = label;
-                if (!input) return;
-                badge.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    input.focus();
-                });
-                badge.addEventListener('keydown', function (e) {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        input.focus();
-                    }
-                });
-            });
-
-            document.addEventListener('keydown', function (e) {
-                const key = (e.key || '').toLowerCase();
-                if (key === 'k' && (isMac ? e.metaKey : e.ctrlKey)) {
-                    // prevent browser default "find" / search behaviors
-                    e.preventDefault();
-                    const desktop = document.getElementById('search-input-desktop');
-                    const mobile = document.getElementById('search-input-mobile');
-                    (desktop || mobile)?.focus();
-                }
-            });
-        })();
-    </script>
     @livewireScripts
 </body>
 </html>

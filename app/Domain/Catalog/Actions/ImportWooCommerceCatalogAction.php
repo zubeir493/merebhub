@@ -37,7 +37,18 @@ final class ImportWooCommerceCatalogAction
      */
     public function handle(string $path, array $options = []): array
     {
-        $rows = $this->readRows($path);
+        return $this->handleRows($this->readRows($path), $options);
+    }
+
+    /**
+     * Import normalized WooCommerce rows supplied by a PHP seeder.
+     *
+     * @param  list<array<string, string>>  $rows
+     * @param  array{download_remote_assets?: bool, assets_path?: ?string, source_type?: string}  $options
+     * @return array{products: int, variants: int, downloads: int, warnings: list<string>}
+     */
+    public function handleRows(array $rows, array $options = []): array
+    {
         $parents = [];
         $variations = [];
 

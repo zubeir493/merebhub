@@ -3,6 +3,7 @@
 use App\Models\DownloadableAsset;
 use App\Models\Product;
 use App\Models\Staff;
+use Database\Seeders\WooCommerceCatalogSeeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
@@ -57,4 +58,20 @@ test('rerunning the WooCommerce import updates records instead of duplicating th
 
     expect(Product::query()->where('name->en', 'Test Suite')->count())->toBe(1)
         ->and(Product::query()->where('name->en', 'Test Suite')->firstOrFail()->variants()->count())->toBe(2);
+});
+
+test('the catalog seeder imports the embedded WooCommerce catalog without a CSV file', function (): void {
+    Storage::fake('public');
+    Storage::fake('private');
+    Http::preventStrayRequests();
+    Http::fake([
+        'https://merebhub.com/*' => Http::response('asset-bytes', 200),
+    ]);
+
+    $this->seed(WooCommerceCatalogSeeder::class);
+
+    expect(Product::query()->count())->toBe(5)
+        ->and(Product::query()->withCount('variants')->get()->sum('variants_count'))->toBe(13)
+        ->and(DownloadableAsset::query()->count())->toBe(1)
+        ->and(Product::query()->where('name->en', 'HelpPilot Remote Support')->exists())->toBeTrue();
 });

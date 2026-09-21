@@ -36,6 +36,10 @@ class DatabaseSeeder extends Seeder
             $this->seedDemoAccounts();
         }
 
+        if (filled(env('MEREBHUB_ADMIN_EMAIL')) || filled(env('MEREBHUB_ADMIN_PASSWORD'))) {
+            $this->call(AdminUserSeeder::class);
+        }
+
         $user = User::updateOrCreate(
             ['email' => 'buyer@merebhub.test'],
             [

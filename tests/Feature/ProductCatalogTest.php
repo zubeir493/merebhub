@@ -8,7 +8,20 @@ use App\Models\Merchant;
 use App\Models\Product;
 use App\Models\Staff;
 use App\Policies\ProductPolicy;
+use Lunar\Core\FieldTypes\TranslatedText;
 use Lunar\Filament\Models\Staff as FilamentStaff;
+
+test('product cards can read persisted rating metadata from catalog attributes', function () {
+    $product = Product::factory()->create([
+        'attribute_data' => collect([
+            'rating' => new TranslatedText(collect(['en' => '4.7'])),
+            'ratings_count' => new TranslatedText(collect(['en' => '18'])),
+        ]),
+    ]);
+
+    expect($product->refresh()->rating)->toBe(4.7)
+        ->and($product->ratings_count)->toBe(18);
+});
 
 test('a merchant can submit a draft product for review', function () {
     $merchant = Merchant::factory()->create();

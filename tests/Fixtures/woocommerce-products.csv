@@ -1,0 +1,4 @@
+ID,Type,SKU,Name,Published,Categories,Images,Short description,Description,Parent,Attribute 1 value(s),Regular price,Sale price,Download 1 name,Download 1 URL
+900,variable,TEST-SUITE,Test Suite,1,Software,https://example.test/test.webp,Short test description,Full test description,,,,,
+901,variation,TEST-SUITE-BASIC,Test Suite - Basic,1,,,,,TEST-SUITE,Basic,19.00,,,
+902,"variation, downloadable",TEST-SUITE-PRO,Test Suite - Pro,1,,,,,TEST-SUITE,Pro,49.00,,test.zip,https://example.test/test.zip

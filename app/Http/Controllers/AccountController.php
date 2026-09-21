@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Domain\Fulfillment\Enums\AssetScanStatus;
 use App\Http\Requests\AccountSettingsRequest;
+use App\Models\DownloadableAsset;
+use App\Models\Entitlement;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -36,6 +39,24 @@ class AccountController extends Controller
             ->withQueryString();
 
         return view('storefront.account.purchases', ['purchases' => $purchases]);
+    }
+
+    public function downloads(Request $request): View
+    {
+        $entitledProductIds = Entitlement::query()
+            ->whereBelongsTo($request->user())
+            ->where('status', 'active')
+            ->whereNotNull('product_id')
+            ->select('product_id');
+        $downloads = DownloadableAsset::query()
+            ->where('scan_status', AssetScanStatus::Clean)
+            ->whereIn('product_id', $entitledProductIds)
+            ->with('product.defaultUrl')
+            ->latest()
+            ->paginate(15)
+            ->withQueryString();
+
+        return view('storefront.account.downloads', ['downloads' => $downloads]);
     }
 
     public function settings(Request $request): View

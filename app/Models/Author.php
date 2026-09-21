@@ -103,6 +103,6 @@ class Author extends Brand
             return asset(ltrim($path, '/'));
         }
 
-        return Storage::disk('public')->url($path);
+        return Storage::disk((string) config('marketplace.public_media_disk', 'public'))->url($path);
     }
 }

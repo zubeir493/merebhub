@@ -24,12 +24,7 @@
         <div class="min-w-0">
             <a href="{{ route('products.show', $product) }}" class="block truncate text-base font-bold text-zinc-950 transition group-hover:text-teal-700">{{ $product->name }}</a>
             <p class="mt-1 truncate text-xs font-medium text-zinc-500">
-                @if ($product->author)
-                    <a href="{{ route('vendors.show', $product->author) }}" class="hover:text-teal-700">{{ $product->author->name }}</a>
-                @else
-                    Independent
-                @endif
-                · {{ $product->category }}
+                {{ $product->category }}
             </p>
         </div>
         <strong class="shrink-0 text-sm text-zinc-950 tabular-nums">{{ number_format((float) $product->price) }} ETB</strong>

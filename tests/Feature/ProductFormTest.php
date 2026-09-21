@@ -1,5 +1,6 @@
 <?php
 
+use App\Domain\Fulfillment\Enums\AssetScanStatus;
 use App\Domain\Merchants\Enums\MerchantMembershipRole;
 use App\Domain\Merchants\Enums\MerchantMembershipStatus;
 use App\Domain\Merchants\Enums\MerchantStatus;
@@ -9,10 +10,13 @@ use App\Filament\Admin\Resources\Products\ProductResource as AdminProductResourc
 use App\Filament\Merchant\Resources\Products\Pages\CreateProduct as MerchantCreateProduct;
 use App\Filament\Merchant\Resources\Products\Pages\EditProduct as MerchantEditProduct;
 use App\Models\Category;
+use App\Models\DownloadableAsset;
 use App\Models\Merchant;
 use App\Models\Product;
 use App\Models\User;
 use Filament\Facades\Filament;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use Lunar\Core\Models\ProductType;
 use Lunar\Filament\Models\Staff as FilamentStaff;
@@ -32,7 +36,8 @@ test('staff can create a product with scalar translated form values', function (
     $this->actingAs($staff, 'staff');
 
     Livewire::test(AdminCreateProduct::class)
-        ->assertSee('Gallery images')
+        ->assertSee('Product gallery')
+        ->assertSee('Downloadable files')
         ->fillForm([
             'name' => 'Created product',
             'product_type_id' => $productType->getKey(),
@@ -51,6 +56,46 @@ test('staff can create a product with scalar translated form values', function (
 
     expect($createdProduct->name)->toBe('Created product')
         ->and($createdProduct->description)->toBe('A product created by staff.');
+});
+
+test('staff can attach downloadable files to the configured private disk', function () {
+    config()->set('marketplace.private_files_disk', 's3_private');
+    Storage::fake('s3_private');
+    $staff = FilamentStaff::forceCreate([
+        'first_name' => 'Catalog',
+        'last_name' => 'Admin',
+        'email' => 'catalog-download@example.test',
+        'password' => 'password',
+        'admin' => true,
+    ]);
+    $productType = ProductType::factory()->create();
+
+    Filament::setCurrentPanel(Filament::getPanel('lunar'));
+    Filament::bootCurrentPanel();
+    $this->actingAs($staff, 'staff');
+
+    Livewire::test(AdminCreateProduct::class)
+        ->fillForm([
+            'name' => 'Downloadable product',
+            'product_type_id' => $productType->getKey(),
+            'description' => 'A product with a private downloadable installer.',
+            'status' => 'draft',
+            'publication_state' => 'draft',
+            'source_type' => 'local_developer',
+            'support_owner' => 'merebhub',
+            'downloadable_files' => [UploadedFile::fake()->create('merebhub-app.zip', 128, 'application/zip')],
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors()
+        ->assertNotified();
+
+    $asset = DownloadableAsset::query()->firstOrFail();
+
+    expect($asset->filename)->toBe('merebhub-app.zip')
+        ->and($asset->disk)->toBe('s3_private')
+        ->and($asset->scan_status)->toBe(AssetScanStatus::Clean)
+        ->and($asset->checksum)->not->toBeNull();
+    Storage::disk('s3_private')->assertExists($asset->path);
 });
 
 test('staff can update a product whose translated values are hydrated as locale maps', function () {
@@ -122,7 +167,8 @@ test('a merchant can create a product with translated form values', function () 
     $this->actingAs($user);
 
     Livewire::test(MerchantCreateProduct::class)
-        ->assertSee('Gallery images')
+        ->assertSee('Product gallery')
+        ->assertSee('Downloadable files')
         ->fillForm([
             'name' => 'Merchant product',
             'product_type_id' => $productType->getKey(),

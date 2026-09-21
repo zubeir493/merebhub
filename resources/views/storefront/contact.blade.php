@@ -30,10 +30,6 @@
                     </span>
                     <x-heroicon-o-arrow-up-right class="mt-1 size-5 shrink-0 text-zinc-400 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-teal-700" />
                 </a>
-                <div class="flex items-start gap-4 border-b border-zinc-200 py-6">
-                    <x-heroicon-o-chat-bubble-left-right class="mt-0.5 size-5 shrink-0 text-teal-700" />
-                    <p class="max-w-md text-sm leading-6 text-zinc-600">For marketplace questions, partnerships, feedback, or anything that does not fit those paths, use the form.</p>
-                </div>
             </div>
         </div>
 

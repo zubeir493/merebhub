@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Domain\Fulfillment\Enums\AssetScanStatus;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 
 class DownloadableAsset extends Model
@@ -44,6 +45,11 @@ class DownloadableAsset extends Model
     public function getRouteKeyName(): string
     {
         return 'public_id';
+    }
+
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class);
     }
 
     public function hasCleanScan(): bool

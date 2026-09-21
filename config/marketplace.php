@@ -16,6 +16,16 @@ return [
 
     'private_files_disk' => env('MARKETPLACE_PRIVATE_FILES_DISK', 'private'),
 
+    'object_storage' => [
+        'enabled' => env('MARKETPLACE_S3_ENABLED', false),
+        'fallback_disks' => [
+            'filament' => env('FILESYSTEM_DISK', 'local'),
+            'public_media' => env('MARKETPLACE_PUBLIC_MEDIA_DISK', 'public'),
+            'private_files' => env('MARKETPLACE_PRIVATE_FILES_DISK', 'private'),
+            'support_attachments' => env('SUPPORT_ATTACHMENTS_DISK', 'private'),
+        ],
+    ],
+
     'fulfillment' => [
         'license_provider' => env('FULFILLMENT_LICENSE_PROVIDER', 'fake'),
     ],

@@ -7,6 +7,7 @@ use App\Integrations\Keygen\KeygenClient;
 use App\Models\IntegrationSetting;
 use App\Models\Staff;
 use App\Support\IntegrationSettingsStore;
+use App\Support\S3StorageConfigurator;
 use Filament\Facades\Filament;
 use Illuminate\Support\Facades\Http;
 use Livewire\Livewire;
@@ -65,6 +66,24 @@ test('an administrator can save Chapa and Keygen settings from the admin panel',
             'keygen_admin_email' => 'admin@example.test',
             'keygen_admin_password' => 'keygen-admin-password',
             'keygen_verify' => false,
+            'mailtrap_enabled' => true,
+            'mailtrap_host' => 'live.smtp.mailtrap.io',
+            'mailtrap_port' => 2525,
+            'mailtrap_username' => 'api',
+            'mailtrap_password' => 'mailtrap-api-token',
+            'mailtrap_scheme' => 'smtp',
+            'mailtrap_from_address' => 'orders@merebhub.test',
+            'mailtrap_from_name' => 'MerebHub Orders',
+            's3_enabled' => true,
+            's3_access_key_id' => 'backblaze-key-id',
+            's3_secret_access_key' => 'backblaze-application-key',
+            's3_public_bucket' => 'merebhub-assets',
+            's3_private_bucket' => 'merebhub-downloads',
+            's3_region' => 'eu-central-003',
+            's3_endpoint' => 'https://s3.eu-central-003.backblazeb2.com',
+            's3_public_url' => 'https://assets.merebhub.test',
+            's3_use_path_style_endpoint' => true,
+            's3_verify_ssl' => true,
         ])
         ->call('save')
         ->assertHasNoFormErrors()
@@ -75,7 +94,34 @@ test('an administrator can save Chapa and Keygen settings from the admin panel',
     expect($settings->get('chapa', 'public_key'))->toBe('chapa-admin-public')
         ->and($settings->get('chapa', 'secret_key'))->toBe('chapa-admin-secret')
         ->and($settings->get('keygen', 'api_token'))->toBe('keygen-admin-token')
-        ->and($settings->get('keygen', 'verify'))->toBe('0');
+        ->and($settings->get('keygen', 'verify'))->toBe('0')
+        ->and($settings->get('mailtrap', 'password'))->toBe('mailtrap-api-token')
+        ->and(config('mail.default'))->toBe('mailtrap')
+        ->and(config('mail.mailers.mailtrap.host'))->toBe('live.smtp.mailtrap.io')
+        ->and(config('mail.from.address'))->toBe('orders@merebhub.test')
+        ->and($settings->get('s3', 'secret_access_key'))->toBe('backblaze-application-key')
+        ->and(config('filesystems.disks.s3.bucket'))->toBe('merebhub-assets')
+        ->and(config('filesystems.disks.s3_private.bucket'))->toBe('merebhub-downloads')
+        ->and(config('filesystems.disks.s3.region'))->toBe('eu-central-003')
+        ->and(config('filesystems.disks.s3.endpoint'))->toBe('https://s3.eu-central-003.backblazeb2.com')
+        ->and(data_get(config('filesystems.disks.s3'), 'http.verify'))->toBeTrue()
+        ->and(config('marketplace.public_media_disk'))->toBe('s3')
+        ->and(config('marketplace.private_files_disk'))->toBe('s3_private')
+        ->and(config('support.attachments_disk'))->toBe('s3_private');
+
+    expect(IntegrationSetting::query()
+        ->where('provider', 's3')
+        ->where('key', 'secret_access_key')
+        ->firstOrFail()
+        ->getRawOriginal('value'))
+        ->not->toBe('backblaze-application-key');
+
+    $settings->put('s3', 'enabled', false);
+    app(S3StorageConfigurator::class)->apply();
+
+    expect(config('marketplace.public_media_disk'))->toBe('public')
+        ->and(config('marketplace.private_files_disk'))->toBe('private')
+        ->and(config('support.attachments_disk'))->toBe('private');
 });
 
 test('Chapa validation responses remain actionable and are not retried', function (): void {

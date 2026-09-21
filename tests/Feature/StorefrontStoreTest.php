@@ -2,6 +2,8 @@
 
 use App\Models\Author;
 use App\Models\Product;
+use App\Models\ProductReview;
+use App\Models\User;
 
 beforeEach(function () {
     $this->seed();
@@ -36,6 +38,22 @@ test('catalog uses the global search and asynchronous filter controls', function
         ->assertDontSee('desktop-catalog-search', false)
         ->assertDontSee('Clear all')
         ->assertDontSee('>Apply<', false);
+});
+
+test('product cards show the published review summary', function () {
+    $product = Product::published()->with('defaultUrl')->firstOrFail();
+    ProductReview::query()->create([
+        'product_id' => $product->getKey(),
+        'user_id' => User::factory()->create()->getKey(),
+        'rating' => 2,
+        'body' => 'The product works, but the overall experience still needs improvement.',
+        'status' => 'published',
+    ]);
+
+    $this->get(route('store.index', ['q' => $product->name]))
+        ->assertSuccessful()
+        ->assertSee('2.0')
+        ->assertSee('(1)');
 });
 
 test('legacy search redirects to the unified store catalog', function () {

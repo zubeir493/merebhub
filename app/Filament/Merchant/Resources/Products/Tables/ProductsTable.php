@@ -8,7 +8,9 @@ use App\Filament\Merchant\Resources\Products\ProductResource;
 use App\Models\Product;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\EditAction;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -25,7 +27,8 @@ class ProductsTable
                     ->sortable(),
                 TextColumn::make('productType.name')
                     ->label('Type')
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('publication_state')
                     ->label('Review state')
                     ->badge()
@@ -41,7 +44,8 @@ class ProductsTable
                 TextColumn::make('status')
                     ->label('Catalog status')
                     ->badge()
-                    ->formatStateUsing(fn (mixed $state): string => str($state instanceof BackedEnum ? $state->value : $state)->replace('_', ' ')->title()),
+                    ->formatStateUsing(fn (mixed $state): string => str($state instanceof BackedEnum ? $state->value : $state)->replace('_', ' ')->title())
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
                     ->label('Last updated')
                     ->dateTime()
@@ -52,19 +56,25 @@ class ProductsTable
                     ->options(ProductResource::publicationStateOptions()),
             ])
             ->recordActions([
-                EditAction::make(),
-                Action::make('submit')
-                    ->label('Submit for review')
-                    ->icon('heroicon-o-paper-airplane')
-                    ->color('primary')
-                    ->requiresConfirmation()
-                    ->visible(fn (Product $record): bool => in_array($record->publication_state, [
-                        ProductPublicationState::Draft->value,
-                        ProductPublicationState::ChangesRequested->value,
-                    ], true))
-                    ->action(function (Product $record, SubmitProductForReviewAction $submit): void {
-                        $submit->handle($record);
-                    }),
+                ActionGroup::make([
+                    EditAction::make(),
+                    Action::make('submit')
+                        ->label('Submit for review')
+                        ->icon('heroicon-o-paper-airplane')
+                        ->color('primary')
+                        ->requiresConfirmation()
+                        ->visible(fn (Product $record): bool => in_array($record->publication_state, [
+                            ProductPublicationState::Draft->value,
+                            ProductPublicationState::ChangesRequested->value,
+                        ], true))
+                        ->action(function (Product $record, SubmitProductForReviewAction $submit): void {
+                            $submit->handle($record);
+                        }),
+                ])
+                    ->label('Actions')
+                    ->icon(Heroicon::OutlinedEllipsisVertical)
+                    ->tooltip('Product actions')
+                    ->color('gray'),
             ]);
     }
 }

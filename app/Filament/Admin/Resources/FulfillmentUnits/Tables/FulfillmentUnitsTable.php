@@ -48,15 +48,18 @@ class FulfillmentUnitsTable
                     ->sortable(),
                 TextColumn::make('attempts_count')
                     ->label('Attempts')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('external_id')
                     ->label('Provider ID')
                     ->placeholder('—')
-                    ->copyable(),
+                    ->copyable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('last_error')
                     ->label('Last error')
                     ->limit(60)
-                    ->placeholder('—'),
+                    ->placeholder('—')
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('status')
@@ -71,6 +74,8 @@ class FulfillmentUnitsTable
                 Action::make('retry')
                     ->label('Retry provisioning')
                     ->icon('heroicon-o-arrow-path')
+                    ->iconButton()
+                    ->tooltip('Retry provisioning')
                     ->color('warning')
                     ->requiresConfirmation()
                     ->visible(fn (FulfillmentUnit $record): bool => $record->status === FulfillmentUnitStatus::NeedsAttention)

@@ -3,9 +3,9 @@
 namespace App\Filament\Merchant\Resources\Products\Schemas;
 
 use App\Filament\Merchant\Resources\Products\ProductResource;
+use App\Filament\ProductMediaSection;
 use App\Models\Merchant;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
@@ -84,26 +84,7 @@ class ProductForm
                             ->formatStateUsing($toEnglish)
                             ->dehydrateStateUsing(fn (mixed $state): array => ['en' => $toEnglish($state)]),
                     ]),
-                Section::make('Product gallery')
-                    ->description('Upload screenshots or product artwork. Drag to reorder; the first image is the cover.')
-                    ->schema([
-                        SpatieMediaLibraryFileUpload::make('product_gallery')
-                            ->label('Gallery images')
-                            ->collection(config('lunar.media.collection'))
-                            ->multiple()
-                            ->reorderable()
-                            ->image()
-                            ->imageEditor()
-                            ->imageEditorAspectRatios([
-                                null,
-                                '16:10',
-                                '4:3',
-                                '1:1',
-                            ])
-                            ->maxFiles(8)
-                            ->maxSize(10240)
-                            ->columnSpanFull(),
-                    ]),
+                ProductMediaSection::make(),
                 Section::make('Submission')
                     ->columns(2)
                     ->schema([

@@ -56,7 +56,9 @@ class StoreController extends Controller
             default => ['Software worth using.', 'Independent tools from Ethiopian makers, all in one place.', 'popular', 'store.index'],
         };
         $sort = $filters['sort'] ?? $defaultSort;
-        $base = Product::published()->with(['author.defaultUrl', 'defaultUrl', 'media', 'variants.prices.currency', 'variants.prices.priceable']);
+        $base = Product::published()
+            ->withPublishedReviewSummary()
+            ->with(['author.defaultUrl', 'defaultUrl', 'media', 'variants.prices.currency', 'variants.prices.priceable']);
         $products = (clone $base)
             ->when($collection === 'deals', fn (Builder $query) => $query->whereHas('prices', fn (Builder $query) => $query->whereNotNull('list_price')))
             ->when($search !== '', fn (Builder $query) => $query->search($search))
@@ -67,6 +69,7 @@ class StoreController extends Controller
         match ($sort) {
             'price_asc' => $products->orderBy('prices_min_price'),
             'price_desc' => $products->orderByDesc('prices_min_price'),
+            'rating' => $products->orderByDesc('published_reviews_avg_rating')->latest(),
             default => $products->latest(),
         };
 

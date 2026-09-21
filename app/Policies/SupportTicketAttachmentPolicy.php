@@ -3,15 +3,15 @@
 namespace App\Policies;
 
 use App\Domain\Support\Enums\SupportAttachmentScanStatus;
-use App\Models\Staff;
 use App\Models\SupportTicketAttachment;
 use App\Models\User;
+use Lunar\Core\Models\Staff as CoreStaff;
 
 class SupportTicketAttachmentPolicy
 {
-    public function download(User|Staff $actor, SupportTicketAttachment $attachment): bool
+    public function download(User|CoreStaff $actor, SupportTicketAttachment $attachment): bool
     {
-        if ($actor instanceof Staff) {
+        if ($actor instanceof CoreStaff) {
             return $actor->admin && $attachment->scan_status !== SupportAttachmentScanStatus::Rejected;
         }
 

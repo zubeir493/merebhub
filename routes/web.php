@@ -86,6 +86,7 @@ Route::middleware('auth')->group(function (): void {
         ->middleware('throttle:public-form')
         ->name('products.reviews.store');
     Route::get('/account/purchases', [AccountController::class, 'purchases'])->name('account.purchases');
+    Route::get('/account/downloads', [AccountController::class, 'downloads'])->name('account.downloads');
     Route::get('/account/invoices', [InvoiceController::class, 'index'])->name('account.invoices.index');
     Route::get('/account/invoices/{invoiceOrder}', [InvoiceController::class, 'show'])->name('account.invoices.show');
     Route::get('/account/settings', [AccountController::class, 'settings'])->name('account.settings');

@@ -3,14 +3,14 @@
 namespace App\Policies;
 
 use App\Models\LicenseMapping;
-use App\Models\Staff;
+use Lunar\Core\Models\Staff as CoreStaff;
 
 class LicenseMappingPolicy
 {
     /**
      * Determine whether the user can view any models.
      */
-    public function viewAny(Staff $staff): bool
+    public function viewAny(CoreStaff $staff): bool
     {
         return $staff->admin;
     }
@@ -18,7 +18,7 @@ class LicenseMappingPolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(Staff $staff, LicenseMapping $licenseMapping): bool
+    public function view(CoreStaff $staff, LicenseMapping $licenseMapping): bool
     {
         return $staff->admin;
     }
@@ -26,7 +26,7 @@ class LicenseMappingPolicy
     /**
      * Determine whether the user can create models.
      */
-    public function create(Staff $staff): bool
+    public function create(CoreStaff $staff): bool
     {
         return $staff->admin;
     }
@@ -34,7 +34,7 @@ class LicenseMappingPolicy
     /**
      * Determine whether the user can update the model.
      */
-    public function update(Staff $staff, LicenseMapping $licenseMapping): bool
+    public function update(CoreStaff $staff, LicenseMapping $licenseMapping): bool
     {
         return $staff->admin;
     }
@@ -42,7 +42,7 @@ class LicenseMappingPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(Staff $staff, LicenseMapping $licenseMapping): bool
+    public function delete(CoreStaff $staff, LicenseMapping $licenseMapping): bool
     {
         return $staff->admin;
     }
@@ -50,7 +50,7 @@ class LicenseMappingPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(Staff $staff, LicenseMapping $licenseMapping): bool
+    public function restore(CoreStaff $staff, LicenseMapping $licenseMapping): bool
     {
         return $staff->admin;
     }
@@ -58,7 +58,7 @@ class LicenseMappingPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(Staff $staff, LicenseMapping $licenseMapping): bool
+    public function forceDelete(CoreStaff $staff, LicenseMapping $licenseMapping): bool
     {
         return $staff->admin;
     }

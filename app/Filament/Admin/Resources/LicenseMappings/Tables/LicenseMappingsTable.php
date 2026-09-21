@@ -27,7 +27,8 @@ class LicenseMappingsTable
                 TextColumn::make('keygen_policy_id')
                     ->label('Keygen policy')
                     ->copyable()
-                    ->searchable(),
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 IconColumn::make('active')
                     ->boolean()
                     ->label('Active'),
@@ -38,7 +39,9 @@ class LicenseMappingsTable
             ])
             ->filters([])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()
+                    ->iconButton()
+                    ->tooltip('Edit license mapping'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

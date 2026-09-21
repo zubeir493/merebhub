@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Pages;
 
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -18,9 +19,11 @@ class KeygenPolicies extends KeygenTablePage
 
     protected static ?string $navigationLabel = 'Keygen policies';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Licensing';
+    protected static string|\UnitEnum|null $navigationGroup = null;
 
-    protected static ?int $navigationSort = 20;
+    protected static ?string $navigationParentItem = 'Keygen products';
+
+    protected static ?int $navigationSort = 10;
 
     protected string $view = 'filament.admin.pages.keygen-policies';
 
@@ -32,10 +35,12 @@ class KeygenPolicies extends KeygenTablePage
                 ->all())
             ->columns([
                 TextColumn::make('name')->label('Name')->searchable(),
-                TextColumn::make('product_id')->label('Keygen product')->copyable()->limit(18),
+                TextColumn::make('product_id')->label('Keygen product')->copyable()->limit(18)
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('duration')->label('Duration')->placeholder('—'),
                 TextColumn::make('scheme')->label('Scheme')->badge(),
-                TextColumn::make('id')->label('Keygen ID')->copyable()->limit(18),
+                TextColumn::make('id')->label('Keygen ID')->copyable()->limit(18)
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->headerActions([
                 Action::make('create')
@@ -58,39 +63,45 @@ class KeygenPolicies extends KeygenTablePage
                     }),
             ])
             ->recordActions([
-                Action::make('edit')
-                    ->label('Edit')
-                    ->icon(Heroicon::PencilSquare)
-                    ->fillForm(fn (array $record): array => [
-                        'name' => $record['name'], 'product_id' => $record['product_id'],
-                        'duration' => $record['duration'], 'scheme' => $record['scheme'],
-                        'floating' => $record['floating'], 'protected' => $record['protected'],
-                        'requireProductScope' => $record['requireProductScope'],
-                    ])
-                    ->schema($this->policySchema(false))
-                    ->action(function (array $data, array $record): void {
-                        try {
-                            $this->keygen()->updatePolicy((string) $record['id'], [
-                                'name' => (string) $data['name'],
-                                ...$this->policyAttributes($data),
-                            ]);
-                            $this->refreshRecords();
-                            Notification::make()->title('Keygen policy updated')->success()->send();
-                        } catch (Throwable $exception) {
-                            $this->notifyFailure('Policy update failed', $exception);
-                        }
-                    }),
-                Action::make('delete')
-                    ->label('Delete')->icon(Heroicon::Trash)->color('danger')->requiresConfirmation()
-                    ->action(function (array $record): void {
-                        try {
-                            $this->keygen()->deletePolicy((string) $record['id']);
-                            $this->refreshRecords();
-                            Notification::make()->title('Keygen policy deleted')->success()->send();
-                        } catch (Throwable $exception) {
-                            $this->notifyFailure('Policy deletion failed', $exception);
-                        }
-                    }),
+                ActionGroup::make([
+                    Action::make('edit')
+                        ->label('Edit')
+                        ->icon(Heroicon::PencilSquare)
+                        ->fillForm(fn (array $record): array => [
+                            'name' => $record['name'], 'product_id' => $record['product_id'],
+                            'duration' => $record['duration'], 'scheme' => $record['scheme'],
+                            'floating' => $record['floating'], 'protected' => $record['protected'],
+                            'requireProductScope' => $record['requireProductScope'],
+                        ])
+                        ->schema($this->policySchema(false))
+                        ->action(function (array $data, array $record): void {
+                            try {
+                                $this->keygen()->updatePolicy((string) $record['id'], [
+                                    'name' => (string) $data['name'],
+                                    ...$this->policyAttributes($data),
+                                ]);
+                                $this->refreshRecords();
+                                Notification::make()->title('Keygen policy updated')->success()->send();
+                            } catch (Throwable $exception) {
+                                $this->notifyFailure('Policy update failed', $exception);
+                            }
+                        }),
+                    Action::make('delete')
+                        ->label('Delete')->icon(Heroicon::Trash)->color('danger')->requiresConfirmation()
+                        ->action(function (array $record): void {
+                            try {
+                                $this->keygen()->deletePolicy((string) $record['id']);
+                                $this->refreshRecords();
+                                Notification::make()->title('Keygen policy deleted')->success()->send();
+                            } catch (Throwable $exception) {
+                                $this->notifyFailure('Policy deletion failed', $exception);
+                            }
+                        }),
+                ])
+                    ->label('Actions')
+                    ->icon(Heroicon::OutlinedEllipsisVertical)
+                    ->tooltip('Keygen policy actions')
+                    ->color('gray'),
             ]);
     }
 

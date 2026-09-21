@@ -22,7 +22,9 @@ class SupportTicketResource extends Resource
 
     protected static ?string $navigationLabel = 'Support inbox';
 
-    protected static UnitEnum|string|null $navigationGroup = 'Customers';
+    protected static UnitEnum|string|null $navigationGroup = null;
+
+    protected static ?int $navigationSort = 80;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedChatBubbleLeftRight;
 
@@ -55,7 +57,8 @@ class SupportTicketResource extends Resource
                     ->sortable(),
                 TextColumn::make('assignee.full_name')
                     ->label('Assigned to')
-                    ->placeholder('Unassigned'),
+                    ->placeholder('Unassigned')
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('messages_count')
                     ->label('Messages')
                     ->sortable(),
@@ -81,6 +84,8 @@ class SupportTicketResource extends Resource
                 Action::make('open')
                     ->label('Open conversation')
                     ->icon(Heroicon::OutlinedArrowTopRightOnSquare)
+                    ->iconButton()
+                    ->tooltip('Open conversation')
                     ->url(fn (SupportTicket $record): string => route('staff.support.show', $record)),
             ]);
     }

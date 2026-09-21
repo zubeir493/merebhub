@@ -19,7 +19,9 @@ class FulfillmentUnitResource extends Resource
 
     protected static ?string $navigationLabel = 'Fulfillment recovery';
 
-    protected static UnitEnum|string|null $navigationGroup = 'Operations';
+    protected static UnitEnum|string|null $navigationGroup = null;
+
+    protected static ?int $navigationSort = 100;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedWrenchScrewdriver;
 

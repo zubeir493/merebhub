@@ -9,7 +9,7 @@
     </section>
 
     <div class="mx-auto max-w-[1400px] px-5 py-12 lg:px-8 lg:py-16">
-        <form method="GET" class="grid gap-3 border-y border-zinc-200 py-5 md:grid-cols-[minmax(0,1fr)_auto_auto_auto]">
+        <form method="GET" class="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto_auto_auto]">
             <label class="relative">
                 <span class="sr-only">Search developers</span>
                 <x-heroicon-o-magnifying-glass class="absolute left-4 top-1/2 size-5 -translate-y-1/2 text-zinc-400" />

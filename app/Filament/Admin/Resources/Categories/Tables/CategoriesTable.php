@@ -22,7 +22,7 @@ class CategoriesTable
                     ->badge(),
                 TextColumn::make('slug')
                     ->searchable()
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable(),
@@ -31,7 +31,9 @@ class CategoriesTable
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()
+                    ->iconButton()
+                    ->tooltip('Edit category'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

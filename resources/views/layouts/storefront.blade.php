@@ -72,6 +72,7 @@
                                 <p class="truncate text-xs text-zinc-500">{{ auth()->user()->email }}</p>
                             </div>
                             <a href="{{ route('account.purchases') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-key class="size-4" /> Purchased Licenses</a>
+                            <a href="{{ route('account.downloads') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-arrow-down-tray class="size-4" /> Downloads</a>
                             <a href="{{ route('account.wishlist') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-bookmark class="size-4" /> Wishlist</a>
                             <a href="{{ route('account.settings') }}" class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-cog-6-tooth class="size-4" /> Settings</a>
                             <form method="POST" action="{{ route('logout') }}" class="border-t border-zinc-100">

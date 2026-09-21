@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\Products\Pages;
 
 use App\Domain\Catalog\Actions\SyncProductConfigurationAction;
+use App\Domain\Catalog\Actions\SyncProductDownloadsAction;
 use App\Filament\Admin\Resources\Products\ProductResource;
 use Filament\Resources\Pages\CreateRecord;
 
@@ -27,6 +28,8 @@ class CreateProduct extends CreateRecord
             $data['keygen_policy_id'],
             $data['keygen_mapping_label'],
             $data['keygen_mapping_active'],
+            $data['downloadable_files'],
+            $data['downloadable_file_names'],
         );
 
         return $data;
@@ -35,5 +38,10 @@ class CreateProduct extends CreateRecord
     protected function afterCreate(): void
     {
         app(SyncProductConfigurationAction::class)->handle($this->record, $this->productConfiguration);
+        app(SyncProductDownloadsAction::class)->handle(
+            $this->record,
+            $this->productConfiguration['downloadable_files'] ?? [],
+            $this->productConfiguration['downloadable_file_names'] ?? [],
+        );
     }
 }

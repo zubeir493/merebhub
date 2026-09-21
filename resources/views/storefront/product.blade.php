@@ -88,6 +88,7 @@
                         <span class="text-zinc-500">{{ number_format($displayReviewCount) }} ratings</span>
                     </button>
                 </div>
+                <p class="pt-6">{{ $product->short_description }}</p>
                 <div class="py-6">
                     @if ($product->variants->isNotEmpty())
                         <form method="POST" action="{{ route('cart.store', $product) }}" data-add-to-cart>
@@ -128,12 +129,12 @@
                             currently available for purchase.</div>
                     @endif
                     <p class="mt-3 flex items-center justify-center gap-2 text-center text-xs font-semibold text-zinc-500">
-                        <x-heroicon-o-shield-check class="size-4 shrink-0" /> Cart and order processing powered by Lunar · Secure checkout by Chapa
+                        <x-heroicon-o-shield-check class="size-4 shrink-0" />Secure checkout by Chapa
                     </p>
                 </div>
             </div>
         </section>
-        <section id="product-details" data-product-tabs class="mt-12 border-t border-zinc-200 pt-8">
+        <section id="product-details" data-product-tabs class="mt-12">
             <div class="flex gap-6 overflow-x-auto border-b border-zinc-200" role="tablist" aria-label="Product details">
                 <button type="button" data-product-tab="description" role="tab" aria-selected="{{ $reviewsTabActive ? 'false' : 'true' }}" aria-controls="product-description" class="-mb-px shrink-0 border-b-2 {{ $reviewsTabActive ? 'border-transparent text-zinc-500' : 'border-teal-500 text-zinc-950' }} px-1 pb-4 text-sm font-extrabold transition focus:outline-none focus:ring-4 focus:ring-teal-500/10">Description</button>
                 <button type="button" data-product-tab="reviews" role="tab" aria-selected="{{ $reviewsTabActive ? 'true' : 'false' }}" aria-controls="product-reviews" class="-mb-px shrink-0 border-b-2 {{ $reviewsTabActive ? 'border-teal-500 text-zinc-950' : 'border-transparent text-zinc-500' }} px-1 pb-4 text-sm font-extrabold transition hover:text-zinc-950 focus:outline-none focus:ring-4 focus:ring-teal-500/10">Reviews ({{ number_format($displayReviewCount) }})</button>

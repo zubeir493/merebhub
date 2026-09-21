@@ -16,6 +16,8 @@ return [
 
     'default' => env('MAIL_MAILER', 'log'),
 
+    'fallback_default' => env('MAIL_MAILER', 'log'),
+
     /*
     |--------------------------------------------------------------------------
     | Mailer Configurations

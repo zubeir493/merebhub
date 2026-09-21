@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\Products\Pages;
 
 use App\Domain\Catalog\Actions\SyncProductConfigurationAction;
+use App\Domain\Catalog\Actions\SyncProductDownloadsAction;
 use App\Filament\Admin\Resources\Products\ProductResource;
 use App\Models\LicenseMapping;
 use App\Models\Product;
@@ -53,6 +54,7 @@ class EditProduct extends EditRecord
             })
             ->all();
         $firstVariant = $variants[0] ?? [];
+        $downloadableAssets = $product->downloadableAssets()->get();
 
         return [
             ...$data,
@@ -65,6 +67,8 @@ class EditProduct extends EditRecord
             'keygen_policy_id' => $mapping?->keygen_policy_id,
             'keygen_mapping_label' => $mapping?->label,
             'keygen_mapping_active' => $mapping?->active ?? true,
+            'downloadable_files' => $downloadableAssets->pluck('path')->all(),
+            'downloadable_file_names' => $downloadableAssets->pluck('filename', 'path')->all(),
         ];
     }
 
@@ -82,6 +86,8 @@ class EditProduct extends EditRecord
             $data['keygen_policy_id'],
             $data['keygen_mapping_label'],
             $data['keygen_mapping_active'],
+            $data['downloadable_files'],
+            $data['downloadable_file_names'],
         );
 
         return $data;
@@ -90,6 +96,11 @@ class EditProduct extends EditRecord
     protected function afterSave(): void
     {
         app(SyncProductConfigurationAction::class)->handle($this->record, $this->productConfiguration);
+        app(SyncProductDownloadsAction::class)->handle(
+            $this->record,
+            $this->productConfiguration['downloadable_files'] ?? [],
+            $this->productConfiguration['downloadable_file_names'] ?? [],
+        );
     }
 
     protected function getHeaderActions(): array

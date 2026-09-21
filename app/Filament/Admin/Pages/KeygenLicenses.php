@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Pages;
 
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -18,9 +19,11 @@ class KeygenLicenses extends KeygenTablePage
 
     protected static ?string $navigationLabel = 'Keygen licenses';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Licensing';
+    protected static string|\UnitEnum|null $navigationGroup = null;
 
-    protected static ?int $navigationSort = 30;
+    protected static ?string $navigationParentItem = 'Keygen products';
+
+    protected static ?int $navigationSort = 20;
 
     protected string $view = 'filament.admin.pages.keygen-licenses';
 
@@ -34,10 +37,13 @@ class KeygenLicenses extends KeygenTablePage
                 TextColumn::make('name')->label('Name')->placeholder('—')->searchable(),
                 TextColumn::make('key')->label('License key')->copyable()->searchable(),
                 TextColumn::make('status')->badge(),
-                TextColumn::make('product_id')->label('Product')->placeholder('—')->limit(18),
-                TextColumn::make('policy_id')->label('Policy')->placeholder('—')->limit(18),
+                TextColumn::make('product_id')->label('Product')->placeholder('—')->limit(18)
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('policy_id')->label('Policy')->placeholder('—')->limit(18)
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('expiry')->label('Expires')->placeholder('Perpetual'),
-                TextColumn::make('id')->label('Keygen ID')->copyable()->limit(18),
+                TextColumn::make('id')->label('Keygen ID')->copyable()->limit(18)
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->headerActions([
                 Action::make('create')
@@ -59,55 +65,61 @@ class KeygenLicenses extends KeygenTablePage
                     }),
             ])
             ->recordActions([
-                Action::make('edit')
-                    ->label('Edit')->icon(Heroicon::PencilSquare)
-                    ->fillForm(fn (array $record): array => [
-                        'name' => $record['name'], 'expiry' => $record['expiry'],
-                    ])
-                    ->schema([
-                        TextInput::make('name')->label('License name')->maxLength(255)->nullable(),
-                        TextInput::make('expiry')->nullable()
-                            ->helperText('Use an ISO-8601 timestamp, or clear it for a perpetual license.'),
-                    ])
-                    ->action(function (array $data, array $record): void {
-                        try {
-                            $this->keygen()->updateLicense((string) $record['id'], [
-                                'name' => filled($data['name'] ?? null) ? (string) $data['name'] : null,
-                                'expiry' => filled($data['expiry'] ?? null) ? (string) $data['expiry'] : null,
-                            ]);
-                            $this->refreshRecords();
-                            Notification::make()->title('License updated')->success()->send();
-                        } catch (Throwable $exception) {
-                            $this->notifyFailure('License update failed', $exception);
-                        }
-                    }),
-                Action::make('suspend')->label('Suspend')->icon(Heroicon::Pause)->color('warning')
-                    ->requiresConfirmation()
-                    ->visible(fn (array $record): bool => $record['status'] === 'active')
-                    ->action(function (array $record): void {
-                        $this->runLicenseAction((string) $record['id'], 'suspend', 'License suspended');
-                    }),
-                Action::make('reinstate')->label('Reinstate')->icon(Heroicon::ArrowPath)
-                    ->visible(fn (array $record): bool => $record['status'] === 'suspended')
-                    ->action(function (array $record): void {
-                        $this->runLicenseAction((string) $record['id'], 'reinstate', 'License reinstated');
-                    }),
-                Action::make('revoke')->label('Revoke')->icon(Heroicon::NoSymbol)->color('danger')
-                    ->requiresConfirmation()
-                    ->visible(fn (array $record): bool => $record['status'] !== 'revoked')
-                    ->action(function (array $record): void {
-                        $this->runLicenseAction((string) $record['id'], 'revoke', 'License revoked');
-                    }),
-                Action::make('delete')->label('Delete')->icon(Heroicon::Trash)->color('danger')->requiresConfirmation()
-                    ->action(function (array $record): void {
-                        try {
-                            $this->keygen()->deleteLicense((string) $record['id']);
-                            $this->refreshRecords();
-                            Notification::make()->title('License deleted')->success()->send();
-                        } catch (Throwable $exception) {
-                            $this->notifyFailure('License deletion failed', $exception);
-                        }
-                    }),
+                ActionGroup::make([
+                    Action::make('edit')
+                        ->label('Edit')->icon(Heroicon::PencilSquare)
+                        ->fillForm(fn (array $record): array => [
+                            'name' => $record['name'], 'expiry' => $record['expiry'],
+                        ])
+                        ->schema([
+                            TextInput::make('name')->label('License name')->maxLength(255)->nullable(),
+                            TextInput::make('expiry')->nullable()
+                                ->helperText('Use an ISO-8601 timestamp, or clear it for a perpetual license.'),
+                        ])
+                        ->action(function (array $data, array $record): void {
+                            try {
+                                $this->keygen()->updateLicense((string) $record['id'], [
+                                    'name' => filled($data['name'] ?? null) ? (string) $data['name'] : null,
+                                    'expiry' => filled($data['expiry'] ?? null) ? (string) $data['expiry'] : null,
+                                ]);
+                                $this->refreshRecords();
+                                Notification::make()->title('License updated')->success()->send();
+                            } catch (Throwable $exception) {
+                                $this->notifyFailure('License update failed', $exception);
+                            }
+                        }),
+                    Action::make('suspend')->label('Suspend')->icon(Heroicon::Pause)->color('warning')
+                        ->requiresConfirmation()
+                        ->visible(fn (array $record): bool => $record['status'] === 'active')
+                        ->action(function (array $record): void {
+                            $this->runLicenseAction((string) $record['id'], 'suspend', 'License suspended');
+                        }),
+                    Action::make('reinstate')->label('Reinstate')->icon(Heroicon::ArrowPath)
+                        ->visible(fn (array $record): bool => $record['status'] === 'suspended')
+                        ->action(function (array $record): void {
+                            $this->runLicenseAction((string) $record['id'], 'reinstate', 'License reinstated');
+                        }),
+                    Action::make('revoke')->label('Revoke')->icon(Heroicon::NoSymbol)->color('danger')
+                        ->requiresConfirmation()
+                        ->visible(fn (array $record): bool => $record['status'] !== 'revoked')
+                        ->action(function (array $record): void {
+                            $this->runLicenseAction((string) $record['id'], 'revoke', 'License revoked');
+                        }),
+                    Action::make('delete')->label('Delete')->icon(Heroicon::Trash)->color('danger')->requiresConfirmation()
+                        ->action(function (array $record): void {
+                            try {
+                                $this->keygen()->deleteLicense((string) $record['id']);
+                                $this->refreshRecords();
+                                Notification::make()->title('License deleted')->success()->send();
+                            } catch (Throwable $exception) {
+                                $this->notifyFailure('License deletion failed', $exception);
+                            }
+                        }),
+                ])
+                    ->label('Actions')
+                    ->icon(Heroicon::OutlinedEllipsisVertical)
+                    ->tooltip('License actions')
+                    ->color('gray'),
             ]);
     }
 

@@ -107,6 +107,14 @@ test('an active purchase lists only downloadable assets that passed scanning', f
         ->assertSuccessful()
         ->assertSee('release.zip')
         ->assertDontSee('pending.zip');
+
+    $this->actingAs($customer)
+        ->get(route('account.downloads'))
+        ->assertSuccessful()
+        ->assertSee('Downloads')
+        ->assertSee('release.zip')
+        ->assertSee('Download')
+        ->assertDontSee('pending.zip');
 });
 
 test('an entitled customer can reveal a credential and the reveal is audited without the secret', function (): void {

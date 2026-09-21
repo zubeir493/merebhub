@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Pages;
 
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -18,9 +19,9 @@ class KeygenProducts extends KeygenTablePage
 
     protected static ?string $navigationLabel = 'Keygen products';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Licensing';
+    protected static string|\UnitEnum|null $navigationGroup = null;
 
-    protected static ?int $navigationSort = 10;
+    protected static ?int $navigationSort = 120;
 
     protected string $view = 'filament.admin.pages.keygen-products';
 
@@ -34,8 +35,10 @@ class KeygenProducts extends KeygenTablePage
                 TextColumn::make('name')->label('Name')->searchable(),
                 TextColumn::make('code')->label('Code')->copyable()->searchable(),
                 TextColumn::make('distributionStrategy')->label('Distribution')->badge(),
-                TextColumn::make('url')->label('URL')->placeholder('—')->limit(45),
-                TextColumn::make('id')->label('Keygen ID')->copyable()->limit(18),
+                TextColumn::make('url')->label('URL')->placeholder('—')->limit(45)
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('id')->label('Keygen ID')->copyable()->limit(18)
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->headerActions([
                 Action::make('create')
@@ -59,44 +62,50 @@ class KeygenProducts extends KeygenTablePage
                     }),
             ])
             ->recordActions([
-                Action::make('edit')
-                    ->label('Edit')
-                    ->icon(Heroicon::PencilSquare)
-                    ->fillForm(fn (array $record): array => [
-                        'name' => $record['name'], 'code' => $record['code'], 'url' => $record['url'],
-                        'distributionStrategy' => $record['distributionStrategy'],
-                    ])
-                    ->schema($this->productSchema())
-                    ->action(function (array $data, array $record): void {
-                        try {
-                            $this->keygen()->updateProduct((string) $record['id'], [
-                                'name' => (string) $data['name'],
-                                'code' => (string) $data['code'],
-                                'url' => filled($data['url'] ?? null) ? (string) $data['url'] : null,
-                                'distributionStrategy' => (string) $data['distributionStrategy'],
-                            ]);
-                            $this->refreshRecords();
-                            Notification::make()->title('Keygen product updated')->success()->send();
-                        } catch (Throwable $exception) {
-                            $this->notifyFailure('Product update failed', $exception);
-                        }
-                    }),
-                Action::make('delete')
-                    ->label('Delete')
-                    ->icon(Heroicon::Trash)
-                    ->color('danger')
-                    ->requiresConfirmation()
-                    ->modalHeading('Delete Keygen product?')
-                    ->modalDescription('This also deletes its Keygen policies and licenses.')
-                    ->action(function (array $record): void {
-                        try {
-                            $this->keygen()->deleteProduct((string) $record['id']);
-                            $this->refreshRecords();
-                            Notification::make()->title('Keygen product deleted')->success()->send();
-                        } catch (Throwable $exception) {
-                            $this->notifyFailure('Product deletion failed', $exception);
-                        }
-                    }),
+                ActionGroup::make([
+                    Action::make('edit')
+                        ->label('Edit')
+                        ->icon(Heroicon::PencilSquare)
+                        ->fillForm(fn (array $record): array => [
+                            'name' => $record['name'], 'code' => $record['code'], 'url' => $record['url'],
+                            'distributionStrategy' => $record['distributionStrategy'],
+                        ])
+                        ->schema($this->productSchema())
+                        ->action(function (array $data, array $record): void {
+                            try {
+                                $this->keygen()->updateProduct((string) $record['id'], [
+                                    'name' => (string) $data['name'],
+                                    'code' => (string) $data['code'],
+                                    'url' => filled($data['url'] ?? null) ? (string) $data['url'] : null,
+                                    'distributionStrategy' => (string) $data['distributionStrategy'],
+                                ]);
+                                $this->refreshRecords();
+                                Notification::make()->title('Keygen product updated')->success()->send();
+                            } catch (Throwable $exception) {
+                                $this->notifyFailure('Product update failed', $exception);
+                            }
+                        }),
+                    Action::make('delete')
+                        ->label('Delete')
+                        ->icon(Heroicon::Trash)
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->modalHeading('Delete Keygen product?')
+                        ->modalDescription('This also deletes its Keygen policies and licenses.')
+                        ->action(function (array $record): void {
+                            try {
+                                $this->keygen()->deleteProduct((string) $record['id']);
+                                $this->refreshRecords();
+                                Notification::make()->title('Keygen product deleted')->success()->send();
+                            } catch (Throwable $exception) {
+                                $this->notifyFailure('Product deletion failed', $exception);
+                            }
+                        }),
+                ])
+                    ->label('Actions')
+                    ->icon(Heroicon::OutlinedEllipsisVertical)
+                    ->tooltip('Keygen product actions')
+                    ->color('gray'),
             ]);
     }
 

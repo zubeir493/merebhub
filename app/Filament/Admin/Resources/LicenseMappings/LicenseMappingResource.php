@@ -22,7 +22,9 @@ class LicenseMappingResource extends Resource
 
     protected static ?string $navigationLabel = 'Licenses';
 
-    protected static UnitEnum|string|null $navigationGroup = 'Fulfillment';
+    protected static UnitEnum|string|null $navigationGroup = null;
+
+    protected static ?int $navigationSort = 110;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedKey;
 

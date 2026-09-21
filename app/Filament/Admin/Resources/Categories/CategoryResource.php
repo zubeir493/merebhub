@@ -23,7 +23,11 @@ class CategoryResource extends Resource
 
     protected static ?string $navigationLabel = 'Categories';
 
-    protected static UnitEnum|string|null $navigationGroup = 'Catalog review';
+    protected static UnitEnum|string|null $navigationGroup = null;
+
+    protected static ?string $navigationParentItem = 'Products';
+
+    protected static ?int $navigationSort = 30;
 
     protected static ?string $recordTitleAttribute = 'name';
 

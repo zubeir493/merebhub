@@ -8,11 +8,13 @@ use App\Filament\Admin\Resources\Products\ProductResource;
 use App\Models\Product;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -56,7 +58,8 @@ class ProductsTable
                     ->sortable(),
                 TextColumn::make('source_type')
                     ->label('Source')
-                    ->formatStateUsing(fn (mixed $state): string => str($state instanceof BackedEnum ? $state->value : $state)->replace('_', ' ')->title()),
+                    ->formatStateUsing(fn (mixed $state): string => str($state instanceof BackedEnum ? $state->value : $state)->replace('_', ' ')->title())
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('status')
                     ->label('Catalog status')
                     ->badge()
@@ -80,40 +83,46 @@ class ProductsTable
                     ->preload(),
             ])
             ->recordActions([
-                EditAction::make(),
-                Action::make('review')
-                    ->label('Review')
-                    ->icon('heroicon-o-clipboard-document-check')
-                    ->color('warning')
-                    ->form([
-                        Select::make('state')
-                            ->label('Decision')
-                            ->options([
-                                ProductPublicationState::UnderReview->value => 'Under review',
-                                ProductPublicationState::Approved->value => 'Approved',
-                                ProductPublicationState::ChangesRequested->value => 'Changes requested',
-                                ProductPublicationState::Rejected->value => 'Rejected',
-                                ProductPublicationState::Published->value => 'Published',
-                                ProductPublicationState::Archived->value => 'Archived',
-                            ])
-                            ->required(),
-                        Textarea::make('reason')
-                            ->label('Review note')
-                            ->required()
-                            ->maxLength(2000),
-                    ])
-                    ->action(function (Product $record, array $data, ReviewProductAction $review): void {
-                        $reviewer = auth('staff')->user();
+                ActionGroup::make([
+                    EditAction::make(),
+                    Action::make('review')
+                        ->label('Review')
+                        ->icon('heroicon-o-clipboard-document-check')
+                        ->color('warning')
+                        ->form([
+                            Select::make('state')
+                                ->label('Decision')
+                                ->options([
+                                    ProductPublicationState::UnderReview->value => 'Under review',
+                                    ProductPublicationState::Approved->value => 'Approved',
+                                    ProductPublicationState::ChangesRequested->value => 'Changes requested',
+                                    ProductPublicationState::Rejected->value => 'Rejected',
+                                    ProductPublicationState::Published->value => 'Published',
+                                    ProductPublicationState::Archived->value => 'Archived',
+                                ])
+                                ->required(),
+                            Textarea::make('reason')
+                                ->label('Review note')
+                                ->required()
+                                ->maxLength(2000),
+                        ])
+                        ->action(function (Product $record, array $data, ReviewProductAction $review): void {
+                            $reviewer = auth('staff')->user();
 
-                        abort_unless($reviewer instanceof Staff, 403);
+                            abort_unless($reviewer instanceof Staff, 403);
 
-                        $review->handle(
-                            $record,
-                            $reviewer,
-                            ProductPublicationState::from($data['state']),
-                            $data['reason'],
-                        );
-                    }),
+                            $review->handle(
+                                $record,
+                                $reviewer,
+                                ProductPublicationState::from($data['state']),
+                                $data['reason'],
+                            );
+                        }),
+                ])
+                    ->label('Actions')
+                    ->icon(Heroicon::OutlinedEllipsisVertical)
+                    ->tooltip('Product actions')
+                    ->color('gray'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

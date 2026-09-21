@@ -107,7 +107,14 @@ class StorefrontController extends Controller
             ->whereBelongsTo($author, 'author')
             ->when($search !== '', fn (Builder $query) => $query->search($search))
             ->when($category !== '', fn (Builder $query) => $query->catalogAttributeContains('attribute_data', $category));
-        $products = (clone $query)->latest()->paginate(12)->withQueryString();
+        $productsQuery = clone $query;
+
+        match ($sort) {
+            'rating' => $productsQuery->orderByDesc('published_reviews_avg_rating')->latest(),
+            default => $productsQuery->latest(),
+        };
+
+        $products = $productsQuery->paginate(12)->withQueryString();
         $categories = (clone $query)->get()->pluck('category')->filter()->unique()->sort()->values();
 
         return view('storefront.author', compact('author', 'products', 'categories', 'search', 'category', 'sort'));
@@ -115,13 +122,15 @@ class StorefrontController extends Controller
 
     private function products(): Builder
     {
-        return Product::published()->with([
-            'author.defaultUrl',
-            'defaultUrl',
-            'media',
-            'variants.prices.currency',
-            'variants.prices.priceable',
-            'variants.values',
-        ]);
+        return Product::published()
+            ->withPublishedReviewSummary()
+            ->with([
+                'author.defaultUrl',
+                'defaultUrl',
+                'media',
+                'variants.prices.currency',
+                'variants.prices.priceable',
+                'variants.values',
+            ]);
     }
 }

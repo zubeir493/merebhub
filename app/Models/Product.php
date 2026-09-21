@@ -239,7 +239,7 @@ class Product extends \Lunar\Core\Models\Product
             return asset(ltrim($path, '/'));
         }
 
-        return Storage::disk('public')->url($path);
+        return Storage::disk((string) config('marketplace.public_media_disk', 'public'))->url($path);
     }
 
     public function variantPresentationImage(ProductVariant $variant): ?string
@@ -258,7 +258,7 @@ class Product extends \Lunar\Core\Models\Product
             return asset(ltrim($path, '/'));
         }
 
-        return Storage::disk('public')->url($path);
+        return Storage::disk((string) config('marketplace.public_media_disk', 'public'))->url($path);
     }
 
     public function variantDisplayName(ProductVariant $variant): string

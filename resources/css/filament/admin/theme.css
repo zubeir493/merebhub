@@ -219,11 +219,7 @@ nav.fi-sidebar-nav::-webkit-scrollbar {
     background-color: var(--gray-900);
 }
 
-/* The reference header keeps the sidebar fixed open; remove Lunar's collapse control. */
-.fi-topbar-open-sidebar-btn {
-    display: none !important;
-}
-
+/* Keep desktop collapse controls hidden while preserving Filament's mobile drawer trigger. */
 .fi-topbar-open-collapse-sidebar-btn,
 .fi-topbar-close-collapse-sidebar-btn,
 .fi-sidebar-open-collapse-sidebar-btn,

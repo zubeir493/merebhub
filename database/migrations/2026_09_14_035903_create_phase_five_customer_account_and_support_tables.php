@@ -8,6 +8,10 @@ return new class extends Migration
 {
     public function up(): void
     {
+        Schema::disableForeignKeyConstraints();
+        $this->down();
+        Schema::enableForeignKeyConstraints();
+
         $lunarPrefix = (string) config('lunar.database.table_prefix', 'lunar_');
 
         Schema::create('billing_profiles', function (Blueprint $table): void {
@@ -95,7 +99,7 @@ return new class extends Migration
             $table->text('body');
             $table->timestamps();
 
-            $table->index(['support_ticket_id', 'is_internal', 'created_at']);
+            $table->index(['support_ticket_id', 'is_internal', 'created_at'], 'stm_ticket_internal_created_idx');
         });
 
         Schema::create('support_ticket_attachments', function (Blueprint $table): void {

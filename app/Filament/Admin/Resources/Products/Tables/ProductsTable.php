@@ -29,10 +29,7 @@ class ProductsTable
             ->columns([
                 TextColumn::make('name')
                     ->label('Product')
-                    ->searchable()
-                    ->sortable(),
-                TextColumn::make('merchant.display_name')
-                    ->label('Merchant')
+                    ->description(fn (Product $record): ?string => $record->merchant?->display_name)
                     ->searchable()
                     ->sortable(),
                 ToggleColumn::make('featured')
@@ -56,10 +53,6 @@ class ProductsTable
                         default => 'gray',
                     })
                     ->sortable(),
-                TextColumn::make('source_type')
-                    ->label('Source')
-                    ->formatStateUsing(fn (mixed $state): string => str($state instanceof BackedEnum ? $state->value : $state)->replace('_', ' ')->title())
-                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('status')
                     ->label('Catalog status')
                     ->badge()

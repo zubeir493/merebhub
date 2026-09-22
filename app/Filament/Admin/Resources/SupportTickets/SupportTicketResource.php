@@ -37,12 +37,9 @@ class SupportTicketResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('public_id')
-                    ->label('Reference')
-                    ->copyable()
-                    ->searchable(),
                 TextColumn::make('subject')
-                    ->searchable()
+                    ->description(fn (SupportTicket $record): string => '#'.$record->public_id)
+                    ->searchable(['subject', 'public_id'])
                     ->limit(60),
                 TextColumn::make('user.name')
                     ->label('Customer')
@@ -55,15 +52,9 @@ class SupportTicketResource extends Resource
                     ->badge()
                     ->formatStateUsing(fn (mixed $state): string => Str::headline($state instanceof BackedEnum ? $state->value : (string) $state))
                     ->sortable(),
-                TextColumn::make('assignee.full_name')
-                    ->label('Assigned to')
-                    ->placeholder('Unassigned')
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('messages_count')
-                    ->label('Messages')
-                    ->sortable(),
                 TextColumn::make('last_message_at')
                     ->label('Last activity')
+                    ->description(fn (SupportTicket $record): string => $record->messages_count.' '.Str::plural('message', $record->messages_count))
                     ->since()
                     ->sortable(),
             ])

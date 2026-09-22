@@ -37,13 +37,9 @@ class KeygenLicenses extends KeygenTablePage
                 TextColumn::make('name')->label('Name')->placeholder('—')->searchable(),
                 TextColumn::make('key')->label('License key')->copyable()->searchable(),
                 TextColumn::make('status')->badge(),
-                TextColumn::make('product_id')->label('Product')->placeholder('—')->limit(18)
-                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('policy_id')->label('Policy')->placeholder('—')->limit(18)
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('expiry')->label('Expires')->placeholder('Perpetual'),
-                TextColumn::make('id')->label('Keygen ID')->copyable()->limit(18)
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->headerActions([
                 Action::make('create')

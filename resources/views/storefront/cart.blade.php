@@ -12,7 +12,7 @@
                 <span class="mx-auto grid size-14 place-items-center rounded-full bg-zinc-100"><x-heroicon-o-shopping-cart class="size-7 text-zinc-500" /></span>
                 <h2 class="mt-5 text-xl font-extrabold">Your cart is empty</h2>
                 <p class="mt-2 text-sm text-zinc-500">Explore the catalog and add software when you are ready.</p>
-                <a href="{{ route('store.index') }}" class="btn-primary mt-6">Explore Deals</a>
+                <a href="{{ route('store.index') }}" class="btn-primary mt-6">Browse software catalog</a>
             </section>
         @else
             <div class="mt-8 grid gap-10 lg:grid-cols-[1fr_360px]">
@@ -59,7 +59,7 @@
                 <aside class="h-fit lg:sticky lg:top-28">
                     <h2 class="text-lg font-extrabold">Order summary</h2>
                     <div class="mt-5 flex items-center justify-between text-sm text-zinc-600"><span>Subtotal</span><strong class="text-zinc-950">{{ $cart->subTotal->format() }}</strong></div>
-                    <div class="mt-4 flex items-center justify-between border-b border-zinc-200 pb-5 text-sm text-zinc-600"><span>Commerce engine</span><span>Lunar</span></div>
+                    <div class="mt-4 flex items-center justify-between border-b border-zinc-200 pb-5 text-sm text-zinc-600"><span>Currency</span><span>ETB (Ethiopian Birr)</span></div>
                     <div class="mt-5 flex items-end justify-between"><strong>Total</strong><strong class="text-md">{{ $cart->total->format() }}</strong></div>
                     <button type="button" data-share-cart="{{ route('cart.share') }}" class="mt-5 flex min-h-11 w-full items-center justify-center gap-2 rounded-md border border-zinc-300 px-4 py-3 text-sm font-extrabold text-teal-900 transition hover:border-teal-400 hover:bg-teal-50"><x-heroicon-o-share class="size-4" /> Share cart</button>
                     <p class="mt-2 hidden text-center text-xs font-semibold text-emerald-700" data-share-cart-status role="status"></p>
@@ -67,7 +67,7 @@
                         @csrf
                         <button type="submit" class="btn-primary w-full"><x-heroicon-o-lock-closed class="size-4" /> Checkout with Chapa</button>
                     </form>
-                    <p class="mt-4 text-center text-xs leading-5 text-zinc-500">Taxes and totals are calculated by Lunar.</p>
+                    <p class="mt-4 text-center text-xs leading-5 text-zinc-500">Instant digital delivery with secure payment processing.</p>
                 </aside>
             </div>
         @endif

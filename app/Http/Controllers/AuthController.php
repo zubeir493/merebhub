@@ -17,9 +17,14 @@ use Lunar\Core\Models\Customer;
 
 class AuthController extends Controller
 {
-    public function loginForm(): View
+    public function loginForm(Request $request): View
     {
-        return view('auth.login');
+        $content = $this->resolveAuthContent($request, isRegister: false);
+
+        return view('auth.login', [
+            'title' => $content['title'],
+            'subtitle' => $content['subtitle'],
+        ]);
     }
 
     public function login(LoginRequest $request): RedirectResponse
@@ -35,9 +40,71 @@ class AuthController extends Controller
         return redirect()->intended(route('account.orders'));
     }
 
-    public function registerForm(): View
+    public function registerForm(Request $request): View
     {
-        return view('auth.register');
+        $content = $this->resolveAuthContent($request, isRegister: true);
+
+        return view('auth.register', [
+            'title' => $content['title'],
+            'subtitle' => $content['subtitle'],
+        ]);
+    }
+
+    /**
+     * @return array{title: string, subtitle: string}
+     */
+    private function resolveAuthContent(Request $request, bool $isRegister = false): array
+    {
+        $intent = Str::lower((string) (
+            $request->query('intent')
+            ?: $request->query('from')
+            ?: $request->query('redirect')
+            ?: $request->session()->get('url.intended')
+            ?: url()->previous()
+        ));
+
+        if (Str::contains($intent, ['checkout', 'cart', 'order'])) {
+            return [
+                'title' => $isRegister ? 'Create an account to complete your purchase' : 'Sign in to complete your purchase',
+                'subtitle' => $isRegister
+                    ? 'Create your account in seconds to finalize your checkout and receive your licenses.'
+                    : 'Sign in to proceed with checkout and access your purchased software licenses.',
+            ];
+        }
+
+        if (Str::contains($intent, 'wishlist')) {
+            return [
+                'title' => $isRegister ? 'Create an account to save to your wishlist' : 'Sign in to save to your wishlist',
+                'subtitle' => $isRegister
+                    ? 'Keep track of the software, tools, and developer libraries you want to revisit.'
+                    : 'Sign in to bookmark software and keep track of products you want to buy later.',
+            ];
+        }
+
+        if (Str::contains($intent, ['download', 'purchase', 'credential', 'license'])) {
+            return [
+                'title' => $isRegister ? 'Create an account to access your downloads' : 'Sign in to access your downloads',
+                'subtitle' => $isRegister
+                    ? 'Keep every purchase, license key, and software download in one place.'
+                    : 'Access your product license keys, offline activation files, and software downloads.',
+            ];
+        }
+
+        if (Str::contains($intent, ['review'])) {
+            return [
+                'title' => $isRegister ? 'Create an account to write a review' : 'Sign in to write a review',
+                'subtitle' => $isRegister
+                    ? 'Join MerebHub to rate and review verified Ethiopian software.'
+                    : 'Share your feedback and experience with the developer and community.',
+            ];
+        }
+
+        return [
+            'title' => $isRegister ? 'Create your account' : 'Welcome back',
+            'subtitle' => $isRegister
+                ? 'Keep every purchase, license, and download in one place.'
+                : 'Sign in to access your licenses and downloads.',
+        ];
     }
 
     public function register(RegisterRequest $request): RedirectResponse

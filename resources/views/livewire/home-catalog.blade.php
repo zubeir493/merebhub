@@ -88,7 +88,7 @@
 
                 <div class="mt-9 grid border-y border-zinc-200 md:grid-cols-2 xl:grid-cols-3">
                     @foreach ($popularProducts as $index => $product)
-                        <a wire:key="popular-{{ $product->id }}" href="{{ route('products.show', $product) }}" class="group flex min-w-0 items-center gap-4 border-b border-zinc-200 py-5 md:border-r-0 md:px-5 md:[&:nth-child(odd)]:border-r md:[&:nth-last-child(-n+2)]:border-b-0 xl:border-r-0 xl:[&:nth-child(3n)]:border-r-0 xl:[&:nth-child(3n+1)]:border-r xl:[&:nth-child(3n+2)]:border-r xl:[&:nth-child(3n+1)]:pl-0 xl:[&:nth-child(3n)]:pr-0 xl:[&:nth-last-child(-n+3)]:border-b-0">
+                        <a wire:key="popular-{{ $product->id }}" href="{{ route('products.show', $product) }}" class="group flex min-w-0 items-center gap-4 border-b border-zinc-200 py-5 md:border-r-0 md:px-5 md:max-xl:[&:nth-child(odd)]:border-r md:[&:nth-last-child(-n+2)]:border-b-0 xl:border-r-0 xl:[&:nth-child(3n)]:border-r-0 xl:[&:nth-child(3n+1)]:border-r xl:[&:nth-child(3n+2)]:border-r xl:[&:nth-child(3n+1)]:pl-0 xl:[&:nth-child(3n)]:pr-0 xl:[&:nth-last-child(-n+3)]:border-b-0">
                             <span class="w-5 shrink-0 text-xs font-extrabold tabular-nums text-zinc-400">{{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}</span>
                             <img src="{{ $product->coverUrl() }}" alt="" loading="lazy" class="size-16 shrink-0 rounded-xl bg-zinc-100 object-cover transition duration-300 group-hover:scale-[1.04]">
                             <span class="min-w-0 flex-1">
@@ -137,8 +137,8 @@
         <section class="border-b border-zinc-200 bg-white">
             <div class="mx-auto grid max-w-[1400px] gap-12 px-5 py-20 lg:grid-cols-[minmax(0,.72fr)_minmax(0,1.28fr)] lg:px-8 lg:py-24">
                 <div>
-                    <h2 class="public-section-title max-w-[11ch]">Start with what you need to do.</h2>
-                    <p class="mt-5 max-w-md text-sm leading-7 text-zinc-600">Browse by the work in front of you, then compare the products built to handle it.</p>
+                    <h2 class="public-section-title max-w-[14ch]">Explore by category.</h2>
+                    <p class="mt-5 max-w-md text-sm leading-7 text-zinc-600">Find the right software crafted for your exact workflow, from finance and productivity to developer tooling.</p>
                     <a href="{{ route('store.index') }}" class="btn-dark mt-7">Explore every category <x-heroicon-o-arrow-right class="size-4" /></a>
                 </div>
                 <div class="grid border-t border-zinc-200 sm:grid-cols-2">
@@ -147,7 +147,7 @@
                             <span>
                                 <span class="mb-4 block text-teal-700 transition duration-200 group-hover:-translate-y-0.5"><x-dynamic-component :component="$item->iconComponent()" class="size-5" /></span>
                                 <strong class="block text-base text-zinc-950 transition group-hover:text-teal-700">{{ $item->name }}</strong>
-                                <span class="mt-1 block text-xs font-medium text-zinc-500">Browse software</span>
+                                <span class="mt-1 block text-xs font-medium text-zinc-500">Explore {{ strtolower($item->name) }}</span>
                             </span>
                             <x-heroicon-o-arrow-up-right class="size-4 shrink-0 text-zinc-400 transition duration-200 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-teal-700" />
                         </a>
@@ -173,4 +173,16 @@
             </div>
         </section>
     @endif
+
+    <section data-home-marketplace-cta class="relative isolate overflow-hidden border-t border-zinc-200 bg-zinc-950 text-white">
+        <div class="mx-auto flex max-w-[1400px] flex-col gap-8 px-5 py-16 sm:flex-row sm:items-end sm:justify-between lg:px-8 lg:py-24">
+            <div>
+                <span class="text-xs font-bold uppercase tracking-wider text-teal-300">Discover software</span>
+                <h2 class="mt-3 max-w-[14ch] text-4xl font-extrabold leading-[.98] tracking-[-0.035em] sm:text-5xl lg:text-6xl">Your next essential tool is already here.</h2>
+            </div>
+            <a href="{{ route('store.index') }}" class="group inline-flex items-center gap-3 rounded-lg bg-teal-300 px-6 py-4 text-base font-extrabold text-teal-950 transition hover:bg-teal-200">
+                Explore the marketplace <x-heroicon-o-arrow-right class="size-5 transition-transform group-hover:translate-x-1" />
+            </a>
+        </div>
+    </section>
 </div>

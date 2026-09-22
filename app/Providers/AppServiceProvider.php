@@ -13,6 +13,7 @@ use App\Filament\Admin\Pages\KeygenProducts;
 use App\Filament\Admin\Resources\Categories\CategoryResource;
 use App\Filament\Admin\Resources\FulfillmentUnits\FulfillmentUnitResource;
 use App\Filament\Admin\Resources\LicenseMappings\LicenseMappingResource;
+use App\Filament\Admin\Resources\Merchants\MerchantResource;
 use App\Filament\Admin\Resources\Products\ProductResource as AdminProductResource;
 use App\Filament\Admin\Resources\SupportTickets\SupportTicketResource;
 use App\Filament\AvatarProviders\PrimaryColorAvatarProvider;
@@ -180,6 +181,7 @@ class AppServiceProvider extends ServiceProvider
                     ...LunarPanel::getActiveResources(),
                     AdminProductResource::class,
                     CategoryResource::class,
+                    MerchantResource::class,
                     FulfillmentUnitResource::class,
                     LicenseMappingResource::class,
                     SupportTicketResource::class,
@@ -247,6 +249,13 @@ class AppServiceProvider extends ServiceProvider
     {
         config()->set('lunar.staff.model', Staff::class);
         config()->set('auth.providers.staff.model', Staff::class);
+
+        if ($this->app->runningInConsole() && isset($_SERVER['argv'])) {
+            $commands = array_slice($_SERVER['argv'], 1);
+            if (array_intersect($commands, ['config:cache', 'optimize'])) {
+                config()->set('lunar-filament.record_urls', []);
+            }
+        }
 
         $mailtrap->apply();
         $storage->apply();

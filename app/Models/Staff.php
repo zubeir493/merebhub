@@ -11,7 +11,7 @@ use Filament\Models\Contracts\HasName;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Staff extends \Lunar\Core\Models\Staff implements FilamentUser, HasName, HasAppAuthentication
+class Staff extends \Lunar\Core\Models\Staff implements FilamentUser, HasAppAuthentication, HasName
 {
     use InteractsWithAppAuthentication, InteractsWithAppAuthenticationRecovery;
 

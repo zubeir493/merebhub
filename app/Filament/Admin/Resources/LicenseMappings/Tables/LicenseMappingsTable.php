@@ -17,11 +17,9 @@ class LicenseMappingsTable
             ->columns([
                 TextColumn::make('product.name')
                     ->label('Product')
+                    ->description(fn ($record): string => $record->productVariant ? 'SKU: '.$record->productVariant->sku : 'All variants')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('productVariant.sku')
-                    ->label('Variant')
-                    ->placeholder('All variants'),
                 TextColumn::make('label')
                     ->placeholder('—'),
                 TextColumn::make('keygen_policy_id')

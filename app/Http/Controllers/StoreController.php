@@ -70,11 +70,11 @@ class StoreController extends Controller
             'price_asc' => $products->orderBy('prices_min_price'),
             'price_desc' => $products->orderByDesc('prices_min_price'),
             'rating' => $products->orderByDesc('published_reviews_avg_rating')->latest(),
+            'popular' => $products->orderByDesc('published_reviews_count')->orderByDesc('published_reviews_avg_rating')->latest(),
             default => $products->latest(),
         };
 
-        $catalogProducts = $base->get();
-        $platforms = $catalogProducts->flatMap->platforms->unique('slug')->sortBy('name')->values();
+        $platforms = Product::published()->select('attribute_data')->get()->flatMap->platforms->unique('slug')->sortBy('name')->values();
         $authors = $search === ''
             ? collect()
             : Author::query()

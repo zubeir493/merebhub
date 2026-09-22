@@ -20,7 +20,7 @@ class FulfillmentUnitsTable
         return $table
             ->columns([
                 TextColumn::make('public_id')
-                    ->label('Fulfillment unit')
+                    ->label('Unit')
                     ->copyable()
                     ->searchable(),
                 TextColumn::make('order.reference')
@@ -28,11 +28,8 @@ class FulfillmentUnitsTable
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('product.name')
-                    ->label('Product')
-                    ->searchable(),
-                TextColumn::make('meta.variant_name')
-                    ->label('Variant')
-                    ->placeholder('Standard license')
+                    ->label('Product & Tier')
+                    ->description(fn ($record): string => (string) (data_get($record->meta, 'variant_name') ?: 'Standard license'))
                     ->searchable(),
                 TextColumn::make('provider')
                     ->badge(),
@@ -46,20 +43,6 @@ class FulfillmentUnitsTable
                         default => 'gray',
                     })
                     ->sortable(),
-                TextColumn::make('attempts_count')
-                    ->label('Attempts')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('external_id')
-                    ->label('Provider ID')
-                    ->placeholder('—')
-                    ->copyable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('last_error')
-                    ->label('Last error')
-                    ->limit(60)
-                    ->placeholder('—')
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('status')

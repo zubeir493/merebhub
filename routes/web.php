@@ -80,7 +80,7 @@ Route::middleware('auth')->group(function (): void {
     Route::get('/account', fn () => redirect()->route('account.settings'))->name('account');
     Route::get('/account/orders', [AccountController::class, 'orders'])->name('account.orders');
     Route::get('/account/wishlist', [WishlistController::class, 'index'])->name('account.wishlist');
-    Route::post('/account/wishlist/{slug}', [WishlistController::class, 'store'])->name('wishlist.store');
+    Route::match(['get', 'post'], '/account/wishlist/{slug}', [WishlistController::class, 'store'])->name('wishlist.store');
     Route::delete('/account/wishlist/{wishlistItem}', [WishlistController::class, 'destroy'])->name('wishlist.destroy');
     Route::post('/apps/{slug}/reviews', [StorefrontController::class, 'storeReview'])
         ->middleware('throttle:public-form')

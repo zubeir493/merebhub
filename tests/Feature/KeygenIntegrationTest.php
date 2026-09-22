@@ -141,6 +141,32 @@ test('the Keygen client supports dashboard product policy and license management
     Http::assertSentCount(13);
 });
 
+test('the Keygen policy creation supports device count maxMachines limit', function (): void {
+    Http::preventStrayRequests();
+    Http::fake([
+        'https://keygen.localhost:8443/v1/accounts/account-123/policies' => Http::response([
+            'data' => [
+                'id' => 'policy-device-limited',
+                'type' => 'policies',
+                'attributes' => [
+                    'name' => '3 Devices',
+                    'maxMachines' => 3,
+                ],
+            ],
+        ], 201),
+    ]);
+
+    $client = new KeygenClient;
+    $response = $client->createPolicy('3 Devices', 'product-123', ['maxMachines' => 3]);
+
+    expect($response['data']['id'])->toBe('policy-device-limited');
+
+    Http::assertSent(function ($request): bool {
+        return $request->url() === 'https://keygen.localhost:8443/v1/accounts/account-123/policies'
+            && $request['data']['attributes']['maxMachines'] === 3;
+    });
+});
+
 test('the Keygen provider recovers a license by its idempotency metadata', function (): void {
     Http::preventStrayRequests();
     Http::fake([

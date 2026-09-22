@@ -34,7 +34,7 @@ test('a Lunar product detail page renders its price and publisher', function () 
         ->assertSuccessful()
         ->assertSee($product->name)
         ->assertSee($product->author->name)
-        ->assertSee('Cart and order processing powered by Lunar');
+        ->assertSee('Secure checkout by Chapa');
 });
 
 test('new products receive readable storefront slugs', function (): void {

@@ -81,3 +81,26 @@ test('the verification notice shows a plain local link when mail uses the log dr
         ->assertSee('/email/verify/'.$user->getKey().'/', false)
         ->assertSee('signature=', false);
 });
+
+test('updating account email resets verification and triggers verification notification', function () {
+    Notification::fake();
+
+    $user = User::factory()->create([
+        'email' => 'old-email@example.com',
+        'email_verified_at' => now(),
+    ]);
+
+    $this->actingAs($user)
+        ->patch(route('account.settings.update'), [
+            'name' => $user->name,
+            'email' => 'new-email@example.com',
+        ])
+        ->assertRedirect();
+
+    $user->refresh();
+
+    expect($user->email)->toBe('new-email@example.com')
+        ->and($user->hasVerifiedEmail())->toBeFalse();
+
+    Notification::assertSentTo($user, VerifyEmail::class);
+});

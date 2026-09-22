@@ -73,11 +73,19 @@ class AccountController extends Controller
             unset($data['password']);
         }
 
-        if ($data['email'] !== $user->email) {
-            $data['email_verified_at'] = null;
+        $emailChanged = $data['email'] !== $user->email;
+
+        $user->fill($data);
+
+        if ($emailChanged) {
+            $user->email_verified_at = null;
         }
 
-        $user->update($data);
+        $user->save();
+
+        if ($emailChanged) {
+            $user->sendEmailVerificationNotification();
+        }
 
         return back()->with('status', 'Account settings updated.');
     }

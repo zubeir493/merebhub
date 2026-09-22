@@ -8,6 +8,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Component;
+use Filament\Schemas\Components\Section;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -35,10 +36,15 @@ class KeygenPolicies extends KeygenTablePage
                 ->all())
             ->columns([
                 TextColumn::make('name')->label('Name')->searchable(),
+                TextColumn::make('duration')->label('Duration')
+                    ->formatStateUsing(fn ($state) => $state ? "{$state} days" : 'Perpetual'),
+                TextColumn::make('maxMachines')->label('Device limit')
+                    ->formatStateUsing(fn ($state) => $state ? "{$state} devices" : 'Unlimited')
+                    ->badge()
+                    ->color(fn ($state) => $state ? 'info' : 'gray'),
+                TextColumn::make('scheme')->label('Scheme')->badge(),
                 TextColumn::make('product_id')->label('Keygen product')->copyable()->limit(18)
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('duration')->label('Duration')->placeholder('—'),
-                TextColumn::make('scheme')->label('Scheme')->badge(),
                 TextColumn::make('id')->label('Keygen ID')->copyable()->limit(18)
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -69,7 +75,8 @@ class KeygenPolicies extends KeygenTablePage
                         ->icon(Heroicon::PencilSquare)
                         ->fillForm(fn (array $record): array => [
                             'name' => $record['name'], 'product_id' => $record['product_id'],
-                            'duration' => $record['duration'], 'scheme' => $record['scheme'],
+                            'duration' => $record['duration'], 'maxMachines' => $record['maxMachines'],
+                            'scheme' => $record['scheme'],
                             'floating' => $record['floating'], 'protected' => $record['protected'],
                             'requireProductScope' => $record['requireProductScope'],
                         ])
@@ -115,6 +122,7 @@ class KeygenPolicies extends KeygenTablePage
             'name' => (string) ($attributes['name'] ?? ''),
             'product_id' => (string) data_get($record, 'relationships.product.data.id', ''),
             'duration' => $attributes['duration'] ?? null,
+            'maxMachines' => $attributes['maxMachines'] ?? null,
             'scheme' => (string) ($attributes['scheme'] ?? ''),
             'floating' => (bool) ($attributes['floating'] ?? false),
             'protected' => (bool) ($attributes['protected'] ?? false),
@@ -126,26 +134,72 @@ class KeygenPolicies extends KeygenTablePage
     private function policySchema(bool $includeProduct = true): array
     {
         return [
-            TextInput::make('name')->required()->maxLength(255),
+            TextInput::make('name')
+                ->label('Policy name')
+                ->required()
+                ->maxLength(255)
+                ->helperText('A descriptive name for this licensing policy, e.g. "Standard 3-Device Commercial".'),
             ...($includeProduct ? [Select::make('product_id')
                 ->label('Keygen product')
                 ->options(fn (): array => collect($this->safeRecords(fn (): array => $this->keygen()->products()))->mapWithKeys(fn (array $record): array => [
                     (string) $record['id'] => (string) data_get($record, 'attributes.name', $record['id']),
                 ])->all())
                 ->searchable()->required()] : []),
-            TextInput::make('duration')->numeric()->minValue(1)->nullable()
-                ->helperText('Days; leave empty for a perpetual policy.'),
-            Select::make('scheme')->options([
-                'ED25519_SIGN' => 'Ed25519 signed',
-                'RSA_2048_PKCS1_SIGN' => 'RSA 2048 signed',
-                'RSA_4096_PKCS1_SIGN' => 'RSA 4096 signed',
-            ])->default('ED25519_SIGN')->required(),
-            Select::make('floating')->options([false => 'Node-locked', true => 'Floating'])
-                ->default(false)->required(),
-            Select::make('protected')->options([false => 'Unprotected', true => 'Protected'])
-                ->default(false)->required(),
-            Select::make('requireProductScope')->label('Require product scope')
-                ->options([false => 'No', true => 'Yes'])->default(false)->required(),
+            TextInput::make('maxMachines')
+                ->label('Device limit (max machines)')
+                ->numeric()
+                ->minValue(1)
+                ->nullable()
+                ->helperText('Maximum devices or machines allowed to activate this license concurrently. Leave empty for unlimited.'),
+            TextInput::make('duration')
+                ->label('Duration (days)')
+                ->numeric()
+                ->minValue(1)
+                ->nullable()
+                ->helperText('License validity length in days. Leave empty for a perpetual license.'),
+            Section::make('Advanced licensing options')
+                ->description('Cryptographic signing scheme, floating lease model, and product isolation.')
+                ->collapsible()
+                ->collapsed()
+                ->schema([
+                    Select::make('scheme')
+                        ->label('Cryptographic scheme')
+                        ->options([
+                            'ED25519_SIGN' => 'Ed25519 signed (Recommended)',
+                            'RSA_2048_PKCS1_SIGN' => 'RSA 2048 signed',
+                            'RSA_4096_PKCS1_SIGN' => 'RSA 4096 signed',
+                        ])
+                        ->default('ED25519_SIGN')
+                        ->required()
+                        ->helperText('Algorithm used to sign license keys and offline activation files. Ed25519 is fast and compact.'),
+                    Select::make('floating')
+                        ->label('Activation mode')
+                        ->options([
+                            false => 'Node-locked (Tied to machine fingerprint)',
+                            true => 'Floating (Temporary dynamic lease checkout)',
+                        ])
+                        ->default(false)
+                        ->required()
+                        ->helperText('Node-locked ties activation to a fixed device until deactivated. Floating allows devices to lease activations dynamically.'),
+                    Select::make('protected')
+                        ->label('Tamper protection')
+                        ->options([
+                            false => 'Standard (Normal policy)',
+                            true => 'Protected (Admin credentials required to alter)',
+                        ])
+                        ->default(false)
+                        ->required()
+                        ->helperText('Protected policies require account-level administrative permissions to modify or delete.'),
+                    Select::make('requireProductScope')
+                        ->label('Require product scope')
+                        ->options([
+                            false => 'No (Allow global validation)',
+                            true => 'Yes (Strict product validation)',
+                        ])
+                        ->default(false)
+                        ->required()
+                        ->helperText('When enabled, license keys can only validate against API requests specifying this exact Keygen product ID.'),
+                ]),
         ];
     }
 
@@ -154,7 +208,8 @@ class KeygenPolicies extends KeygenTablePage
     {
         return [
             'duration' => filled($data['duration'] ?? null) ? (int) $data['duration'] : null,
-            'scheme' => (string) $data['scheme'],
+            'maxMachines' => filled($data['maxMachines'] ?? null) ? (int) $data['maxMachines'] : null,
+            'scheme' => (string) ($data['scheme'] ?? 'ED25519_SIGN'),
             'floating' => filter_var($data['floating'] ?? false, FILTER_VALIDATE_BOOLEAN),
             'protected' => filter_var($data['protected'] ?? false, FILTER_VALIDATE_BOOLEAN),
             'requireProductScope' => filter_var($data['requireProductScope'] ?? false, FILTER_VALIDATE_BOOLEAN),

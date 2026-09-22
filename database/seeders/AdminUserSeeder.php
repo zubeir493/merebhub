@@ -36,8 +36,8 @@ class AdminUserSeeder extends Seeder
             throw new InvalidArgumentException('The admin email address is invalid.');
         }
 
-        if (mb_strlen($password) < 12) {
-            throw new InvalidArgumentException('The admin password must be at least 12 characters long.');
+        if (mb_strlen($password) < 8) {
+            throw new InvalidArgumentException('The admin password must be at least 8 characters long.');
         }
 
         return Staff::query()->updateOrCreate(

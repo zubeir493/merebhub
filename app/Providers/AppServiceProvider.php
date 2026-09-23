@@ -11,6 +11,7 @@ use App\Filament\Admin\Pages\KeygenLicenses;
 use App\Filament\Admin\Pages\KeygenPolicies;
 use App\Filament\Admin\Pages\KeygenProducts;
 use App\Filament\Admin\Resources\Categories\CategoryResource;
+use App\Filament\Admin\Resources\Coupons\CouponResource;
 use App\Filament\Admin\Resources\FulfillmentUnits\FulfillmentUnitResource;
 use App\Filament\Admin\Resources\LicenseMappings\LicenseMappingResource;
 use App\Filament\Admin\Resources\Merchants\MerchantResource;
@@ -182,6 +183,7 @@ class AppServiceProvider extends ServiceProvider
                     AdminProductResource::class,
                     CategoryResource::class,
                     MerchantResource::class,
+                    CouponResource::class,
                     FulfillmentUnitResource::class,
                     LicenseMappingResource::class,
                     SupportTicketResource::class,

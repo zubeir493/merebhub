@@ -33,6 +33,7 @@ test('the admin sidebar uses a flat commerce order with native parent items', fu
             'Customers',
             'Merchants',
             'Support inbox',
+            'Coupons',
             'Discounts',
             'Fulfillment recovery',
             'Licenses',

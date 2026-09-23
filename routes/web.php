@@ -52,6 +52,8 @@ Route::get('/vendors', [StorefrontController::class, 'vendors'])->name('vendors.
 Route::get('/vendors/{slug}', [StorefrontController::class, 'vendor'])->name('vendors.show');
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::get('/cart/mini', [CartController::class, 'mini'])->name('cart.mini');
+Route::post('/cart/coupon', [CartController::class, 'applyCoupon'])->name('cart.coupon.apply');
+Route::delete('/cart/coupon', [CartController::class, 'removeCoupon'])->name('cart.coupon.remove');
 Route::post('/cart/share', [CartController::class, 'share'])->name('cart.share');
 Route::get('/cart/shared', [CartController::class, 'shared'])->middleware('signed')->name('cart.shared');
 Route::post('/cart/{slug}', [CartController::class, 'store'])->name('cart.store');

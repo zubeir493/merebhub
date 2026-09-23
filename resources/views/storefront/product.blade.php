@@ -57,22 +57,28 @@
             <div class="flex flex-col">
                 <div class="flex justify-between items-start gap-3">
                     <h1 class="mt-3 text-5xl font-extrabold leading-[.95] tracking-[-0.05em] text-zinc-950">{{ $product->name }}</h1>
-                    @if ($wishlistItem)
-                        <form method="POST" action="{{ route('wishlist.destroy', $wishlistItem) }}" class="mt-3">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="grid size-11 place-items-center rounded-full transition hover:bg-amber-50" aria-label="Remove {{ $product->name }} from wishlist" title="Remove from wishlist">
-                                <x-heroicon-s-bookmark class="size-6 text-amber-500" />
-                            </button>
-                        </form>
+                    @auth
+                        @if ($wishlistItem)
+                            <form method="POST" action="{{ route('wishlist.destroy', $wishlistItem) }}" class="mt-3">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="grid size-11 place-items-center rounded-full transition hover:bg-amber-50" aria-label="Remove {{ $product->name }} from wishlist" title="Remove from wishlist">
+                                    <x-heroicon-s-bookmark class="size-6 text-amber-500" />
+                                </button>
+                            </form>
+                        @else
+                            <form method="POST" action="{{ route('wishlist.store', $product) }}" class="mt-3">
+                                @csrf
+                                <button type="submit" class="grid size-11 place-items-center rounded-full transition hover:bg-amber-50" aria-label="Save {{ $product->name }} to wishlist" title="Save to wishlist">
+                                    <x-heroicon-o-bookmark class="size-6 text-amber-500" />
+                                </button>
+                            </form>
+                        @endif
                     @else
-                        <form method="POST" action="{{ route('wishlist.store', $product) }}" class="mt-3">
-                            @csrf
-                            <button type="submit" class="grid size-11 place-items-center rounded-full transition hover:bg-amber-50" aria-label="{{ auth()->check() ? 'Save '.$product->name.' to wishlist' : 'Sign in to save to wishlist' }}" title="{{ auth()->check() ? 'Save to wishlist' : 'Sign in to save to wishlist' }}">
-                                <x-heroicon-o-bookmark class="size-6 text-amber-500" />
-                            </button>
-                        </form>
-                    @endif
+                        <a href="{{ route('login', ['intent' => 'wishlist', 'redirect' => route('products.show', $product)]) }}" class="mt-3 grid size-11 place-items-center rounded-full transition hover:bg-amber-50" aria-label="Sign in to add items to your wishlist" title="Sign in to save to wishlist">
+                            <x-heroicon-o-bookmark class="size-6 text-amber-500" />
+                        </a>
+                    @endauth
                 </div>
                 <div class="flex justify-between items-start gap-3">
                     @if ($product->author)

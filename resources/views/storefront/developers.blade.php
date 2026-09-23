@@ -7,7 +7,7 @@
                 <h1 class="public-page-title">Your software deserves a market.</h1>
             </div>
             <div class="lg:col-span-4 lg:pb-1">
-                <p class="public-lede">MerebHub brings Ethiopian software into one focused marketplace—so customers can discover it, understand it, and buy it with confidence.</p>
+                <p class="public-lede">MerebHub brings Ethiopian software into one focused marketplace, so customers can discover it, understand it, and buy it with confidence.</p>
                 <div class="mt-7 flex flex-wrap gap-3">
                     <a href="#apply" class="btn-dark group">Start an application <x-heroicon-o-arrow-down class="size-4 transition-transform group-hover:translate-y-0.5" /></a>
                     <a href="{{ route('vendors.index') }}" class="editorial-link">Meet current developers <x-heroicon-o-arrow-up-right class="size-4" /></a>

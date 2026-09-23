@@ -9,7 +9,7 @@
         <div class="mx-auto max-w-[1400px] px-5 pb-12 pt-14 sm:pt-16 lg:px-8 lg:pb-14 lg:pt-20">
             <div class="grid gap-10 lg:grid-cols-12 lg:items-end">
                 <h1 class="public-page-title lg:col-span-8">
-                    Find the software worth keeping.
+                    Software you'll actually love using.
                 </h1>
                 <div class="lg:col-span-4 lg:pb-2">
                     <p class="public-lede">Independent Ethiopian software, selected with care and delivered through one trusted marketplace.</p>
@@ -120,9 +120,9 @@
         <div class="mx-auto max-w-[1400px] px-5 lg:px-8">
             <div class="grid gap-10 lg:grid-cols-12 lg:items-end">
                 <p class="max-w-[14ch] text-[clamp(3.25rem,7vw,5.75rem)] font-extrabold leading-[.88] tracking-[-0.04em] text-balance lg:col-span-7">
-                    Built here doesn’t mean built small.
+                    Homegrown software with serious superpowers.
                 </p>
-                <p class="max-w-lg text-base leading-8 text-zinc-300 lg:col-span-5 lg:justify-self-end">MerebHub gives independent makers a marketplace shaped for Ethiopian customers—and gives customers a clearer way to discover, buy, and return to their software.</p>
+                <p class="max-w-lg text-base leading-8 text-zinc-300 lg:col-span-5 lg:justify-self-end">MerebHub brings Ethiopia's brightest indie creators right to your desktop. Pay smoothly in ETB, get instant license keys, and enjoy tools that just click.</p>
             </div>
 
             <div class="mt-16 grid border-y border-white/15 sm:grid-cols-3">

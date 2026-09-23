@@ -14,9 +14,9 @@ test('the existing storefront renders Lunar catalog products', function () {
     $this->get(route('home'))
         ->assertSuccessful()
         ->assertSee($product->name)
-        ->assertSee('Find the software worth keeping.')
+        ->assertSee("Software you'll actually love using.", false)
         ->assertSee('Popular right now')
-        ->assertSee('Built here doesn’t mean built small.')
+        ->assertSee('Homegrown software with serious superpowers.')
         ->assertSee(route('store.index'));
 });
 

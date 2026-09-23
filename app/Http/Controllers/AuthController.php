@@ -24,6 +24,7 @@ class AuthController extends Controller
         return view('auth.login', [
             'title' => $content['title'],
             'subtitle' => $content['subtitle'],
+            'intent' => $content['intent'],
         ]);
     }
 
@@ -37,6 +38,11 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
+        $redirect = $request->query('redirect');
+        if ($redirect && (Str::startsWith($redirect, '/') || Str::startsWith($redirect, (string) config('app.url')))) {
+            return redirect()->to($redirect);
+        }
+
         return redirect()->intended(route('account.orders'));
     }
 
@@ -47,11 +53,12 @@ class AuthController extends Controller
         return view('auth.register', [
             'title' => $content['title'],
             'subtitle' => $content['subtitle'],
+            'intent' => $content['intent'],
         ]);
     }
 
     /**
-     * @return array{title: string, subtitle: string}
+     * @return array{title: string, subtitle: string, intent: ?string}
      */
     private function resolveAuthContent(Request $request, bool $isRegister = false): array
     {
@@ -60,29 +67,33 @@ class AuthController extends Controller
             ?: $request->query('from')
             ?: $request->query('redirect')
             ?: $request->session()->get('url.intended')
+            ?: $request->headers->get('referer')
             ?: url()->previous()
         ));
 
         if (Str::contains($intent, ['checkout', 'cart', 'order'])) {
             return [
-                'title' => $isRegister ? 'Create an account to complete your purchase' : 'Sign in to complete your purchase',
+                'intent' => 'checkout',
+                'title' => $isRegister ? 'Create an account to complete your checkout' : 'Sign in to complete your checkout',
                 'subtitle' => $isRegister
-                    ? 'Create your account in seconds to finalize your checkout and receive your licenses.'
-                    : 'Sign in to proceed with checkout and access your purchased software licenses.',
+                    ? 'Create an account to complete your checkout and receive your software licenses.'
+                    : 'You need to sign in to complete your checkout and access your purchased software licenses.',
             ];
         }
 
         if (Str::contains($intent, 'wishlist')) {
             return [
-                'title' => $isRegister ? 'Create an account to save to your wishlist' : 'Sign in to save to your wishlist',
+                'intent' => 'wishlist',
+                'title' => $isRegister ? 'Create an account to add items to your wishlist' : 'Sign in to add items to your wishlist',
                 'subtitle' => $isRegister
-                    ? 'Keep track of the software, tools, and developer libraries you want to revisit.'
-                    : 'Sign in to bookmark software and keep track of products you want to buy later.',
+                    ? 'Create a free account to add items to your wishlist and save tools for later.'
+                    : 'Sign in to add items to your wishlist and keep track of software you want to buy later.',
             ];
         }
 
         if (Str::contains($intent, ['download', 'purchase', 'credential', 'license'])) {
             return [
+                'intent' => 'downloads',
                 'title' => $isRegister ? 'Create an account to access your downloads' : 'Sign in to access your downloads',
                 'subtitle' => $isRegister
                     ? 'Keep every purchase, license key, and software download in one place.'
@@ -92,6 +103,7 @@ class AuthController extends Controller
 
         if (Str::contains($intent, ['review'])) {
             return [
+                'intent' => 'review',
                 'title' => $isRegister ? 'Create an account to write a review' : 'Sign in to write a review',
                 'subtitle' => $isRegister
                     ? 'Join MerebHub to rate and review verified Ethiopian software.'
@@ -100,6 +112,7 @@ class AuthController extends Controller
         }
 
         return [
+            'intent' => null,
             'title' => $isRegister ? 'Create your account' : 'Welcome back',
             'subtitle' => $isRegister
                 ? 'Keep every purchase, license, and download in one place.'

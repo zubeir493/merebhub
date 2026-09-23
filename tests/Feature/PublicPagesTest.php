@@ -38,7 +38,7 @@ test('home page includes the layered marketplace sections', function () {
     $this->get(route('home'))
         ->assertSuccessful()
         ->assertSee('data-home-local-build', false)
-        ->assertSee('Built here doesn’t mean built small.')
+        ->assertSee('Homegrown software with serious superpowers.')
         ->assertSee('data-home-marketplace-cta', false)
         ->assertSee('Your next essential tool is already here.');
 });

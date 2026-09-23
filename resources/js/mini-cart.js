@@ -84,17 +84,14 @@ function renderMiniCart(payload) {
 
     if (items.length === 0) {
         miniCartItems.innerHTML = `
-            <div class="px-4 py-9 text-center">
-                <div class="mx-auto grid size-12 place-items-center rounded-full bg-zinc-100 text-zinc-500">🛒</div>
-            <div class="px-5 py-10 text-center">
-                <div class="mx-auto grid size-12 place-items-center rounded-2xl bg-zinc-100 text-zinc-400">
-                    <svg class="size-6 text-zinc-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+            <div class="px-4 py-8 text-center">
+                <div class="mx-auto grid size-10 place-items-center rounded-full bg-zinc-100 text-zinc-400">
+                    <svg class="size-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 0 0-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 0 0-16.536-1.84M7.5 14.25 5.106 5.272M6 20.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm12.75 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" />
                     </svg>
                 </div>
-                <p class="mt-3 text-sm font-extrabold text-zinc-900">Your cart is empty</p>
-                <p class="mt-1 text-xs leading-5 text-zinc-500">Add a product and it will appear here.</p>
-                <p class="mt-1 text-xs leading-5 text-zinc-500">Add software or developer tools and they will appear here.</p>
+                <p class="mt-2 text-xs font-bold text-zinc-900">Your cart is empty</p>
+                <p class="mt-0.5 text-[11px] text-zinc-500">Add software to your cart to get started.</p>
             </div>
         `;
 
@@ -102,24 +99,15 @@ function renderMiniCart(payload) {
     }
 
     miniCartItems.innerHTML = items.map((item) => `
-        <a href="${escapeHtml(item.url)}" class="flex items-center gap-3 p-2 transition hover:bg-zinc-50">
-            <span class="grid size-14 shrink-0 place-items-center overflow-hidden rounded-lg bg-zinc-100 text-lg">
-                ${item.image ? `<img src="${escapeHtml(item.image)}" alt="" class="h-full w-full object-cover">` : '🧩'}
-        <a href="${escapeHtml(item.url)}" class="group flex items-center gap-3.5 px-3 py-2.5 rounded-xl transition duration-150 hover:bg-zinc-50">
-            <span class="grid size-12 shrink-0 place-items-center overflow-hidden rounded-xl border border-zinc-200/80 bg-zinc-100 text-zinc-400 shadow-2xs">
-                ${item.image ? `<img src="${escapeHtml(item.image)}" alt="" class="h-full w-full object-cover">` : `<svg class="size-5 text-zinc-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" /></svg>`}
+        <a href="${escapeHtml(item.url)}" class="flex items-center gap-3 px-4 py-2.5 transition hover:bg-zinc-50">
+            <span class="grid size-10 shrink-0 place-items-center overflow-hidden rounded-md border border-zinc-200 bg-zinc-50 text-xs text-zinc-400">
+                ${item.image ? `<img src="${escapeHtml(item.image)}" alt="" class="h-full w-full object-cover">` : `<svg class="size-4 text-zinc-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" /></svg>`}
             </span>
             <span class="min-w-0 flex-1">
-                <span class="block truncate text-sm font-extrabold text-zinc-900">${escapeHtml(item.option)}</span>
-                <span class="mt-0.5 block truncate text-xs font-semibold text-zinc-500">${item.quantity} × ${escapeHtml(item.unit_price)}</span>
-                <span class="block truncate text-sm font-bold text-zinc-950 group-hover:text-teal-700 transition-colors">${escapeHtml(item.option)}</span>
-                <span class="mt-0.5 flex items-center gap-1.5 text-xs text-zinc-500">
-                    <span class="font-medium text-zinc-600">${item.quantity} ×</span>
-                    <span class="tabular-nums">${escapeHtml(item.unit_price)}</span>
-                </span>
+                <span class="block truncate text-xs font-bold text-zinc-900">${escapeHtml(item.option)}</span>
+                <span class="mt-0.5 block truncate text-[11px] text-zinc-500">${item.quantity} × ${escapeHtml(item.unit_price)}</span>
             </span>
-            <strong class="shrink-0 text-xs font-extrabold text-zinc-900">${escapeHtml(item.total)}</strong>
-            <strong class="shrink-0 text-sm font-extrabold text-zinc-950 tabular-nums">${escapeHtml(item.total)}</strong>
+            <strong class="shrink-0 text-xs font-bold text-zinc-900 tabular-nums">${escapeHtml(item.total)}</strong>
         </a>
     `).join('');
 }
@@ -146,19 +134,17 @@ function setMiniCartOpen(isOpen) {
     miniCart.classList.add('translate-y-2', 'scale-[.98]', 'opacity-0');
     miniCartCloseTimer = window.setTimeout(() => {
         miniCart.hidden = true;
-    }, 200);
+    }, 150);
 }
 
 async function refreshMiniCart() {
     miniCartItems.innerHTML = '<p class="px-4 py-8 text-center text-xs font-semibold text-zinc-500">Updating your cart…</p>';
-    miniCartItems.innerHTML = '<p class="px-5 py-8 text-center text-xs font-semibold text-zinc-500">Updating your cart…</p>';
 
     try {
         const response = await fetch(miniCartEndpoint, { headers: { Accept: 'application/json' } });
         renderMiniCart(await response.json());
     } catch {
         miniCartItems.innerHTML = '<p class="px-4 py-8 text-center text-xs font-semibold text-rose-600">Cart details are temporarily unavailable.</p>';
-        miniCartItems.innerHTML = '<p class="px-5 py-8 text-center text-xs font-semibold text-rose-600">Cart details are temporarily unavailable.</p>';
     }
 }
 

@@ -106,7 +106,6 @@ class AppServiceProvider extends ServiceProvider
             CollectionGroupResource::class => 40,
             TagResource::class => 60,
             CustomerResource::class => 70,
-            DiscountResource::class => 90,
             StaffResource::class => 130,
         ];
 
@@ -122,6 +121,7 @@ class AppServiceProvider extends ServiceProvider
             ChannelResource::class,
             CurrencyResource::class,
             CustomerGroupResource::class,
+            DiscountResource::class,
             LanguageResource::class,
             LocationResource::class,
             ProductOptionResource::class,

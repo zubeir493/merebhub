@@ -397,3 +397,17 @@ test('Chapa checkout charges the discounted total after coupon is applied', func
         return $request['amount'] === $expectedTotal;
     });
 });
+
+test('mini cart endpoint returns valid json for empty cart without errors', function (): void {
+    $response = $this->getJson(route('cart.mini'));
+
+    $response->assertSuccessful()
+        ->assertJson([
+            'cart_count' => 0,
+            'items' => [],
+            'total' => '0.00 ETB',
+            'subtotal' => '0.00 ETB',
+            'discount_total' => null,
+            'coupon_code' => null,
+        ]);
+});

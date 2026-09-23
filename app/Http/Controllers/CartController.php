@@ -356,9 +356,9 @@ class CartController extends Controller
                     'unit_price' => $item->unitPrice->format(),
                 ];
             })->values()->all(),
-            'total' => $cart->total->format(),
-            'subtotal' => $cart->subTotal?->format() ?? $cart->total->format(),
-            'discount_total' => $discountValue > 0 ? $cart->discountTotal->format() : null,
+            'total' => $cart->total?->format() ?? '0.00 ETB',
+            'subtotal' => $cart->subTotal?->format() ?? $cart->total?->format() ?? '0.00 ETB',
+            'discount_total' => $discountValue > 0 ? $cart->discountTotal?->format() : null,
             'coupon_code' => $cart->coupon_code,
         ];
     }

@@ -89,94 +89,65 @@
                 @endauth
             </div>
         </div>
-        <div data-mini-cart data-endpoint="{{ route('cart.mini') }}" hidden role="dialog" aria-label="Mini cart" aria-modal="false" class="fixed right-4 top-[4.75rem] z-50 w-[min(24rem,calc(100vw-2rem))] origin-top-right translate-y-2 scale-[.98] rounded-2xl border border-zinc-200 bg-white opacity-0 shadow-2xl shadow-zinc-950/15 transition-[opacity,transform] duration-200 ease-out sm:right-6">
-            <div class="flex items-center justify-between border-b border-zinc-100 px-5 py-4">
-                <div>
-                    <h2 class="text-base font-extrabold text-zinc-950">Your cart</h2>
-                    <p data-mini-cart-count-label class="mt-0.5 text-xs font-semibold text-zinc-500"></p>
-        <div data-mini-cart data-endpoint="{{ route('cart.mini') }}" hidden role="dialog" aria-label="Mini cart" aria-modal="false" class="fixed right-4 top-[4.75rem] z-50 w-[min(25rem,calc(100vw-2rem))] origin-top-right translate-y-2 scale-[.98] rounded-2xl border border-zinc-200/90 bg-white opacity-0 shadow-2xl shadow-zinc-950/20 ring-1 ring-zinc-950/5 transition-[opacity,transform] duration-200 ease-out sm:right-6">
-            <div class="flex items-center justify-between border-b border-zinc-100/90 px-5 py-4">
-                <div class="flex items-center gap-2.5">
-                    <h2 class="text-base font-extrabold tracking-tight text-zinc-950">Your cart</h2>
-                    <span data-mini-cart-count-label class="inline-flex items-center rounded-full bg-zinc-100 px-2.5 py-0.5 text-[11px] font-bold text-zinc-700"></span>
+        <div data-mini-cart data-endpoint="{{ route('cart.mini') }}" hidden role="dialog" aria-label="Mini cart" aria-modal="false" class="fixed right-4 top-[4.75rem] z-50 w-80 sm:w-96 overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-xl origin-top-right translate-y-2 scale-[.98] opacity-0 transition-[opacity,transform] duration-150 ease-out sm:right-6">
+            <div class="flex items-center justify-between border-b border-zinc-100 px-4 py-3">
+                <div class="flex items-center gap-2">
+                    <h2 class="text-sm font-extrabold text-zinc-950">Your Cart</h2>
+                    <span data-mini-cart-count-label class="text-xs font-semibold text-zinc-500"></span>
                 </div>
-                <button type="button" data-mini-cart-close class="grid size-9 place-items-center rounded-lg text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-800" aria-label="Close cart">
-                    <x-heroicon-o-x-mark class="size-5" />
-                <button type="button" data-mini-cart-close class="grid size-8 place-items-center rounded-lg text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-800" aria-label="Close cart">
+                <button type="button" data-mini-cart-close class="grid size-7 place-items-center rounded-md text-zinc-400 hover:bg-zinc-100 hover:text-zinc-700" aria-label="Close cart">
                     <x-heroicon-o-x-mark class="size-4" />
                 </button>
             </div>
-            <div data-mini-cart-items class="max-h-[min(55vh,28rem)] overflow-y-auto"></div>
-            <div class="border-t border-zinc-100 bg-zinc-50/70 p-4">
-            <div data-mini-cart-items class="max-h-[min(50vh,26rem)] overflow-y-auto divide-y divide-zinc-100/70 p-2"></div>
-            <div class="border-t border-zinc-100 bg-zinc-50/80 px-5 py-4">
-                <div data-mini-cart-subtotal-row class="hidden items-center justify-between text-xs text-zinc-600">
+            <div data-mini-cart-items class="max-h-64 overflow-y-auto divide-y divide-zinc-100"></div>
+            <div class="border-t border-zinc-100 bg-white px-4 py-3">
+                <div data-mini-cart-subtotal-row class="hidden items-center justify-between text-xs text-zinc-500">
                     <span>Subtotal</span>
-                    <span data-mini-cart-subtotal class="font-semibold text-zinc-950"></span>
-                    <span data-mini-cart-subtotal class="font-bold text-zinc-900 tabular-nums"></span>
+                    <span data-mini-cart-subtotal class="font-bold text-zinc-900"></span>
                 </div>
-                <div data-mini-cart-discount-row class="hidden items-center justify-between text-xs text-emerald-700 mt-1">
-                <div data-mini-cart-discount-row class="hidden items-center justify-between text-xs text-emerald-700 mt-1.5 font-medium">
+                <div data-mini-cart-discount-row class="hidden items-center justify-between text-xs text-teal-700 mt-1">
                     <span class="flex items-center gap-1 font-semibold">
-                        <x-heroicon-s-tag class="size-3.5" />
-                        <x-heroicon-s-tag class="size-3.5 shrink-0" />
+                        <x-heroicon-o-tag class="size-3.5 shrink-0" />
                         <span data-mini-cart-coupon-label>Discount</span>
                     </span>
                     <span data-mini-cart-discount class="font-bold"></span>
-                    <span data-mini-cart-discount class="font-bold tabular-nums"></span>
                 </div>
                 <div class="flex items-center justify-between text-sm mt-1">
-                    <span class="font-semibold text-zinc-600">Total</span>
-                    <strong data-mini-cart-total class="text-zinc-950"></strong>
-                <div class="flex items-center justify-between text-sm mt-2 pt-2 border-t border-zinc-200/70">
-                    <span class="font-extrabold text-zinc-900">Total</span>
-                    <strong data-mini-cart-total class="text-base font-black text-zinc-950 tabular-nums"></strong>
+                    <span class="font-bold text-zinc-700">Total</span>
+                    <strong data-mini-cart-total class="font-black text-zinc-950"></strong>
                 </div>
 
-                <div data-mini-cart-coupon-section class="mt-3 border-t border-zinc-200/60 pt-3">
+                <div data-mini-cart-coupon-section class="mt-2.5">
                     <form data-mini-cart-coupon-form method="POST" action="{{ route('cart.coupon.apply') }}" class="flex gap-1.5">
-                <div data-mini-cart-coupon-section class="mt-3.5 border-t border-zinc-200/60 pt-3">
-                    <form data-mini-cart-coupon-form method="POST" action="{{ route('cart.coupon.apply') }}" class="flex gap-2">
                         @csrf
-                        <input type="text" name="coupon_code" placeholder="Promo code" class="block w-full rounded-md border border-zinc-200 bg-white px-2.5 py-1.5 text-xs font-semibold uppercase placeholder:normal-case placeholder:font-normal placeholder:text-zinc-400 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500" required>
-                        <button type="submit" class="shrink-0 rounded-md bg-zinc-900 px-3 py-1.5 text-xs font-bold text-white hover:bg-zinc-800 transition">Apply code</button>
-                        <input type="text" name="coupon_code" placeholder="Discount code" class="block w-full rounded-xl border border-zinc-200/90 bg-white px-3 py-2 text-xs font-semibold uppercase tracking-wider text-zinc-950 placeholder:normal-case placeholder:font-normal placeholder:tracking-normal placeholder:text-zinc-400 shadow-2xs focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/20" required>
-                        <button type="submit" class="shrink-0 rounded-xl bg-zinc-950 px-3.5 py-2 text-xs font-extrabold text-white shadow-xs hover:bg-zinc-800 active:scale-[0.98] transition">Apply</button>
+                        <input type="text" name="coupon_code" placeholder="Promo code" class="h-8 w-full rounded-md border border-zinc-300 px-2.5 text-xs font-semibold uppercase placeholder:normal-case placeholder:font-normal placeholder:text-zinc-400 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500" required>
+                        <button type="submit" class="btn-dark shrink-0 !min-h-8 !px-3 !py-1 !text-xs">Apply code</button>
                     </form>
-                    <div data-mini-cart-applied-coupon class="hidden items-center justify-between rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-xs">
-                    <div data-mini-cart-applied-coupon class="hidden items-center justify-between rounded-xl border border-emerald-200 bg-emerald-50/90 px-3 py-2 text-xs shadow-2xs">
+                    <div data-mini-cart-applied-coupon class="hidden items-center justify-between rounded-md border border-teal-200 bg-teal-50/70 px-2.5 py-1 text-xs">
                         <div class="flex items-center gap-1.5 min-w-0">
-                            <x-heroicon-s-tag class="size-3.5 shrink-0 text-emerald-600" />
-                            <span data-mini-cart-applied-code class="font-bold text-emerald-950 uppercase truncate"></span>
+                            <x-heroicon-o-tag class="size-3.5 shrink-0 text-teal-600" />
+                            <span data-mini-cart-applied-code class="font-bold text-teal-950 uppercase truncate"></span>
                         </div>
                         <button type="button" data-mini-cart-remove-coupon data-url="{{ route('cart.coupon.remove') }}" class="shrink-0 text-xs font-bold text-rose-600 hover:text-rose-800 ml-2">Remove</button>
-                        <button type="button" data-mini-cart-remove-coupon data-url="{{ route('cart.coupon.remove') }}" class="shrink-0 text-xs font-bold text-rose-600 hover:text-rose-800 ml-2 transition">Remove</button>
                     </div>
                     <p data-mini-cart-coupon-error class="mt-1 hidden text-[11px] font-semibold text-rose-600"></p>
-                    <p data-mini-cart-coupon-error class="mt-1.5 hidden text-[11px] font-semibold text-rose-600"></p>
                 </div>
 
-                <div class="mt-3 grid grid-cols-1 gap-2">
-                    <a href="{{ route('cart.index') }}" class="flex items-center justify-center rounded-lg border border-zinc-300 px-3 py-2.5 text-xs font-extrabold text-zinc-700 transition hover:bg-white">View cart</a>
-                    <form method="POST" action="{{ route('checkout.store') }}">
-                        @csrf
-                        <button type="submit" class="flex w-full items-center justify-center rounded-lg bg-zinc-950 px-3 py-2.5 text-xs font-extrabold text-white transition hover:bg-teal-700">Checkout</button>
-                    </form>
-                <div class="mt-4 space-y-2">
+                <div class="mt-3 flex flex-col gap-2">
                     @auth
                         <form method="POST" action="{{ route('checkout.store') }}">
                             @csrf
-                            <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-xl bg-teal-700 px-4 py-3 text-xs font-extrabold text-white shadow-md shadow-teal-900/20 transition-all duration-150 hover:bg-teal-800 hover:shadow-lg hover:shadow-teal-900/25 active:scale-[0.99]">
-                                <x-heroicon-s-lock-closed class="size-3.5" /> Checkout
+                            <button type="submit" class="btn-primary flex w-full items-center justify-center gap-2 !min-h-10 !py-2 !text-xs">
+                                <x-heroicon-o-lock-closed class="size-3.5" /> Checkout with Chapa
                             </button>
                         </form>
                     @else
-                        <a href="{{ route('login', ['intent' => 'checkout', 'redirect' => route('cart.index')]) }}" class="flex w-full items-center justify-center gap-2 rounded-xl bg-teal-700 px-4 py-3 text-xs font-extrabold text-white shadow-md shadow-teal-900/20 transition-all duration-150 hover:bg-teal-800 hover:shadow-lg hover:shadow-teal-900/25 active:scale-[0.99]">
-                            <x-heroicon-s-lock-closed class="size-3.5" /> Checkout
+                        <a href="{{ route('login', ['intent' => 'checkout', 'redirect' => route('cart.index')]) }}" class="btn-primary flex w-full items-center justify-center gap-2 !min-h-10 !py-2 !text-xs">
+                            <x-heroicon-o-lock-closed class="size-3.5" /> Checkout with Chapa
                         </a>
                     @endauth
-                    <a href="{{ route('cart.index') }}" class="flex w-full items-center justify-center gap-1.5 rounded-xl border border-zinc-200/90 bg-white px-4 py-2.5 text-xs font-extrabold text-zinc-800 shadow-2xs transition hover:border-zinc-300 hover:bg-zinc-50 active:scale-[0.99]">
-                        <x-heroicon-o-shopping-bag class="size-3.5 text-zinc-500" /> View cart
+                    <a href="{{ route('cart.index') }}" class="flex h-9 w-full items-center justify-center gap-1.5 rounded-md border border-zinc-300 bg-white text-xs font-bold text-zinc-700 transition hover:bg-zinc-50 hover:text-zinc-950">
+                        <x-heroicon-o-shopping-cart class="size-3.5" /> View cart
                     </a>
                 </div>
             </div>
@@ -223,10 +194,10 @@
                         <img src="/images/marketplace/logo.svg" alt="" width="32" height="32" class="size-8">
                         <strong class="text-lg">MerebHub</strong>
                     </div>
-                    <p class="mt-8 max-w-[15ch] text-5xl font-extrabold leading-[.92] tracking-[-0.05em] text-white sm:text-6xl">Make room for better tools.</p>
+                    <p class="mt-8 max-w-[15ch] text-5xl font-extrabold leading-[.92] tracking-[-0.05em] text-white sm:text-6xl">Ready to level up your toolkit?</p>
                 </div>
                 <div class="lg:justify-self-end">
-                    <p class="max-w-lg text-sm leading-7 text-zinc-400">A focused marketplace for discovering and owning independent Ethiopian software—with clear pricing, trusted publishers, and purchases kept in one place.</p>
+                    <p class="max-w-lg text-sm leading-7 text-zinc-400">Explore standout independent software crafted by local makers. Simple ETB checkout, verified publishers, and every license organized in one tidy spot.</p>
                     <div class="mt-7 flex flex-wrap gap-3">
                         <a href="{{ route('store.index') }}" class="group inline-flex items-center gap-2 rounded-lg bg-teal-300 px-4 py-3 text-sm font-extrabold text-teal-950 transition hover:bg-teal-200">Browse marketplace <x-heroicon-o-arrow-up-right class="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" /></a>
                         <a href="{{ route('developers.index') }}" class="inline-flex items-center gap-2 rounded-lg border border-white/15 px-4 py-3 text-sm font-extrabold text-white transition hover:border-teal-300/60 hover:text-teal-200">For developers</a>

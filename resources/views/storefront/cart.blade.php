@@ -140,10 +140,6 @@
                     </div>
                     <button type="button" data-share-cart="{{ route('cart.share') }}" class="mt-5 flex min-h-11 w-full items-center justify-center gap-2 rounded-md border border-zinc-300 px-4 py-3 text-sm font-extrabold text-teal-900 transition hover:border-teal-400 hover:bg-teal-50"><x-heroicon-o-share class="size-4" /> Share cart</button>
                     <p class="mt-2 hidden text-center text-xs font-semibold text-emerald-700" data-share-cart-status role="status"></p>
-                    <form method="POST" action="{{ route('checkout.store') }}" class="mt-6">
-                        @csrf
-                        <button type="submit" class="btn-primary w-full"><x-heroicon-o-lock-closed class="size-4" /> Checkout</button>
-                    </form>
                     @auth
                         <form method="POST" action="{{ route('checkout.store') }}" class="mt-6">
                             @csrf

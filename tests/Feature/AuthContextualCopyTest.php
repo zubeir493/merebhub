@@ -60,7 +60,7 @@ test('cart page links guest checkout button directly to login with checkout inte
             'intent' => 'checkout',
             'redirect' => route('cart.index'),
         ]))
-        ->assertSee('Checkout with Chapa');
+        ->assertSee('Checkout');
 });
 
 test('unauthenticated access to checkout route preserves checkout intent on login page', function (): void {

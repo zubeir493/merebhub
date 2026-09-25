@@ -134,21 +134,21 @@
                 </div>
 
                 <div class="mt-3 flex flex-col gap-2">
+                    <a href="{{ route('cart.index') }}" class="flex h-9 w-full items-center justify-center gap-1.5 rounded-md border border-zinc-300 bg-white text-xs font-bold text-zinc-700 transition hover:bg-zinc-50 hover:text-zinc-950">
+                        <x-heroicon-o-shopping-cart class="size-3.5" /> View cart
+                    </a>
                     @auth
                         <form method="POST" action="{{ route('checkout.store') }}">
                             @csrf
                             <button type="submit" class="btn-primary flex w-full items-center justify-center gap-2 !min-h-10 !py-2 !text-xs">
-                                <x-heroicon-o-lock-closed class="size-3.5" /> Checkout with Chapa
+                                <x-heroicon-o-lock-closed class="size-3.5" /> Checkout
                             </button>
                         </form>
                     @else
                         <a href="{{ route('login', ['intent' => 'checkout', 'redirect' => route('cart.index')]) }}" class="btn-primary flex w-full items-center justify-center gap-2 !min-h-10 !py-2 !text-xs">
-                            <x-heroicon-o-lock-closed class="size-3.5" /> Checkout with Chapa
+                            <x-heroicon-o-lock-closed class="size-3.5" /> Checkout
                         </a>
                     @endauth
-                    <a href="{{ route('cart.index') }}" class="flex h-9 w-full items-center justify-center gap-1.5 rounded-md border border-zinc-300 bg-white text-xs font-bold text-zinc-700 transition hover:bg-zinc-50 hover:text-zinc-950">
-                        <x-heroicon-o-shopping-cart class="size-3.5" /> View cart
-                    </a>
                 </div>
             </div>
         </div>

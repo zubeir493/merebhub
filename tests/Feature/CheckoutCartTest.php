@@ -3,6 +3,7 @@
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
+use Lunar\Core\Facades\CartSession;
 use Lunar\Core\Models\Order;
 
 beforeEach(function () {
@@ -99,7 +100,7 @@ test('adding a product to the cart returns JSON without redirecting', function (
         ->assertHeader('content-type', 'application/json');
 });
 
-test('customers can create a signed shared cart link', function (): void {
+test('customers can create a compact shared cart link', function (): void {
     $product = Product::published()->with(['defaultUrl', 'variants'])->firstOrFail();
     $variant = $product->variants->firstOrFail();
 
@@ -108,15 +109,56 @@ test('customers can create a signed shared cart link', function (): void {
 
     $shareResponse = $this->postJson(route('cart.share'))
         ->assertSuccessful()
-        ->assertJsonStructure(['url', 'expires_at']);
+        ->assertJsonStructure(['url', 'code']);
 
     $sharedUrl = $shareResponse->json('url');
 
-    expect($sharedUrl)->toContain('signature=');
+    expect($sharedUrl)->toContain('?mh-cart-share=')
+        ->and($sharedUrl)->toContain((string) $variant->getKey());
 
     $this->get($sharedUrl)
         ->assertRedirect(route('cart.index'))
         ->assertSessionHas('status');
+});
+
+test('cart line quantity can be updated asynchronously via json and accepts model binding', function (): void {
+    $product = Product::published()->with(['defaultUrl', 'variants'])->firstOrFail();
+    $variant = $product->variants->firstOrFail();
+
+    $this->postJson(route('cart.store', $product), ['variant_id' => $variant->getKey()])
+        ->assertSuccessful();
+
+    $cart = CartSession::current();
+    $line = $cart->lines->first();
+
+    $this->patchJson(route('cart.update', $line->id), ['quantity' => 3])
+        ->assertSuccessful()
+        ->assertJson([
+            'message' => 'Cart updated.',
+            'cart_count' => 3,
+        ]);
+
+    expect($line->fresh()->quantity)->toBe(3);
+});
+
+test('cart line can be removed asynchronously via json', function (): void {
+    $product = Product::published()->with(['defaultUrl', 'variants'])->firstOrFail();
+    $variant = $product->variants->firstOrFail();
+
+    $this->postJson(route('cart.store', $product), ['variant_id' => $variant->getKey()])
+        ->assertSuccessful();
+
+    $cart = CartSession::current();
+    $line = $cart->lines->first();
+
+    $this->deleteJson(route('cart.destroy', $line->id))
+        ->assertSuccessful()
+        ->assertJson([
+            'message' => 'Item removed from your cart.',
+            'cart_count' => 0,
+        ]);
+
+    expect(CartSession::current()->lines->count())->toBe(0);
 });
 
 test('product variants render as visual radio choices with configurable presentation', function (): void {

@@ -67,7 +67,7 @@ class CheckoutController extends Controller
         abort_unless($order->user_id === $request->user()->getKey() && ! $order->isDraft(), 404);
 
         return view('storefront.checkout-return', [
-            'order' => $order->load('lines.purchasable.product'),
+            'order' => $order->load(['productLines.purchasable.product.media', 'currency']),
         ]);
     }
 }

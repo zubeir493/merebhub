@@ -7,7 +7,6 @@ use App\Models\Product;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\URL as URLFacade;
 use Illuminate\View\View;
 use Lunar\Core\Exceptions\Carts\CartException;
 use Lunar\Core\Facades\CartSession;
@@ -18,8 +17,12 @@ use Lunar\Core\Models\Url;
 
 class CartController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View|RedirectResponse
     {
+        if ($request->filled('mh-cart-share')) {
+            return $this->restoreFromShareCode((string) $request->query('mh-cart-share'));
+        }
+
         $cart = CartSession::current();
         $cart?->loadMissing('lines.purchasable.values');
         $items = $cart?->lines ?? collect();
@@ -56,26 +59,30 @@ class CartController extends Controller
     {
         $cart = CartSession::current();
         $cart?->loadMissing('lines');
-        $payload = ($cart?->lines ?? collect())->map(fn (CartLine $item): array => [
-            'variant_id' => (int) $item->purchasable_id,
-            'quantity' => min(10, max(1, (int) $item->quantity)),
-        ])->values()->all();
+        $lines = $cart?->lines ?? collect();
 
-        if ($payload === []) {
+        if ($lines->isEmpty()) {
             return response()->json(['message' => 'Add an item before sharing your cart.'], 422);
         }
 
-        $encoded = rtrim(strtr(base64_encode(json_encode($payload, JSON_THROW_ON_ERROR)), '+/', '-_'), '=');
-        $expiresAt = now()->addDays(7);
+        $code = $lines->map(function (CartLine $item): string {
+            $qty = min(10, max(1, (int) $item->quantity));
+
+            return $qty > 1 ? "{$item->purchasable_id}:{$qty}" : (string) $item->purchasable_id;
+        })->join(':');
 
         return response()->json([
-            'url' => URLFacade::temporarySignedRoute('cart.shared', $expiresAt, ['payload' => $encoded]),
-            'expires_at' => $expiresAt->toIso8601String(),
+            'url' => url('/?mh-cart-share='.$code),
+            'code' => $code,
         ]);
     }
 
     public function shared(Request $request): RedirectResponse
     {
+        if ($request->filled('mh-cart-share')) {
+            return $this->restoreFromShareCode((string) $request->query('mh-cart-share'));
+        }
+
         $encoded = (string) $request->query('payload');
         $encoded .= str_repeat('=', (4 - strlen($encoded) % 4) % 4);
         $decoded = base64_decode(strtr($encoded, '-_', '+/'), true);
@@ -94,29 +101,62 @@ class CartController extends Controller
             return redirect()->route('cart.index')->withErrors(['cart' => 'This shared cart link is invalid.']);
         }
 
-        $variantIds = collect($items)
-            ->filter(fn (mixed $item): bool => is_array($item) && isset($item['variant_id']))
-            ->pluck('variant_id')
-            ->map(fn (mixed $id): int => (int) $id)
-            ->filter(fn (int $id): bool => $id > 0)
-            ->unique()
-            ->take(100);
-        $variants = ProductVariant::query()->whereIn('id', $variantIds)->get()->keyBy('id');
+        $tokens = [];
+        foreach ($items as $item) {
+            if (is_array($item) && isset($item['variant_id'])) {
+                $qty = min(10, max(1, (int) ($item['quantity'] ?? 1)));
+                $tokens[] = "{$item['variant_id']}:{$qty}";
+            }
+        }
+
+        return $this->restoreFromShareCode(implode(':', $tokens));
+    }
+
+    public function restoreFromShareCode(string $code): RedirectResponse
+    {
+        $tokens = array_values(array_filter(
+            preg_split('/[:,-]/', $code) ?: [],
+            fn (string $t): bool => is_numeric($t) && (int) $t > 0
+        ));
+
+        if (empty($tokens)) {
+            return redirect()->route('cart.index')->withErrors(['cart' => 'This shared cart link is invalid.']);
+        }
+
+        $tokenInts = array_map('intval', $tokens);
+        $variants = ProductVariant::query()->whereIn('id', $tokenInts)->get()->keyBy('id');
         $publishedProductIds = Product::published()
             ->whereKey($variants->pluck('product_id'))
             ->pluck('id')
             ->map(fn (mixed $id): int => (int) $id)
             ->all();
-        $addedQuantity = 0;
 
-        foreach (array_slice($items, 0, 100) as $item) {
-            if (! is_array($item)) {
+        $items = [];
+        $i = 0;
+        $count = count($tokens);
+
+        while ($i < $count) {
+            $id = (int) $tokens[$i];
+            if (! isset($variants[$id])) {
+                $i++;
+
                 continue;
             }
 
-            $variant = $variants->get((int) ($item['variant_id'] ?? 0));
-            $quantity = min(10, max(1, (int) ($item['quantity'] ?? 1)));
+            $next = ($i + 1 < $count) ? (int) $tokens[$i + 1] : null;
+            if ($next !== null && $next >= 1 && $next <= 10 && (! isset($variants[$next]) || ($i + 2 < $count && isset($variants[(int) $tokens[$i + 2]])))) {
+                $items[$id] = $next;
+                $i += 2;
+            } else {
+                $items[$id] = 1;
+                $i += 1;
+            }
+        }
 
+        $addedQuantity = 0;
+
+        foreach ($items as $variantId => $quantity) {
+            $variant = $variants->get($variantId);
             if ($variant === null || ! in_array((int) $variant->product_id, $publishedProductIds, true)) {
                 continue;
             }
@@ -363,17 +403,37 @@ class CartController extends Controller
         ];
     }
 
-    public function update(Request $request, int $cartLine): RedirectResponse
+    public function update(Request $request, CartLine|int $cartLine): RedirectResponse|JsonResponse
     {
+        $lineId = $cartLine instanceof CartLine ? (int) $cartLine->getKey() : (int) $cartLine;
         $validated = $request->validate(['quantity' => ['required', 'integer', 'min:1', 'max:10']]);
-        CartSession::updateLine($cartLine, $validated['quantity']);
+        CartSession::updateLine($lineId, $validated['quantity']);
+
+        $cart = CartSession::current();
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Cart updated.',
+                ...$this->miniCartPayload($cart),
+            ]);
+        }
 
         return back()->with('status', 'Cart updated.');
     }
 
-    public function destroy(int $cartLine): RedirectResponse
+    public function destroy(Request $request, CartLine|int $cartLine): RedirectResponse|JsonResponse
     {
-        CartSession::remove($cartLine);
+        $lineId = $cartLine instanceof CartLine ? (int) $cartLine->getKey() : (int) $cartLine;
+        CartSession::remove($lineId);
+
+        $cart = CartSession::current();
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => 'Item removed from your cart.',
+                ...$this->miniCartPayload($cart),
+            ]);
+        }
 
         return back()->with('status', 'Item removed from your cart.');
     }

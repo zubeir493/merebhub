@@ -16,8 +16,12 @@ use Lunar\Core\Models\Url;
 
 class StorefrontController extends Controller
 {
-    public function home(): View
+    public function home(Request $request): View|RedirectResponse
     {
+        if ($request->filled('mh-cart-share')) {
+            return app(CartController::class)->restoreFromShareCode((string) $request->query('mh-cart-share'));
+        }
+
         return view('storefront.home');
     }
 

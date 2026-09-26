@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -66,8 +67,22 @@ class CheckoutController extends Controller
     {
         abort_unless($order->user_id === $request->user()->getKey() && ! $order->isDraft(), 404);
 
+        $order->load(['productLines.purchasable.product.media', 'currency', 'user']);
+
+        $productIds = $order->productLines
+            ->pluck('purchasable.product_id')
+            ->filter()
+            ->unique();
+
+        $products = Product::query()
+            ->with(['author', 'defaultUrl', 'media'])
+            ->whereKey($productIds)
+            ->get()
+            ->keyBy('id');
+
         return view('storefront.checkout-return', [
-            'order' => $order->load(['productLines.purchasable.product.media', 'currency']),
+            'order' => $order,
+            'products' => $products,
         ]);
     }
 }

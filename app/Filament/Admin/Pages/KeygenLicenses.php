@@ -8,9 +8,11 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Schemas\Components\Component;
+use Filament\Support\Enums\FontFamily;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 use Throwable;
 
 class KeygenLicenses extends KeygenTablePage
@@ -35,11 +37,27 @@ class KeygenLicenses extends KeygenTablePage
                 ->all())
             ->columns([
                 TextColumn::make('name')->label('Name')->placeholder('—')->searchable(),
-                TextColumn::make('key')->label('License key')->copyable()->searchable(),
+                TextColumn::make('id')
+                    ->label('License ID')
+                    ->copyable()
+                    ->copyableState(fn (?string $state): ?string => $state)
+                    ->copyMessage('Keygen license ID copied')
+                    ->fontFamily(FontFamily::Mono)
+                    ->formatStateUsing(fn (?string $state): string => $state ? Str::limit($state, 8, '...') : '—')
+                    ->tooltip(fn (?string $state): ?string => $state),
+                TextColumn::make('key')->label('License key')->copyable()->searchable()->limit(16),
                 TextColumn::make('status')->badge(),
-                TextColumn::make('policy_id')->label('Policy')->placeholder('—')->limit(18)
-                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('expiry')->label('Expires')->placeholder('Perpetual'),
+                TextColumn::make('policy_id')
+                    ->label('Policy ID')
+                    ->placeholder('—')
+                    ->copyable()
+                    ->copyableState(fn (?string $state): ?string => $state)
+                    ->copyMessage('Keygen policy ID copied')
+                    ->fontFamily(FontFamily::Mono)
+                    ->formatStateUsing(fn (?string $state): string => $state ? Str::limit($state, 8, '...') : '—')
+                    ->tooltip(fn (?string $state): ?string => $state)
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->headerActions([
                 Action::make('create')

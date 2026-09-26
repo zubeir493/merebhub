@@ -8,13 +8,14 @@ import './cart.js';
 import './home.js';
 import './product-detail.js';
 import './storefront.js';
-
-createInertiaApp({
-    title: (title) => `${title} · MerebHub`,
-    resolve: (name) => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob('./Pages/**/*.vue')),
-    setup({ el, App, props, plugin }) {
-        createApp({ render: () => h(App, props) })
-            .use(plugin)
-            .mount(el);
-    },
-});
+if (document.querySelector('[data-page]')) {
+ createInertiaApp({
+ title: (title) => `${title} - MerebHub`,
+ resolve: (name) => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob('./Pages/**/*.vue')),
+ setup({ el, App, props, plugin }) {
+ createApp({ render: () => h(App, props) })
+ .use(plugin)
+ .mount(el);
+ },
+ });
+}

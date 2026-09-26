@@ -31,6 +31,7 @@ class AccountController extends Controller
                 'credential',
                 'order',
                 'orderLine.purchasable.product',
+                'orderLine.purchasable.values',
                 'fulfillmentUnit',
                 'product.downloadableAssets' => fn (HasMany $query) => $query->where('scan_status', 'clean'),
             ])
@@ -68,21 +69,15 @@ class AccountController extends Controller
     {
         $user = $request->user();
         $data = $request->safe()->only(['name', 'email', 'password']);
-
         if (blank($data['password'] ?? null)) {
             unset($data['password']);
         }
-
         $emailChanged = $data['email'] !== $user->email;
-
         $user->fill($data);
-
         if ($emailChanged) {
             $user->email_verified_at = null;
         }
-
         $user->save();
-
         if ($emailChanged) {
             $user->sendEmailVerificationNotification();
         }

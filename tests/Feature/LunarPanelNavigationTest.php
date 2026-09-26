@@ -13,6 +13,7 @@ beforeEach(function (): void {
 
     Filament::setCurrentPanel(Filament::getPanel('lunar'));
     Filament::bootCurrentPanel();
+
     $this->actingAs($staff, 'staff');
 });
 
@@ -88,13 +89,24 @@ test('Filament sidebars cannot be collapsed on desktop', function (): void {
         ->and(Filament::getPanel('merchant')->isSidebarFullyCollapsibleOnDesktop())->toBeFalse();
 });
 
+test('merchant panel shares the admin visual theme', function (): void {
+    $adminPanel = Filament::getPanel('lunar');
+    $merchantPanel = Filament::getPanel('merchant');
+
+    expect($merchantPanel->getViteTheme())->toBe($adminPanel->getViteTheme())
+        ->and($merchantPanel->getFontFamily())->toBe($adminPanel->getFontFamily())
+        ->and($merchantPanel->getDefaultThemeMode())->toBe($adminPanel->getDefaultThemeMode())
+        ->and($merchantPanel->hasTopbar())->toBe($adminPanel->hasTopbar())
+        ->and($merchantPanel->getBrandName())->toBe($adminPanel->getBrandName());
+});
+
 test('the dashboard uses a home icon and unused catalog resources stay hidden', function (): void {
     expect(FilamentIcon::resolve('lunar::dashboard'))->toBe('heroicon-o-home')
         ->and(LunarPanel::getActiveResources())
         ->not->toContain(AttributeGroupResource::class, ProductVariantResource::class);
 });
 
-test('removed Lunar pages return not found when visited directly', function () {
+test('removed Lunar pages return not found when visited directly', function (): void {
     foreach ([
         '/lunar/channels',
         '/lunar/locations',

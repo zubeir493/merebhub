@@ -7,15 +7,14 @@ use App\Models\User;
 use Filament\Auth\Pages\Login;
 use Filament\Facades\Filament;
 use Illuminate\Support\Facades\Hash;
+use Livewire\Livewire;
 
 test('database seeder creates local admin and merchant accounts', function () {
     $this->seed();
-
     $admin = Staff::query()->where('email', 'admin@merebhub.test')->first();
     $merchant = User::query()->where('email', 'merchant@merebhub.test')->first();
     $merchantProfile = Merchant::query()->where('slug', 'demo-merchant')->first();
     $demoProduct = Product::query()->whereBelongsTo($merchantProfile)->first();
-
     expect($admin)->not->toBeNull()
         ->and($admin->admin)->toBeTrue()
         ->and(Hash::check('password', $admin->password))->toBeTrue()
@@ -28,12 +27,9 @@ test('database seeder creates local admin and merchant accounts', function () {
         ->and($admin->canAccessPanel(Filament::getPanel('lunar')))->toBeTrue()
         ->and($merchant->canAccessPanel(Filament::getPanel('merchant')))->toBeTrue();
 });
-
 test('admin user can log in to the admin panel with seeded credentials', function () {
     $this->seed();
-
     $this->get('/admin/login')->assertSuccessful();
-
     Livewire::test(Login::class)
         ->fillForm([
             'email' => 'admin@merebhub.test',
@@ -42,6 +38,5 @@ test('admin user can log in to the admin panel with seeded credentials', functio
         ->call('authenticate')
         ->assertHasNoFormErrors()
         ->assertRedirect('/admin');
-
     $this->assertAuthenticated('staff');
 });

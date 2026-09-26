@@ -2,16 +2,22 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\AvatarProviders\PrimaryColorAvatarProvider;
+use App\Filament\Merchant\Pages\Dashboard;
+use App\Filament\Merchant\Widgets\MerchantRecentSales;
+use App\Filament\Merchant\Widgets\MerchantSalesChart;
+use App\Filament\Merchant\Widgets\MerchantStatsOverview;
+use App\Filament\Merchant\Widgets\MerchantTopProducts;
+use App\Filament\Merchant\Widgets\MerchantWelcome;
+use App\Filament\Pages\Auth\EditProfile;
+use Filament\Enums\ThemeMode;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Widgets\AccountWidget;
-use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
@@ -28,21 +34,36 @@ class MerchantPanelProvider extends PanelProvider
             ->path('merchant')
             ->authGuard('web')
             ->login()
+            ->viteTheme('resources/css/filament/admin/theme.css')
+            ->font('Plus Jakarta Sans')
+            ->darkMode(false)
+            ->defaultThemeMode(ThemeMode::Light)
+            ->spa()
+            ->topbar()
             ->sidebarCollapsibleOnDesktop(false)
             ->sidebarFullyCollapsibleOnDesktop(false)
-            ->brandName('MerebHub Merchant')
+            ->brandName('MerebHub')
+            ->brandLogo(null)
+            ->favicon(asset('favicon.ico'))
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Indigo,
             ])
-            ->discoverResources(in: app_path('Filament/Merchant/Resources'), for: 'App\Filament\Merchant\Resources')
-            ->discoverPages(in: app_path('Filament/Merchant/Pages'), for: 'App\Filament\Merchant\Pages')
+            ->profile(EditProfile::class)
+            ->databaseNotifications()
+            ->defaultAvatarProvider(PrimaryColorAvatarProvider::class)
+            ->globalSearch(true)
+            ->discoverResources(in: app_path('Filament/Merchant/Resources'), for: 'App\\Filament\\Merchant\\Resources')
+            ->discoverPages(in: app_path('Filament/Merchant/Pages'), for: 'App\\Filament\\Merchant\\Pages')
             ->pages([
                 Dashboard::class,
             ])
-            ->discoverWidgets(in: app_path('Filament/Merchant/Widgets'), for: 'App\Filament\Merchant\Widgets')
+            ->discoverWidgets(in: app_path('Filament/Merchant/Widgets'), for: 'App\\Filament\\Merchant\\Widgets')
             ->widgets([
-                AccountWidget::class,
-                FilamentInfoWidget::class,
+                MerchantWelcome::class,
+                MerchantStatsOverview::class,
+                MerchantSalesChart::class,
+                MerchantTopProducts::class,
+                MerchantRecentSales::class,
             ])
             ->middleware([
                 EncryptCookies::class,

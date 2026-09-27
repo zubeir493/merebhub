@@ -37,6 +37,10 @@ test('staff can create a product with scalar translated form values', function (
 
     Livewire::test(AdminCreateProduct::class)
         ->assertSee('Product gallery')
+        ->assertSee('Product variants')
+        ->assertSee('Licensing & fulfillment')
+        ->assertDontSee('Review & publish')
+        ->assertDontSee('Product setup')
         ->assertSee('Downloadable files')
         ->fillForm([
             'name' => 'Created product',
@@ -55,7 +59,12 @@ test('staff can create a product with scalar translated form values', function (
     $createdProduct = Product::query()->latest('id')->firstOrFail();
 
     expect($createdProduct->name)->toBe('Created product')
-        ->and($createdProduct->description)->toBe('A product created by staff.');
+        ->and($createdProduct->description)->toBe('A product created by staff.')
+        ->and((string) $createdProduct->status)->toBe('draft')
+        ->and($createdProduct->publication_state)->toBe('draft')
+        ->and($createdProduct->source_type)->toBe('local_developer')
+        ->and($createdProduct->support_owner)->toBe('merebhub')
+        ->and((bool) $createdProduct->official_partner)->toBeFalse();
 });
 
 test('staff can attach downloadable files to the configured private disk', function () {

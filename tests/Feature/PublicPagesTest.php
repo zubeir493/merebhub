@@ -17,9 +17,21 @@ test('public editorial pages share the storefront shell and page header', functi
     'home' => 'home',
     'store' => 'store.index',
     'developers' => 'developers.index',
+    'developer docs' => 'developers.docs',
     'contact' => 'contact.index',
     'developer directory' => 'vendors.index',
 ]);
+
+test('developer docs explain the integration and offline activation path', function () {
+    $this->get(route('developers.docs'))
+        ->assertSuccessful()
+        ->assertSee('The process')
+        ->assertSee('licenses/actions/validate-key')
+        ->assertSee('Offline activation')
+        ->assertSee('.lreq')
+        ->assertSee('.lic')
+        ->assertSee('Open developer application');
+});
 
 test('public navigation contains the same destinations on desktop and mobile', function () {
     $response = $this->get(route('developers.index'));

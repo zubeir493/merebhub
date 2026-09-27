@@ -99,6 +99,29 @@ test('merchant panel navigation is organized around overview, sales, customers, 
     expect($items)->toBe(['Overview', 'Orders', 'Customers', 'Products']);
 });
 
+test('the merchant dashboard shows the signed-in user name in the topbar', function (): void {
+    $owner = User::factory()->create([
+        'name' => 'Merchant Operator',
+        'merchant_access' => true,
+    ]);
+
+    $merchant = Merchant::factory()->create([
+        'status' => MerchantStatus::Approved,
+        'approved_at' => now(),
+    ]);
+
+    $merchant->memberships()->create([
+        'user_id' => $owner->id,
+        'merchant_role' => 'owner',
+        'status' => 'active',
+    ]);
+
+    $this->actingAs($owner, 'web')
+        ->get('/merchant')
+        ->assertSuccessful()
+        ->assertSee('Merchant Operator');
+});
+
 test('merchant overview uses the custom dashboard and welcome widget', function (): void {
     app(CreateMerchantAction::class)->handleWithNewOwner(
         [
@@ -125,10 +148,15 @@ test('merchant overview uses the custom dashboard and welcome widget', function 
         MerchantSalesChart::class,
         MerchantTopProducts::class,
         MerchantRecentSales::class,
-    ]);
+    ])
+        ->and($dashboard->getColumns())->toBe([
+            'sm' => 1,
+            'md' => 2,
+            'lg' => 3,
+        ]);
 
     Livewire::test(MerchantWelcome::class)
-        ->assertSee('Merchant workspace')
+        ->assertSee('Keep your catalog moving')
         ->assertSee('Welcome Merchant');
 });
 

@@ -153,7 +153,34 @@
 }
 
 .fi-topbar .fi-user-menu-trigger>span {
+    display: block;
+    max-width: 14rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     font-size: .85rem;
+}
+
+.fi-wi-widget:has(> .fi-admin-best-sellers-widget) {
+    align-self: stretch;
+}
+
+.fi-admin-best-sellers-widget,
+.fi-admin-best-sellers-widget > .fi-ta,
+.fi-admin-best-sellers-widget > .fi-ta > .fi-ta-ctn {
+    height: 100%;
+}
+
+.fi-admin-best-sellers-widget > .fi-ta > .fi-ta-ctn > .fi-ta-main {
+    display: flex;
+    flex-direction: column;
+}
+
+.fi-admin-best-sellers-widget .fi-ta-empty-state {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
 }
 
 @media screen and (max-width: 1023px) {

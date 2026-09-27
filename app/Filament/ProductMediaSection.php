@@ -40,7 +40,7 @@ class ProductMediaSection
                             ->maxFiles(8)
                             ->maxSize(10240),
                     ]),
-                Tab::make('Customer downloads')
+                Tab::make('Downloadables')
                     ->icon(Heroicon::OutlinedFolderArrowDown)
                     ->schema([
                         ProductDownloadUpload::make(),

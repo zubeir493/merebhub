@@ -61,6 +61,7 @@ test('an admin review records a decision and audit note', function () {
     );
 
     expect($reviewed->publication_state)->toBe(ProductPublicationState::Published->value)
+        ->and((string) $reviewed->status)->toBe('published')
         ->and($reviewed->published_at)->not->toBeNull()
         ->and(AuditEvent::query()->where('event', 'catalog.product.reviewed')->value('metadata'))->toMatchArray([
             'state' => ProductPublicationState::Published->value,

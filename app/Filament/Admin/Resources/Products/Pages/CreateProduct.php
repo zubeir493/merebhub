@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\Products\Pages;
 
 use App\Domain\Catalog\Actions\SyncProductConfigurationAction;
 use App\Domain\Catalog\Actions\SyncProductDownloadsAction;
+use App\Domain\Catalog\Enums\ProductPublicationState;
 use App\Filament\Admin\Resources\Products\ProductResource;
 use Filament\Resources\Pages\CreateRecord;
 
@@ -17,6 +18,12 @@ class CreateProduct extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $this->productConfiguration = $data;
+
+        $data['status'] ??= 'draft';
+        $data['publication_state'] ??= ProductPublicationState::Draft->value;
+        $data['source_type'] ??= 'local_developer';
+        $data['support_owner'] ??= 'merebhub';
+        $data['official_partner'] ??= false;
 
         unset(
             $data['catalog_category'],

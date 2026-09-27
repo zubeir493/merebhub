@@ -3,7 +3,7 @@
 namespace App\Filament\Merchant\Resources\Products\Schemas;
 
 use App\Filament\Merchant\Resources\Products\ProductResource;
-use App\Filament\ProductMediaSection;
+use App\Filament\ProductDetailsSection;
 use App\Models\Merchant;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -84,7 +84,7 @@ class ProductForm
                             ->formatStateUsing($toEnglish)
                             ->dehydrateStateUsing(fn (mixed $state): array => ['en' => $toEnglish($state)]),
                     ]),
-                ProductMediaSection::make(),
+                ProductDetailsSection::make(),
                 Section::make('Submission')
                     ->columns(2)
                     ->schema([

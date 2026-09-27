@@ -1,117 +1,208 @@
 <?php
 
-namespace App\Filament\Admin\Resources\Products\Schemas;
+namespace App\Filament;
 
-use App\Filament\ProductDetailsSection;
 use App\Integrations\Keygen\KeygenClient;
-use App\Models\Category;
+use Filament\Actions\Action;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
-use Filament\Schemas\Schema;
-use Illuminate\Support\Collection;
+use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Str;
 use Lunar\Core\Models\TaxClass;
 use Throwable;
 
-class ProductForm
+class ProductDetailsSection
 {
-    public static function configure(Schema $schema): Schema
+    public static function make(bool $includeProductSetup = false): Tabs
     {
-        $toEnglish = static function (mixed $state): ?string {
-            if ($state instanceof Collection) {
-                $state = $state->all();
-            }
+        $tabs = [
+            self::galleryTab(),
+            self::downloadsTab(),
+        ];
 
-            if (is_array($state)) {
-                $state = $state['en'] ?? collect($state)->first();
-            }
+        if ($includeProductSetup) {
+            $tabs = [
+                ...$tabs,
+                self::variantsTab(),
+                self::licensingTab(),
+            ];
+        }
 
-            return $state === null ? null : (string) $state;
-        };
+        return Tabs::make('Product details')
+            ->tabs($tabs)
+            ->columnSpanFull();
+    }
 
-        return $schema
-            ->components([
-                Section::make('Product details')
+    private static function galleryTab(): Tab
+    {
+        return Tab::make('Gallery')
+            ->icon(Heroicon::OutlinedPhoto)
+            ->schema([
+                SpatieMediaLibraryFileUpload::make('product_gallery')
+                    ->label('Product gallery')
+                    ->helperText('Add up to eight screenshots or product images. Drag to reorder; the first image becomes the cover.')
+                    ->collection(config('lunar.media.collection'))
+                    ->disk((string) config('marketplace.public_media_disk', 'public'))
+                    ->visibility('public')
+                    ->multiple()
+                    ->appendFiles()
+                    ->reorderable()
+                    ->image()
+                    ->imageEditor()
+                    ->imageEditorAspectRatios([
+                        null,
+                        '16:10',
+                        '4:3',
+                        '1:1',
+                    ])
+                    ->panelLayout('grid')
+                    ->imagePreviewHeight('180')
+                    ->maxParallelUploads(4)
+                    ->uploadingMessage('Uploading gallery images…')
+                    ->maxFiles(8)
+                    ->maxSize(10240),
+            ]);
+    }
+
+    private static function downloadsTab(): Tab
+    {
+        return Tab::make('Customer downloads')
+            ->icon(Heroicon::OutlinedFolderArrowDown)
+            ->schema([
+                ProductDownloadUpload::make(),
+            ]);
+    }
+
+    private static function variantsTab(): Tab
+    {
+        return Tab::make('Variants & pricing')
+            ->icon(Heroicon::OutlinedSquares2x2)
+            ->schema([
+                Repeater::make('variants_data')
                     ->columns(2)
+                    ->label('Product variants')
+                    ->collapsible()
+                    ->addable(false)
+                    ->reorderable(false)
+                    ->defaultItems(1)
+                    ->extraItemActions([
+                        Action::make('add_variant')
+                            ->label('Add variant')
+                            ->icon(Heroicon::Plus)
+                            ->action(function (Repeater $component): void {
+                                $state = $component->getState() ?? [];
+                                $state[(string) Str::uuid()] = [
+                                    'name' => '',
+                                    'sku' => '',
+                                    'price' => null,
+                                    'compare_at_price' => null,
+                                    'tax_class_id' => self::defaultTaxClassId(),
+                                    'selling_policy' => 'always',
+                                    'shippable' => false,
+                                    'presentation_icon' => null,
+                                    'presentation_image' => null,
+                                    'keygen_policy_id' => null,
+                                ];
+                                $component->state($state);
+                            }),
+                    ])
+                    ->default([
+                        [
+                            'name' => 'Standard license',
+                            'sku' => 'STANDARD',
+                        ],
+                    ])
+                    ->itemLabel(fn (array $state): string => (string) ($state['name'] ?? $state['sku'] ?? 'Variant'))
                     ->schema([
+                        Hidden::make('id'),
                         TextInput::make('name')
-                            ->label('Product name')
+                            ->label('Variant name')
                             ->required()
-                            ->maxLength(255)
-                            ->formatStateUsing($toEnglish)
-                            ->dehydrateStateUsing(fn (mixed $state): array => ['en' => $toEnglish($state)]),
-                        Select::make('catalog_category')
-                            ->label('Category')
-                            ->options(fn (): array => self::categoryOptions())
-                            ->searchable()
-                            ->preload(),
-                        TextInput::make('default_price')
-                            ->label('Starting price')
+                            ->maxLength(255),
+                        TextInput::make('sku')
+                            ->label('SKU')
+                            ->required()
+                            ->maxLength(255),
+                        TextInput::make('price')
+                            ->label('Price')
                             ->numeric()
                             ->minValue(0)
-                            ->prefix('ETB')
-                            ->helperText('Used by a variant when its price is left blank.'),
-                        TextInput::make('default_compare_at_price')
+                            ->suffix('ETB'),
+                        TextInput::make('compare_at_price')
                             ->label('Compare-at price')
                             ->numeric()
                             ->minValue(0)
-                            ->prefix('ETB'),
-                        Select::make('product_type_id')
-                            ->label('Product type')
-                            ->relationship('productType', 'name')
-                            ->required()
+                            ->suffix('ETB'),
+                        Select::make('tax_class_id')
+                            ->label('Tax class')
+                            ->options(fn (): array => self::taxClassOptions())
+                            ->default(fn (): ?int => self::defaultTaxClassId())
+                            ->required(),
+                        Select::make('selling_policy')
+                            ->label('Selling policy')
+                            ->options([
+                                'always' => 'Always sell',
+                                'in_stock' => 'Only when in stock',
+                                'in_stock_or_on_backorder' => 'Stock or backorder',
+                            ])
+                            ->default('always')
+                            ->required(),
+                        Toggle::make('shippable')
+                            ->label('Physical / shippable')
+                            ->default(false),
+                        Select::make('presentation_icon')
+                            ->label('Storefront icon')
+                            ->options([
+                                'academic-cap' => 'Academic cap',
+                                'bolt' => 'Bolt',
+                                'briefcase' => 'Briefcase',
+                                'chart' => 'Chart',
+                                'code' => 'Code',
+                                'cloud' => 'Cloud',
+                                'puzzle-piece' => 'Puzzle piece',
+                                'shield' => 'Shield',
+                                'sparkles' => 'Sparkles',
+                                'cube' => 'Cube',
+                            ])
+                            ->searchable(),
+                        TextInput::make('presentation_image')
+                            ->label('Storefront image path or URL')
+                            ->url()
+                            ->maxLength(255),
+                        Select::make('keygen_policy_id')
+                            ->label('Variant policy override')
+                            ->options(fn (): array => self::keygenPolicyOptions())
                             ->searchable()
-                            ->preload(),
-                        Select::make('brand_id')
-                            ->label('Brand / author')
-                            ->relationship('brand', 'name')
-                            ->searchable()
-                            ->preload(),
-                        Select::make('merchant_id')
-                            ->label('Merchant')
-                            ->relationship('merchant', 'display_name')
-                            ->searchable()
-                            ->preload(),
-                        TextInput::make('catalog_platform')
-                            ->label('Platforms')
-                            ->placeholder('Web, Windows, Linux')
-                            ->helperText('Comma-separated values used by the storefront.'),
-                        Textarea::make('short_description')
-                            ->label('Short description')
-                            ->rows(3)
-                            ->maxLength(500)
-                            ->formatStateUsing($toEnglish)
-                            ->dehydrateStateUsing(function (mixed $state) use ($toEnglish): ?array {
-                                $state = $toEnglish($state);
-
-                                return $state === null || $state === '' ? null : ['en' => $state];
-                            }),
-                        Textarea::make('description')
-                            ->label('Description')
-                            ->rows(7)
-                            ->required()
-                            ->formatStateUsing($toEnglish)
-                            ->dehydrateStateUsing(fn (mixed $state): array => ['en' => $toEnglish($state)]),
+                            ->helperText('Optional. Leave empty to inherit the product policy.'),
                     ]),
-                ProductDetailsSection::make(),
-                Section::make('License fulfillment')
-                    ->description('When enabled, a mapped Keygen policy generates a license after payment is fulfilled.')
+            ]);
+    }
+
+    private static function licensingTab(): Tab
+    {
+        return Tab::make('Licensing & fulfillment')
+            ->icon(Heroicon::OutlinedKey)
+            ->schema([
+                Group::make()
                     ->columns(2)
                     ->schema([
                         Select::make('fulfillment_summary.type')
-                            ->label('Automatic fulfillment')
+                            ->label('Fulfillment')
                             ->options([
                                 'none' => 'No automatic fulfillment',
                                 'license' => 'Generate a Keygen license',
                             ])
                             ->default('none')
+                            ->live()
                             ->required(),
                         Select::make('fulfillment_summary.provider')
                             ->label('License provider')
@@ -204,92 +295,7 @@ class ProductForm
                             ->default(true)
                             ->visible(fn (Get $get): bool => $get('fulfillment_summary.type') === 'license'),
                     ]),
-                Section::make('Variants and pricing')
-                    ->description('Manage every purchasable edition here. A variant policy overrides the default product policy.')
-                    ->schema([
-                        Repeater::make('variants_data')
-                            ->label('Product variants')
-                            ->default([
-                                [
-                                    'name' => 'Standard license',
-                                    'sku' => 'STANDARD',
-                                ],
-                            ])
-                            ->addActionLabel('Add variant')
-                            ->collapsible()
-                            ->itemLabel(fn (array $state): string => (string) ($state['name'] ?? $state['sku'] ?? 'Variant'))
-                            ->schema([
-                                Hidden::make('id'),
-                                TextInput::make('name')
-                                    ->label('Variant name')
-                                    ->required()
-                                    ->maxLength(255),
-                                TextInput::make('sku')
-                                    ->label('SKU')
-                                    ->required()
-                                    ->maxLength(255),
-                                TextInput::make('price')
-                                    ->label('Price')
-                                    ->numeric()
-                                    ->minValue(0)
-                                    ->prefix('ETB')
-                                    ->helperText('Leave blank to use the starting price above.'),
-                                TextInput::make('compare_at_price')
-                                    ->label('Compare-at price')
-                                    ->numeric()
-                                    ->minValue(0)
-                                    ->prefix('ETB'),
-                                Select::make('tax_class_id')
-                                    ->label('Tax class')
-                                    ->options(fn (): array => self::taxClassOptions())
-                                    ->default(fn (): ?int => self::defaultTaxClassId())
-                                    ->required(),
-                                Select::make('selling_policy')
-                                    ->label('Selling policy')
-                                    ->options([
-                                        'always' => 'Always sell',
-                                        'in_stock' => 'Only when in stock',
-                                        'in_stock_or_on_backorder' => 'Stock or backorder',
-                                    ])
-                                    ->default('always')
-                                    ->required(),
-                                Toggle::make('shippable')
-                                    ->label('Physical / shippable')
-                                    ->default(false),
-                                Select::make('presentation_icon')
-                                    ->label('Storefront icon')
-                                    ->options([
-                                        'academic-cap' => 'Academic cap',
-                                        'bolt' => 'Bolt',
-                                        'briefcase' => 'Briefcase',
-                                        'chart' => 'Chart',
-                                        'code' => 'Code',
-                                        'cloud' => 'Cloud',
-                                        'puzzle-piece' => 'Puzzle piece',
-                                        'shield' => 'Shield',
-                                        'sparkles' => 'Sparkles',
-                                        'cube' => 'Cube',
-                                    ])
-                                    ->searchable(),
-                                TextInput::make('presentation_image')
-                                    ->label('Storefront image path or URL')
-                                    ->url()
-                                    ->maxLength(255),
-                                Select::make('keygen_policy_id')
-                                    ->label('Variant policy override')
-                                    ->options(fn (): array => self::keygenPolicyOptions())
-                                    ->searchable()
-                                    ->helperText('Optional. Leave empty to inherit the product policy.'),
-                            ])
-                            ->columns(2),
-                    ]),
             ]);
-    }
-
-    /** @return array<string, string> */
-    private static function categoryOptions(): array
-    {
-        return Category::query()->orderBy('name')->pluck('name', 'name')->all();
     }
 
     /** @return array<string, string> */

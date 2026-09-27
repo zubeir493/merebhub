@@ -14,7 +14,7 @@ class MerchantRecentSales extends TableWidget
 
     protected static ?int $sort = 3;
 
-    protected int|string|array $columnSpan = ['lg' => 2, 'xl' => 2];
+    protected int|string|array $columnSpan = 'full';
 
     public function table(Table $table): Table
     {

@@ -30,6 +30,7 @@ class ReviewProductAction
         }
 
         $product->forceFill([
+            'status' => $state === ProductPublicationState::Published ? 'published' : 'draft',
             'publication_state' => $state->value,
             'published_at' => $state === ProductPublicationState::Published ? now() : $product->published_at,
             'archived_at' => $state === ProductPublicationState::Archived ? now() : $product->archived_at,

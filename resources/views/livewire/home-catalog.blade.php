@@ -173,16 +173,4 @@
             </div>
         </section>
     @endif
-
-    <section data-home-marketplace-cta class="relative isolate overflow-hidden border-t border-zinc-200 bg-zinc-950 text-white">
-        <div class="mx-auto flex max-w-[1400px] flex-col gap-8 px-5 py-16 sm:flex-row sm:items-end sm:justify-between lg:px-8 lg:py-24">
-            <div>
-                <span class="text-xs font-bold uppercase tracking-wider text-teal-300">Discover software</span>
-                <h2 class="mt-3 max-w-[14ch] text-4xl font-extrabold leading-[.98] tracking-[-0.035em] sm:text-5xl lg:text-6xl">Your next essential tool is already here.</h2>
-            </div>
-            <a href="{{ route('store.index') }}" class="group inline-flex items-center gap-3 rounded-lg bg-teal-300 px-6 py-4 text-base font-extrabold text-teal-950 transition hover:bg-teal-200">
-                Explore the marketplace <x-heroicon-o-arrow-right class="size-5 transition-transform group-hover:translate-x-1" />
-            </a>
-        </div>
-    </section>
 </div>

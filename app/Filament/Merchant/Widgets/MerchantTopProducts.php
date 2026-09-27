@@ -16,7 +16,7 @@ class MerchantTopProducts extends TableWidget
 
     protected static ?int $sort = 2;
 
-    protected int|string|array $columnSpan = ['lg' => 1, 'xl' => 1];
+    protected int|string|array $columnSpan = ['md' => 2, 'lg' => 1, 'xl' => 1];
 
     public function table(Table $table): Table
     {

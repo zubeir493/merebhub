@@ -17,6 +17,14 @@ class DeveloperController extends Controller
         ]);
     }
 
+    public function docs(): View
+    {
+        return view('storefront.developer-docs', [
+            'title' => 'Developer integration guide',
+            'metaDescription' => 'A practical guide to bringing a licensed software product to MerebHub, from application to approval and offline activation.',
+        ]);
+    }
+
     public function store(StoreDeveloperApplicationRequest $request): RedirectResponse
     {
         MerchantApplication::query()->create([

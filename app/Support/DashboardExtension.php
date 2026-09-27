@@ -2,25 +2,25 @@
 
 namespace App\Support;
 
-use Lunar\Filament\Widgets\Dashboard\Orders\LatestOrdersTable;
-use Lunar\Filament\Widgets\Dashboard\Orders\OrdersSalesChart;
-use Lunar\Filament\Widgets\Dashboard\Orders\OrderStatsOverview;
-use Lunar\Filament\Widgets\Dashboard\Orders\PopularProductsTable;
+use App\Filament\Admin\Widgets\AdminLatestOrdersTable;
+use App\Filament\Admin\Widgets\AdminOrdersSalesChart;
+use App\Filament\Admin\Widgets\AdminOrderStatsOverview;
+use App\Filament\Admin\Widgets\AdminPopularProductsTable;
 
 class DashboardExtension
 {
     public function getOverviewWidgets(array $widgets): array
     {
-        return [OrderStatsOverview::class];
+        return [AdminOrderStatsOverview::class];
     }
 
     public function getChartWidgets(array $widgets): array
     {
-        return [OrdersSalesChart::class];
+        return [AdminPopularProductsTable::class, AdminOrdersSalesChart::class];
     }
 
     public function getTableWidgets(array $widgets): array
     {
-        return [LatestOrdersTable::class, PopularProductsTable::class];
+        return [AdminLatestOrdersTable::class];
     }
 }

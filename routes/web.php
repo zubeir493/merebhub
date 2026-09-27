@@ -31,6 +31,7 @@ Route::get('/app-shell', fn () => Inertia::render('PlatformShell'))->name('app-s
 Route::get('/search', [StoreController::class, 'search'])->name('search');
 Route::controller(DeveloperController::class)->group(function (): void {
     Route::get('/developers', 'index')->name('developers.index');
+    Route::get('/developers/docs', 'docs')->name('developers.docs');
     Route::post('/developers/apply', 'store')->middleware('throttle:public-form')->name('developers.apply');
 });
 Route::controller(ContactController::class)->group(function (): void {

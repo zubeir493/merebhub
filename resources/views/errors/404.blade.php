@@ -7,14 +7,14 @@
         <div class="mx-auto flex min-h-[calc(100dvh-4.5rem)] max-w-2xl flex-col items-center justify-center px-5 py-20 text-center lg:px-8">
             <p class="text-8xl font-extrabold leading-none tracking-[-0.08em] sm:text-9xl" aria-hidden="true">404</p>
             <h1 class="mt-6 text-4xl font-extrabold leading-none tracking-[-0.05em] text-zinc-950 text-balance sm:text-5xl">
-                This page isn’t here.
+                We couldn’t find that page.
             </h1>
             <p class="mt-5 max-w-md text-base font-medium leading-7 text-zinc-600">
-                The link may be out of date, or the address may contain a typo.
+                The link may be out of date, or the address may have a typo. Let’s get you back to useful software.
             </p>
             <div class="mt-8 flex flex-wrap justify-center gap-3">
                 <a href="{{ route("store.index") }}" class="btn-primary">
-                    Browse marketplace
+                    Browse the marketplace
                     <x-heroicon-o-arrow-up-right class="size-4" />
                 </a>
             </div>

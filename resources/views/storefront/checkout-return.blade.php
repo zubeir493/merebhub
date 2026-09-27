@@ -7,11 +7,11 @@
             <div class="flex flex-wrap items-center gap-2.5">
                 <span class="inline-flex items-center gap-1.5 rounded-full border border-teal-200 bg-teal-50 px-3 py-1 text-xs font-bold text-teal-800">
                     <span class="size-2 rounded-full bg-teal-500 animate-pulse"></span>
-                    Payment Confirmed
+                    Payment confirmed
                 </span>
                 <span class="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1 text-xs font-semibold text-zinc-600">
                     <x-heroicon-o-shield-check class="size-3.5 text-teal-700" />
-                    Instant Digital Delivery
+                    Licenses ready in your account
                 </span>
                 <span class="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1 text-xs font-semibold text-zinc-600">
                     <x-heroicon-o-calendar class="size-3.5 text-zinc-500" />
@@ -22,16 +22,16 @@
             <div class="mt-5 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
                 <div>
                     <h1 class="text-4xl font-extrabold tracking-[-0.04em] text-zinc-950 sm:text-5xl lg:text-6xl text-balance">
-                        Thank you for your order!
+                        Your software is ready.
                     </h1>
                     <p class="mt-3 max-w-2xl text-base font-medium leading-relaxed text-zinc-600 sm:text-lg">
-                        Your payment was confirmed and your software licenses are ready in your account. You can copy your keys, download official builds, and activate immediately.
+                        Payment is confirmed. Your licenses, downloads, and receipt are now available in your MerebHub account.
                     </p>
                 </div>
                 <div class="shrink-0" x-data="{ copied: false }">
                     <div class="flex items-center content-start gap-2 rounded-md border border-zinc-200 bg-zinc-50 p-2">
                         <div class="px-2">
-                            <span class="block text-[11px] font-bold uppercase tracking-wider text-zinc-400">Order Reference</span>
+                            <span class="block text-[11px] font-bold uppercase tracking-wider text-zinc-400">Order reference</span>
                             <span class="font-mono text-sm font-extrabold text-zinc-900">#{{ $order->reference }}</span>
                         </div>
                         <button
@@ -58,11 +58,11 @@
                     <div>
                         <div class="flex items-end justify-between gap-4 border-b border-zinc-200 pb-4">
                             <h2 class="text-lg font-extrabold text-zinc-950">
-                                Purchased software ({{ $order->productLines->count() }})
+                                Your software ({{ $order->productLines->count() }})
                             </h2>
                             <span class="inline-flex items-center gap-1.5 rounded-full border border-teal-200 bg-teal-50 px-2.5 py-1 text-xs font-bold text-teal-800">
                                 <span class="size-1.5 rounded-full bg-teal-500"></span>
-                                Ready in account
+                                Ready in your account
                             </span>
                         </div>
 
@@ -123,7 +123,7 @@
                                                 </td>
                                                 <td data-label="Action" class="px-4 py-3.5 text-right sm:px-5 sm:py-4">
                                                     <a href="{{ route('account.purchases') }}" class="text-sm font-bold text-teal-800 transition hover:text-teal-600">
-                                                        View license &rarr;
+                                                        Open license &rarr;
                                                     </a>
                                                 </td>
                                             </tr>
@@ -171,36 +171,36 @@
                             <x-heroicon-o-sparkles class="size-4" />
                         </span>
                         <div>
-                            <h3 class="text-base font-extrabold text-zinc-950">How to activate your software</h3>
-                            <p class="text-xs font-semibold text-zinc-600">Follow these 3 easy steps to start using your apps right away.</p>
+                            <h3 class="text-base font-extrabold text-zinc-950">Start using your software</h3>
+                            <p class="text-xs font-semibold text-zinc-600">Three quick steps from purchase to first launch.</p>
                         </div>
                     </div>
 
                     <div class="mt-5 grid gap-3 sm:grid-cols-3">
                         <div class="rounded-md border border-zinc-200 bg-white p-4">
                             <div class="flex size-6 items-center justify-center rounded-full bg-teal-100 text-xs font-black text-teal-900">1</div>
-                            <h4 class="mt-2.5 text-sm font-extrabold text-zinc-950">Get your license key</h4>
-                            <p class="mt-1 text-xs leading-relaxed text-zinc-600">Access your license dashboard to reveal and copy your software key anytime.</p>
+                            <h4 class="mt-2.5 text-sm font-extrabold text-zinc-950">Open your license key</h4>
+                            <p class="mt-1 text-xs leading-relaxed text-zinc-600">Open Purchases & Licenses to reveal or copy your key whenever you need it.</p>
                         </div>
                         <div class="rounded-md border border-zinc-200 bg-white p-4">
                             <div class="flex size-6 items-center justify-center rounded-full bg-teal-100 text-xs font-black text-teal-900">2</div>
-                            <h4 class="mt-2.5 text-sm font-extrabold text-zinc-950">Download the installer</h4>
-                            <p class="mt-1 text-xs leading-relaxed text-zinc-600">Download the appropriate installer for your machine directly from your account.</p>
+                            <h4 class="mt-2.5 text-sm font-extrabold text-zinc-950">Download your software</h4>
+                            <p class="mt-1 text-xs leading-relaxed text-zinc-600">Choose the build for your machine and download it from your account.</p>
                         </div>
                         <div class="rounded-md border border-zinc-200 bg-white p-4">
                             <div class="flex size-6 items-center justify-center rounded-full bg-teal-100 text-xs font-black text-teal-900">3</div>
-                            <h4 class="mt-2.5 text-sm font-extrabold text-zinc-950">Activate &amp; create</h4>
-                            <p class="mt-1 text-xs leading-relaxed text-zinc-600">Launch the app, enter your key, and you are ready. Offline tokens also supported.</p>
+                            <h4 class="mt-2.5 text-sm font-extrabold text-zinc-950">Activate and get to work</h4>
+                            <p class="mt-1 text-xs leading-relaxed text-zinc-600">Open the app, enter your key, and start working. Offline activation is supported too.</p>
                         </div>
                     </div>
 
                     <div class="mt-5 flex flex-wrap items-center justify-between gap-4 border-t border-zinc-200 pt-4 text-xs text-zinc-700">
                         <span class="flex items-center gap-1.5 font-semibold">
                             <x-heroicon-o-shield-check class="size-4 text-teal-700" />
-                            Need offline activation without an active internet connection?
+                            Need to activate without an internet connection?
                         </span>
                         <a href="{{ route('offline-activation.show') }}" class="font-extrabold text-teal-800 hover:text-teal-950 underline underline-offset-4">
-                            Generate offline license file &rarr;
+                            Create an offline license file &rarr;
                         </a>
                     </div>
                 </div>
@@ -209,7 +209,7 @@
             {{-- Right Column: Order Receipt & Quick Actions --}}
             <aside class="h-fit space-y-6 lg:sticky lg:top-28">
                 <div class="rounded-lg border border-zinc-200 bg-white p-6">
-                    <h2 class="text-base font-extrabold text-zinc-950">Receipt summary</h2>
+                    <h2 class="text-base font-extrabold text-zinc-950">Order summary</h2>
 
                     <div class="mt-5 space-y-3 border-b border-zinc-200 pb-5 text-sm">
                         <div class="flex items-center justify-between text-zinc-600">
@@ -284,7 +284,7 @@
 
                     <div class="mt-6 flex flex-col gap-2.5">
                         <a href="{{ route('account.purchases') }}" class="btn-primary w-full">
-                            <x-heroicon-o-key class="size-4" /> Go to licenses &amp; downloads
+                            <x-heroicon-o-key class="size-4" /> Open licenses &amp; downloads
                         </a>
                         <a href="{{ route('account.orders') }}" class="btn-dark w-full">
                             <x-heroicon-o-document-text class="size-4" /> View order receipt
@@ -300,7 +300,7 @@
                             <h4 class="text-xs font-extrabold uppercase tracking-wider text-zinc-900">Have questions?</h4>
                             <p class="mt-1 text-xs leading-relaxed text-zinc-600">Need help installing, activating, or downloading? Our team and verified publishers are ready to help.</p>
                             <a href="{{ route('contact.index') }}" class="mt-2.5 inline-flex items-center gap-1 text-xs font-extrabold text-teal-800 hover:text-teal-950">
-                                Contact customer support <x-heroicon-o-arrow-right class="size-3" />
+                                Get customer support <x-heroicon-o-arrow-right class="size-3" />
                             </a>
                         </div>
                     </div>

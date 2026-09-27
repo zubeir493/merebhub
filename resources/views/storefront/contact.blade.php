@@ -4,28 +4,28 @@
     <section data-public-page-header class="public-page-header">
         <div class="mx-auto grid max-w-[1400px] gap-8 px-5 py-14 sm:py-16 lg:grid-cols-12 lg:items-end lg:px-8 lg:py-20">
             <div class="lg:col-span-8">
-                <h1 class="public-page-title">Start the right conversation.</h1>
+                <h1 class="public-page-title">Let’s find the right way forward.</h1>
             </div>
             <div class="lg:col-span-4 lg:pb-1">
-                <p class="public-lede">Questions about MerebHub, a partnership, or a purchase? Point us in the right direction and tell us what you need.</p>
+                <p class="public-lede">Have a question about a purchase, partnership, or the marketplace? Tell us what you need and we’ll route it to the right person.</p>
             </div>
         </div>
     </section>
 
     <section class="mx-auto grid max-w-[1400px] gap-14 px-5 py-16 lg:grid-cols-12 lg:px-8 lg:py-24">
         <div class="lg:col-span-5">
-            <h2 class="max-w-sm text-4xl font-extrabold tracking-[-0.04em] text-zinc-950">Before you write</h2>
+            <h2 class="max-w-sm text-4xl font-extrabold tracking-[-0.04em] text-zinc-950">Before you send a message</h2>
             <div class="mt-8 border-t border-zinc-200">
                 <a href="{{ route('account.support.index') }}" class="group flex items-start justify-between gap-6 border-b border-zinc-200 py-6">
                     <span>
-                        <strong class="block text-base text-zinc-950 transition group-hover:text-teal-700">Help with an order or license</strong>
+                        <strong class="block text-base text-zinc-950 transition group-hover:text-teal-700">Need help with an order or license?</strong>
                         <span class="mt-2 block max-w-md text-sm leading-6 text-zinc-600">Signed-in customers can open a private support request and follow every reply.</span>
                     </span>
                     <x-heroicon-o-arrow-up-right class="mt-1 size-5 shrink-0 text-zinc-400 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-teal-700" />
                 </a>
                 <a href="{{ route('developers.index') }}#apply" class="group flex items-start justify-between gap-6 border-b border-zinc-200 py-6">
                     <span>
-                        <strong class="block text-base text-zinc-950 transition group-hover:text-teal-700">Want to sell your software?</strong>
+                        <strong class="block text-base text-zinc-950 transition group-hover:text-teal-700">Building software for the marketplace?</strong>
                         <span class="mt-2 block max-w-md text-sm leading-6 text-zinc-600">Use the developer application so the product reaches the right review path.</span>
                     </span>
                     <x-heroicon-o-arrow-up-right class="mt-1 size-5 shrink-0 text-zinc-400 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-teal-700" />
@@ -49,9 +49,9 @@
                     </div>
                 </div>
                 <div>
-                    <label for="contact-topic" class="form-label">What is this about?</label>
+                    <label for="contact-topic" class="form-label">How can we help?</label>
                     <select id="contact-topic" name="topic" class="form-input" required>
-                        <option value="">Choose a topic</option>
+                        <option value="">Choose the closest topic</option>
                         <option value="marketplace" @selected(old('topic') === 'marketplace')>Marketplace question</option>
                         <option value="partnership" @selected(old('topic') === 'partnership')>Partnership</option>
                         <option value="purchase" @selected(old('topic') === 'purchase')>Purchase question</option>
@@ -71,7 +71,7 @@
                 </div>
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <p class="max-w-sm text-xs leading-5 text-zinc-500">We’ll use your email only to respond to this message.</p>
-                    <button type="submit" class="btn-dark shrink-0">Send message <x-heroicon-o-paper-airplane class="size-4" /></button>
+                    <button type="submit" class="btn-dark shrink-0">Send your message <x-heroicon-o-paper-airplane class="size-4" /></button>
                 </div>
             </form>
         </div>

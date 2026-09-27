@@ -52,7 +52,7 @@ test('checkout complete page renders without lazy loading violations', function 
     $this->actingAs($user)
         ->get(route('checkout.complete', $order))
         ->assertSuccessful()
-        ->assertSee('Thank you for your order!')
+        ->assertSee('Your software is ready.')
         ->assertSee($order->reference)
         ->assertSee($product->name);
 });

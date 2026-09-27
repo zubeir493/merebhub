@@ -63,7 +63,7 @@ class StorefrontController extends Controller
         if (! $user instanceof User || ! $product->wasPurchasedBy($user)) {
             return redirect()
                 ->to(route('products.show', $product).'#product-reviews')
-                ->withErrors(['review' => 'You can only review a product after purchasing it with this account.']);
+                ->withErrors(['review' => 'Purchase this software with your account before posting a review.']);
         }
 
         ProductReview::updateOrCreate(
@@ -79,7 +79,7 @@ class StorefrontController extends Controller
 
         return redirect()
             ->to(route('products.show', $product).'#product-reviews')
-            ->with('status', 'Your review has been published.');
+            ->with('status', 'Your review is live. Thanks for helping other shoppers choose.');
     }
 
     public function vendors(Request $request): View

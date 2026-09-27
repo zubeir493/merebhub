@@ -12,16 +12,16 @@ class DeveloperController extends Controller
     public function index(): View
     {
         return view('storefront.developers', [
-            'title' => 'Sell on MerebHub',
-            'metaDescription' => 'Bring your software to MerebHub and reach customers looking for products from Ethiopian developers.',
+            'title' => 'Bring your software to market',
+            'metaDescription' => 'List your Ethiopian software on MerebHub and reach customers who are ready to discover and buy useful tools.',
         ]);
     }
 
     public function docs(): View
     {
         return view('storefront.developer-docs', [
-            'title' => 'Developer integration guide',
-            'metaDescription' => 'A practical guide to bringing a licensed software product to MerebHub, from application to approval and offline activation.',
+            'title' => 'MerebHub integration guide',
+            'metaDescription' => 'A practical guide to listing licensed software on MerebHub, from application and review to activation and offline support.',
         ]);
     }
 
@@ -35,6 +35,6 @@ class DeveloperController extends Controller
 
         return redirect()
             ->to(route('developers.index').'#apply')
-            ->with('status', 'Application received. We’ll review your product and get back to you by email.');
+            ->with('status', 'Application received. We’ll review your product and reply by email with the next step.');
     }
 }

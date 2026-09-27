@@ -3,14 +3,14 @@
 @section('account-content')
     <header class="account-page-header">
         <h1 class="account-page-title">Invoices</h1>
-        <p class="account-page-description">View printable invoices for your completed orders.</p>
+        <p class="account-page-description">Open or print invoices for your completed purchases.</p>
     </header>
 
     @if ($invoices->isEmpty())
         <section class="account-empty-state">
             <x-heroicon-o-document-text class="mx-auto size-12 text-zinc-400" aria-hidden="true" />
-            <h2 class="mt-4 text-xl font-bold">No invoices yet</h2>
-            <p class="mt-2 text-sm text-zinc-600">Invoices for placed orders will appear here.</p>
+            <h2 class="mt-4 text-xl font-bold">Your invoices will appear here</h2>
+            <p class="mt-2 text-sm text-zinc-600">Invoices are created for completed orders and will appear here.</p>
         </section>
     @else
         <div class="account-table-shell account-table-wrap">

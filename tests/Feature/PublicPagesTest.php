@@ -40,7 +40,7 @@ test('public navigation contains the same destinations on desktop and mobile', f
         ->assertSuccessful()
         ->assertSee('data-desktop-public-navigation', false)
         ->assertSee('data-mobile-public-navigation', false)
-        ->assertSeeInOrder(['Store', 'Developers', 'Contact'])
+        ->assertSeeInOrder(['Store', 'Makers', 'Contact'])
         ->assertSee(route('store.index'))
         ->assertSee(route('developers.index'))
         ->assertSee(route('contact.index'));
@@ -50,9 +50,7 @@ test('home page includes the layered marketplace sections', function () {
     $this->get(route('home'))
         ->assertSuccessful()
         ->assertSee('data-home-local-build', false)
-        ->assertSee('Homegrown software with serious superpowers.')
-        ->assertSee('data-home-marketplace-cta', false)
-        ->assertSee('Your next essential tool is already here.');
+        ->assertSee('Useful software, made closer to home.');
 });
 
 test('home page hero uses featured products and published customer ratings', function () {
@@ -77,7 +75,7 @@ test('home page hero uses featured products and published customer ratings', fun
     ]);
 
     $this->get(route('home'))
-        ->assertSee('Featured products')
+        ->assertSee('A few worth a closer look')
         ->assertSee($product->name)
         ->assertSee('4.0 rating');
 });
@@ -88,8 +86,8 @@ test('developer and contact pages render their public forms', function (string $
         ->assertSee($heading)
         ->assertSee('action="'.route($action).'"', false);
 })->with([
-    'developer application' => ['developers.index', 'Your software deserves a market.', 'developers.apply'],
-    'contact form' => ['contact.index', 'Start the right conversation.', 'contact.store'],
+    'developer application' => ['developers.index', 'Put your software in front of the right customers.', 'developers.apply'],
+    'contact form' => ['contact.index', 'Let’s find the right way forward.', 'contact.store'],
 ]);
 
 test('guests can submit a developer application', function () {
@@ -107,7 +105,7 @@ test('guests can submit a developer application', function () {
 
     $response
         ->assertRedirect(route('developers.index').'#apply')
-        ->assertSessionHas('status', 'Application received. We’ll review your product and get back to you by email.');
+        ->assertSessionHas('status', 'Application received. We’ll review your product and reply by email with the next step.');
 
     $application = MerchantApplication::query()->latest('id')->firstOrFail();
 
@@ -154,7 +152,7 @@ test('contact messages are sent to the configured support inbox', function () {
 
     $response
         ->assertRedirect(route('contact.index').'#contact-form')
-        ->assertSessionHas('status', 'Message sent. Thanks for reaching out.');
+        ->assertSessionHas('status', 'Your message is on its way. We’ll get back to you by email.');
 
     Notification::assertSentOnDemand(
         ContactMessageReceivedNotification::class,

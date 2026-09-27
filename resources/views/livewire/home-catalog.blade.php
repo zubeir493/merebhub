@@ -9,21 +9,21 @@
         <div class="mx-auto max-w-[1400px] px-5 pb-12 pt-14 sm:pt-16 lg:px-8 lg:pb-14 lg:pt-20">
             <div class="grid gap-10 lg:grid-cols-12 lg:items-end">
                 <h1 class="public-page-title lg:col-span-8">
-                    Software you'll actually love using.
+                    Software that earns its place in your day.
                 </h1>
                 <div class="lg:col-span-4 lg:pb-2">
-                    <p class="public-lede">Independent Ethiopian software, selected with care and delivered through one trusted marketplace.</p>
+                    <p class="public-lede">Discover useful software from Ethiopian makers, with clear pricing and a license library that stays organized after you buy.</p>
                     <div class="mt-7 flex flex-wrap gap-3">
                         <a href="{{ route('store.index') }}" class="btn-primary">Browse software <x-heroicon-o-arrow-right class="size-4" /></a>
-                        <a href="{{ route('vendors.index') }}" class="inline-flex items-center justify-center rounded-lg border border-zinc-300 bg-white px-5 py-3 text-sm font-extrabold text-zinc-700 transition hover:border-zinc-400 hover:text-zinc-950">Meet the developers</a>
+                        <a href="{{ route('vendors.index') }}" class="inline-flex items-center justify-center rounded-lg border border-zinc-300 bg-white px-5 py-3 text-sm font-extrabold text-zinc-700 transition hover:border-zinc-400 hover:text-zinc-950">Meet the makers</a>
                     </div>
                 </div>
             </div>
 
             <div class="mt-12 grid border-y border-zinc-200 sm:grid-cols-3">
-                <div class="flex items-center gap-3 py-4 sm:pr-5"><x-heroicon-o-shield-check class="size-5 shrink-0 text-teal-700" /><span class="text-xs font-bold text-zinc-600">Reviewed publishers</span></div>
+                <div class="flex items-center gap-3 py-4 sm:pr-5"><x-heroicon-o-shield-check class="size-5 shrink-0 text-teal-700" /><span class="text-xs font-bold text-zinc-600">Makers you can understand</span></div>
                 <div class="flex items-center gap-3 border-t border-zinc-200 py-4 sm:border-l sm:border-t-0 sm:px-5"><x-heroicon-o-banknotes class="size-5 shrink-0 text-teal-700" /><span class="text-xs font-bold text-zinc-600">Clear ETB pricing</span></div>
-                <div class="flex items-center gap-3 border-t border-zinc-200 py-4 sm:border-l sm:border-t-0 sm:pl-5"><x-heroicon-o-key class="size-5 shrink-0 text-teal-700" /><span class="text-xs font-bold text-zinc-600">Purchases and licenses in one account</span></div>
+                <div class="flex items-center gap-3 border-t border-zinc-200 py-4 sm:border-l sm:border-t-0 sm:pl-5"><x-heroicon-o-key class="size-5 shrink-0 text-teal-700" /><span class="text-xs font-bold text-zinc-600">Every purchase in one account</span></div>
             </div>
         </div>
 
@@ -32,7 +32,7 @@
                 <div data-home-exhibition class="grid overflow-hidden border border-zinc-200 bg-white lg:grid-cols-[minmax(300px,.72fr)_minmax(0,1.6fr)]">
                     <div class="order-2 flex flex-col border-zinc-200 lg:order-1 lg:border-r">
                         <div class="flex items-center justify-between px-5 py-5 lg:px-8">
-                            <span class="text-xs font-extrabold text-zinc-600">Featured products</span>
+                            <span class="text-xs font-extrabold text-zinc-600">A few worth a closer look</span>
                             <span class="text-xs font-bold tabular-nums text-zinc-400">{{ str_pad($exhibitionProducts->count(), 2, '0', STR_PAD_LEFT) }}</span>
                         </div>
                         <div class="mt-auto">
@@ -80,10 +80,10 @@
             <div class="mx-auto max-w-[1400px] px-5 py-20 lg:px-8 lg:py-24">
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <h2 class="text-4xl font-extrabold tracking-[-0.04em] text-zinc-950 sm:text-5xl">Popular right now</h2>
-                        <p class="mt-3 max-w-xl text-sm leading-6 text-zinc-600">A fast read on what customers are exploring across MerebHub.</p>
+                        <h2 class="text-4xl font-extrabold tracking-[-0.04em] text-zinc-950 sm:text-5xl">Popular with shoppers</h2>
+                        <p class="mt-3 max-w-xl text-sm leading-6 text-zinc-600">See what other shoppers are choosing for their work.</p>
                     </div>
-                    <a href="{{ route('store.bestsellers') }}" class="group inline-flex items-center gap-2 text-sm font-extrabold text-teal-700">See best sellers <x-heroicon-o-arrow-right class="size-4 transition-transform group-hover:translate-x-1" /></a>
+                    <a href="{{ route('store.bestsellers') }}" class="group inline-flex items-center gap-2 text-sm font-extrabold text-teal-700">Explore best sellers <x-heroicon-o-arrow-right class="size-4 transition-transform group-hover:translate-x-1" /></a>
                 </div>
 
                 <div class="mt-9 grid border-y border-zinc-200 md:grid-cols-2 xl:grid-cols-3">
@@ -120,15 +120,15 @@
         <div class="mx-auto max-w-[1400px] px-5 lg:px-8">
             <div class="grid gap-10 lg:grid-cols-12 lg:items-end">
                 <p class="max-w-[14ch] text-[clamp(3.25rem,7vw,5.75rem)] font-extrabold leading-[.88] tracking-[-0.04em] text-balance lg:col-span-7">
-                    Homegrown software with serious superpowers.
+                    Useful software, made closer to home.
                 </p>
-                <p class="max-w-lg text-base leading-8 text-zinc-300 lg:col-span-5 lg:justify-self-end">MerebHub brings Ethiopia's brightest indie creators right to your desktop. Pay smoothly in ETB, get instant license keys, and enjoy tools that just click.</p>
+                <p class="max-w-lg text-base leading-8 text-zinc-300 lg:col-span-5 lg:justify-self-end">MerebHub makes it easier to find and buy software from Ethiopian makers. Pay in ETB, receive your license, and get back to the work that matters.</p>
             </div>
 
             <div class="mt-16 grid border-y border-white/15 sm:grid-cols-3">
-                <div class="py-6 sm:pr-7"><x-heroicon-o-shield-check class="size-5 text-teal-300" /><strong class="mt-4 block text-sm">Reviewed publishers</strong><p class="mt-2 text-xs leading-6 text-zinc-400">Publisher information stays visible while you compare.</p></div>
-                <div class="border-t border-white/15 py-6 sm:border-l sm:border-t-0 sm:px-7"><x-heroicon-o-banknotes class="size-5 text-teal-300" /><strong class="mt-4 block text-sm">ETB checkout</strong><p class="mt-2 text-xs leading-6 text-zinc-400">Pricing and checkout are presented in familiar local currency.</p></div>
-                <div class="border-t border-white/15 py-6 sm:border-l sm:border-t-0 sm:pl-7"><x-heroicon-o-key class="size-5 text-teal-300" /><strong class="mt-4 block text-sm">One account</strong><p class="mt-2 text-xs leading-6 text-zinc-400">Purchases, licenses, invoices, and support stay together.</p></div>
+                <div class="py-6 sm:pr-7"><x-heroicon-o-shield-check class="size-5 text-teal-300" /><strong class="mt-4 block text-sm">Reviewed publishers</strong><p class="mt-2 text-xs leading-6 text-zinc-400">See who made each tool before you choose.</p></div>
+                <div class="border-t border-white/15 py-6 sm:border-l sm:border-t-0 sm:px-7"><x-heroicon-o-banknotes class="size-5 text-teal-300" /><strong class="mt-4 block text-sm">ETB checkout</strong><p class="mt-2 text-xs leading-6 text-zinc-400">Know what you will pay in ETB before checkout.</p></div>
+                <div class="border-t border-white/15 py-6 sm:border-l sm:border-t-0 sm:pl-7"><x-heroicon-o-key class="size-5 text-teal-300" /><strong class="mt-4 block text-sm">One account</strong><p class="mt-2 text-xs leading-6 text-zinc-400">Keep receipts, keys, downloads, and help in one account.</p></div>
             </div>
         </div>
     </section>
@@ -137,9 +137,9 @@
         <section class="border-b border-zinc-200 bg-white">
             <div class="mx-auto grid max-w-[1400px] gap-12 px-5 py-20 lg:grid-cols-[minmax(0,.72fr)_minmax(0,1.28fr)] lg:px-8 lg:py-24">
                 <div>
-                    <h2 class="public-section-title max-w-[14ch]">Explore by category.</h2>
-                    <p class="mt-5 max-w-md text-sm leading-7 text-zinc-600">Find the right software crafted for your exact workflow, from finance and productivity to developer tooling.</p>
-                    <a href="{{ route('store.index') }}" class="btn-dark mt-7">Explore every category <x-heroicon-o-arrow-right class="size-4" /></a>
+                    <h2 class="public-section-title max-w-[14ch]">Start with the kind of work you need to do.</h2>
+                    <p class="mt-5 max-w-md text-sm leading-7 text-zinc-600">Browse by workflow, from finance and productivity to developer tools.</p>
+                    <a href="{{ route('store.index') }}" class="btn-dark mt-7">Browse every category <x-heroicon-o-arrow-right class="size-4" /></a>
                 </div>
                 <div class="grid border-t border-zinc-200 sm:grid-cols-2">
                     @foreach ($categories->take(8) as $item)
@@ -161,8 +161,8 @@
         <section class="border-b border-zinc-200 bg-zinc-50/50">
             <div class="mx-auto max-w-[1400px] px-5 py-20 lg:px-8 lg:py-28">
                 <div class="grid gap-7 lg:grid-cols-12 lg:items-end">
-                    <h2 class="text-5xl font-extrabold leading-[.92] tracking-[-0.04em] text-zinc-950 sm:text-6xl lg:col-span-8 lg:text-7xl">New tools.<br>New possibilities.</h2>
-                    <div class="lg:col-span-4"><p class="max-w-sm text-sm leading-7 text-zinc-600">The latest software published across the marketplace, arranged for browsing rather than scrolling past.</p><a href="{{ route('store.newarrivals') }}" class="group mt-5 inline-flex items-center gap-2 text-sm font-extrabold text-teal-700">See every new arrival <x-heroicon-o-arrow-right class="size-4 transition-transform group-hover:translate-x-1" /></a></div>
+                    <h2 class="text-5xl font-extrabold leading-[.92] tracking-[-0.04em] text-zinc-950 sm:text-6xl lg:col-span-8 lg:text-7xl">New tools for the work ahead.</h2>
+                    <div class="lg:col-span-4"><p class="max-w-sm text-sm leading-7 text-zinc-600">Browse the latest releases from makers building for real needs.</p><a href="{{ route('store.newarrivals') }}" class="group mt-5 inline-flex items-center gap-2 text-sm font-extrabold text-teal-700">See all new arrivals <x-heroicon-o-arrow-right class="size-4 transition-transform group-hover:translate-x-1" /></a></div>
                 </div>
 
                 <div class="mt-14 grid gap-x-6 gap-y-12 sm:grid-cols-2 xl:grid-cols-4">

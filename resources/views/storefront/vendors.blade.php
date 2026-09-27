@@ -3,19 +3,19 @@
 @section('content')
     <section data-public-page-header class="public-page-header">
         <div class="mx-auto grid max-w-[1400px] gap-8 px-5 py-14 sm:py-16 lg:grid-cols-12 lg:items-end lg:px-8 lg:py-20">
-            <h1 class="public-page-title lg:col-span-8">Meet the makers behind the software.</h1>
-            <p class="public-lede lg:col-span-4">Discover independent developers, studios, and publishers building practical software in Ethiopia.</p>
+            <h1 class="public-page-title lg:col-span-8">Meet the people building the tools.</h1>
+            <p class="public-lede lg:col-span-4">Explore independent makers, studios, and publishers building practical software in Ethiopia.</p>
         </div>
     </section>
 
     <div class="mx-auto max-w-[1400px] px-5 py-12 lg:px-8 lg:py-16">
         <form method="GET" class="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto_auto_auto]">
             <label class="relative">
-                <span class="sr-only">Search developers</span>
+                <span class="sr-only">Search makers</span>
                 <x-heroicon-o-magnifying-glass class="absolute left-4 top-1/2 size-5 -translate-y-1/2 text-zinc-400" />
                 <input name="q" value="{{ $search }}" placeholder="Search developers" class="form-input pl-11">
             </label>
-            <select name="sort" class="form-input" aria-label="Sort developers">
+            <select name="sort" class="form-input" aria-label="Sort makers">
                 <option value="newest" @selected($sort === 'newest')>Newest</option>
                 <option value="products" @selected($sort === 'products')>Most products</option>
                 <option value="sales" @selected($sort === 'sales')>Most sales</option>
@@ -54,7 +54,7 @@
             @empty
                 <div class="col-span-full border-y border-zinc-200 py-16 text-center">
                     <x-heroicon-o-user-group class="mx-auto size-9 text-zinc-400" />
-                    <h2 class="mt-4 font-extrabold text-zinc-900">No developers match those filters</h2>
+                    <h2 class="mt-4 font-extrabold text-zinc-900">No makers match those filters</h2>
                 </div>
             @endforelse
         </div>

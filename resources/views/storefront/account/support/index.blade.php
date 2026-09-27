@@ -2,12 +2,12 @@
 
 @section('account-content')
     <header class="account-page-header">
-        <h1 class="account-page-title">Support requests</h1>
-        <p class="account-page-description">Send our team a message and follow each reply from your account.</p>
+        <h1 class="account-page-title">Support &amp; help</h1>
+        <p class="account-page-description">Tell us what you need and keep the full conversation in your account.</p>
     </header>
 
     <section class="account-form-surface mb-10">
-        <h2 class="text-xl font-extrabold">Start a support request</h2>
+        <h2 class="text-xl font-extrabold">Tell us how we can help</h2>
         <form method="POST" action="{{ route('account.support.store') }}" enctype="multipart/form-data" class="mt-5 grid gap-4">
             @csrf
             <div>
@@ -34,11 +34,11 @@
     </section>
 
     <section>
-        <h2 class="mb-4 text-xl font-extrabold">Your requests</h2>
+        <h2 class="mb-4 text-xl font-extrabold">Your support conversations</h2>
         @if ($tickets->isEmpty())
             <div class="account-empty-state py-10">
                 <x-heroicon-o-chat-bubble-left-right class="mx-auto size-10 text-zinc-400" aria-hidden="true" />
-                <p class="mt-3 font-bold">No support requests yet</p>
+                <p class="mt-3 font-bold">No support conversations yet</p>
             </div>
         @else
             <div class="border-y border-zinc-200">

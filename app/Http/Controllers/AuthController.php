@@ -33,7 +33,7 @@ class AuthController extends Controller
         $credentials = $request->safe()->only(['email', 'password']);
 
         if (! Auth::attempt($credentials, $request->boolean('remember'))) {
-            return back()->withErrors(['email' => 'Those credentials do not match our records.'])->onlyInput('email');
+            return back()->withErrors(['email' => 'We couldn’t sign you in with those details. Check your email and password and try again.'])->onlyInput('email');
         }
 
         $request->session()->regenerate();
@@ -74,49 +74,49 @@ class AuthController extends Controller
         if (Str::contains($intent, ['checkout', 'cart', 'order'])) {
             return [
                 'intent' => 'checkout',
-                'title' => $isRegister ? 'Create an account to complete your checkout' : 'Sign in to complete your checkout',
+                'title' => $isRegister ? 'Create an account and finish your purchase' : 'Sign in to finish your purchase',
                 'subtitle' => $isRegister
-                    ? 'Create an account to complete your checkout and receive your software licenses.'
-                    : 'You need to sign in to complete your checkout and access your purchased software licenses.',
+                    ? 'Your account keeps the receipt, license keys, and downloads together after payment.'
+                    : 'Sign in to complete payment and access the software you purchase here.',
             ];
         }
 
         if (Str::contains($intent, 'wishlist')) {
             return [
                 'intent' => 'wishlist',
-                'title' => $isRegister ? 'Create an account to add items to your wishlist' : 'Sign in to add items to your wishlist',
+                'title' => $isRegister ? 'Create an account to save this software' : 'Sign in to save this software',
                 'subtitle' => $isRegister
-                    ? 'Create a free account to add items to your wishlist and save tools for later.'
-                    : 'Sign in to add items to your wishlist and keep track of software you want to buy later.',
+                    ? 'Keep promising tools close so you can come back when the time is right.'
+                    : 'Save tools to your wishlist and pick up where you left off later.',
             ];
         }
 
         if (Str::contains($intent, ['download', 'purchase', 'credential', 'license'])) {
             return [
                 'intent' => 'downloads',
-                'title' => $isRegister ? 'Create an account to access your downloads' : 'Sign in to access your downloads',
+                'title' => $isRegister ? 'Create an account for your software library' : 'Sign in to open your software library',
                 'subtitle' => $isRegister
-                    ? 'Keep every purchase, license key, and software download in one place.'
-                    : 'Access your product license keys, offline activation files, and software downloads.',
+                    ? 'Keep purchases, license keys, offline activation files, and downloads in one place.'
+                    : 'Open your license keys, offline activation files, and software downloads.',
             ];
         }
 
         if (Str::contains($intent, ['review'])) {
             return [
                 'intent' => 'review',
-                'title' => $isRegister ? 'Create an account to write a review' : 'Sign in to write a review',
+                'title' => $isRegister ? 'Create an account to share your take' : 'Sign in to share your take',
                 'subtitle' => $isRegister
-                    ? 'Join MerebHub to rate and review verified Ethiopian software.'
-                    : 'Share your feedback and experience with the developer and community.',
+                    ? 'Help other shoppers choose well by reviewing software you have purchased.'
+                    : 'Share useful feedback with the maker and the MerebHub community.',
             ];
         }
 
         return [
             'intent' => null,
-            'title' => $isRegister ? 'Create your account' : 'Welcome back',
+            'title' => $isRegister ? 'Set up your MerebHub account' : 'Welcome back to MerebHub',
             'subtitle' => $isRegister
-                ? 'Keep every purchase, license, and download in one place.'
-                : 'Sign in to access your licenses and downloads.',
+                ? 'One account for purchases, licenses, downloads, and support.'
+                : 'Your purchases, licenses, and downloads are waiting for you.',
         ];
     }
 
@@ -154,7 +154,7 @@ class AuthController extends Controller
         $validated = $request->validate(['email' => ['required', 'email']]);
         Password::sendResetLink($validated);
 
-        return back()->with('status', 'If that email exists, a reset link has been sent.');
+        return back()->with('status', 'If an account uses that email, we’ve sent a secure password reset link.');
     }
 
     public function resetPasswordForm(Request $request, string $token): View

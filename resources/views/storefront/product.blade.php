@@ -28,7 +28,7 @@
                             </div>
                         @else
                             <div data-gallery-slide class="grid h-full place-items-center px-8 text-center text-sm font-bold text-zinc-500">
-                                Product preview coming soon
+                                A product preview will appear here soon.
                             </div>
                         @endif
                     @endforelse
@@ -75,7 +75,7 @@
                             </form>
                         @endif
                     @else
-                        <a href="{{ route('login', ['intent' => 'wishlist', 'redirect' => route('products.show', $product)]) }}" class="mt-3 grid size-11 place-items-center rounded-full transition hover:bg-amber-50" aria-label="Sign in to add items to your wishlist" title="Sign in to save to wishlist">
+                        <a href="{{ route('login', ['intent' => 'wishlist', 'redirect' => route('products.show', $product)]) }}" class="mt-3 grid size-11 place-items-center rounded-full transition hover:bg-amber-50" aria-label="Sign in to save this software" title="Sign in to save this software">
                             <x-heroicon-o-bookmark class="size-6 text-amber-500" />
                         </a>
                     @endauth
@@ -100,7 +100,7 @@
                         <form method="POST" action="{{ route('cart.store', $product) }}" data-add-to-cart>
                             @csrf
                             <fieldset>
-                                <legend class="form-label">Choose an option</legend>
+                                <legend class="form-label">Choose your license</legend>
                                 <div class="grid gap-3">
                                 @foreach ($product->variants as $variant)
                                     @php
@@ -119,7 +119,7 @@
                                             </span>
                                             <span class="min-w-0 flex-1">
                                                 <span class="block truncate text-sm font-extrabold text-zinc-900">{{ $optionLabel }}</span>
-                                                <span class="mt-1 block text-xs font-semibold text-zinc-500">Digital license</span>
+                                                <span class="mt-1 block text-xs font-semibold text-zinc-500">Digital license delivered to your account</span>
                                             </span>
                                             <strong class="shrink-0 text-sm font-extrabold text-zinc-950">{{ number_format((float) ($variant->prices->first()?->price ?? 0) / 100, 2) }} ETB</strong>
                                         </span>
@@ -127,15 +127,14 @@
                                 @endforeach
                                 </div>
                             </fieldset>
-                            <button type="submit" class="btn-primary mt-4 w-full"><x-heroicon-o-shopping-cart class="size-5" /> Add to
-                                cart</button>
+                            <button type="submit" class="btn-primary mt-4 w-full"><x-heroicon-o-shopping-cart class="size-5" /> Add to cart</button>
                         </form>
                     @else
                         <div class="rounded-lg bg-amber-50 px-4 py-3 text-sm font-bold text-amber-800">This product is not
-                            currently available for purchase.</div>
+                            available right now.</div>
                     @endif
                     <p class="mt-3 flex items-center justify-center gap-2 text-center text-xs font-semibold text-zinc-500">
-                        <x-heroicon-o-shield-check class="size-4 shrink-0" />Secure checkout by Chapa
+                        <x-heroicon-o-shield-check class="size-4 shrink-0" />Secure ETB checkout by Chapa
                     </p>
                 </div>
             </div>
@@ -148,7 +147,7 @@
 
             <div id="product-description" data-product-panel="description" role="tabpanel" tabindex="0" @if ($reviewsTabActive) hidden @endif class="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1fr)_300px]">
                 <div>
-                    <h2 class="text-3xl font-extrabold tracking-[-0.035em]">About this software</h2>
+                    <h2 class="text-3xl font-extrabold tracking-[-0.035em]">What you will get</h2>
                     <div class="mt-5 max-w-3xl whitespace-pre-line text-base leading-8 text-zinc-600">{{ $product->description }}</div>
                 </div>
                 <aside class="border-l border-zinc-200 pl-7 text-sm">
@@ -165,7 +164,7 @@
                 <div>
                     <div class="flex items-end justify-between gap-4">
                         <div>
-                            <h2 class="text-3xl font-extrabold tracking-[-0.035em]">Customer reviews</h2>
+                            <h2 class="text-3xl font-extrabold tracking-[-0.035em]">What customers say</h2>
                             <p class="mt-2 text-sm text-zinc-500">See what customers think about {{ $product->name }}.</p>
                         </div>
                         <div class="shrink-0 text-right">
@@ -188,7 +187,7 @@
                                 <p class="mt-2 whitespace-pre-line text-sm leading-7 text-zinc-600">{{ $review->body }}</p>
                             </article>
                         @empty
-                            <div class="border-y border-zinc-200 bg-zinc-50 px-5 py-6 text-sm text-zinc-600">No written reviews yet. Be the first to share your experience.</div>
+                            <div class="border-y border-zinc-200 bg-zinc-50 px-5 py-6 text-sm text-zinc-600">No written reviews yet. Be the first to share how it fits your work.</div>
                         @endforelse
                     </div>
                 </div>
@@ -219,7 +218,7 @@
                                 </div>
                                 <div>
                                     <label for="review-body" class="form-label">Review</label>
-                                    <textarea id="review-body" name="body" rows="5" minlength="20" maxlength="2000" required class="form-input" placeholder="What did you like about this product?">{{ old('body') }}</textarea>
+                                    <textarea id="review-body" name="body" rows="5" minlength="20" maxlength="2000" required class="form-input" placeholder="What worked well for you?">{{ old('body') }}</textarea>
                                     @error('body')<p class="form-error">{{ $message }}</p>@enderror
                                 </div>
                                 @error('rating')<p class="form-error">{{ $message }}</p>@enderror
@@ -232,8 +231,8 @@
                         @endif
                     @else
                         <h2 class="text-lg font-extrabold">Have you used {{ $product->name }}?</h2>
-                        <p class="mt-2 text-sm leading-6 text-zinc-500">Sign in to share your experience with the MerebHub community.</p>
-                        <a href="{{ route('login') }}" class="btn-primary mt-5 w-full">Sign in to write a review</a>
+                        <p class="mt-2 text-sm leading-6 text-zinc-500">Bought it already? Sign in to share what you learned with the MerebHub community.</p>
+                        <a href="{{ route('login') }}" class="btn-primary mt-5 w-full">Sign in to share a review</a>
                     @endauth
                 </div>
             </div>

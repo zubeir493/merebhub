@@ -42,7 +42,7 @@ class WishlistController extends Controller
             'product_id' => $product->getKey(),
         ]);
 
-        return redirect()->route('products.show', $product)->with('status', 'Added to your wishlist.');
+        return redirect()->route('products.show', $product)->with('status', 'Saved to your wishlist.');
     }
 
     public function destroy(Request $request, WishlistItem $wishlistItem): RedirectResponse

@@ -3,15 +3,15 @@
 @section('account-content')
     <header class="account-page-header">
         <h1 class="account-page-title">Downloads</h1>
-        <p class="account-page-description">Download installers and files included with your active purchases.</p>
+        <p class="account-page-description">Find the installers and files included with software you own.</p>
     </header>
 
     @if ($downloads->isEmpty())
         <section class="account-empty-state">
             <x-heroicon-o-arrow-down-tray class="mx-auto size-8 text-zinc-400" aria-hidden="true" />
-            <h2 class="mt-5 text-xl font-extrabold text-zinc-950">No downloads available</h2>
-            <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-zinc-600">When a purchased product includes downloadable files, they will appear here.</p>
-            <a href="{{ route('store.index') }}" class="btn-primary mt-6">Browse software</a>
+            <h2 class="mt-5 text-xl font-extrabold text-zinc-950">Your downloads will appear here</h2>
+            <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-zinc-600">When a product includes files, they will be ready here after purchase.</p>
+            <a href="{{ route('store.index') }}" class="btn-primary mt-6">Browse the catalog</a>
         </section>
     @else
         <div class="account-table-shell account-table-wrap">
@@ -56,7 +56,7 @@
                                             Download
                                         </button>
                                     @else
-                                        <a href="{{ route('verification.notice') }}" class="text-xs font-extrabold text-teal-800 transition hover:text-teal-600">Verify email to download</a>
+                                        <a href="{{ route('verification.notice') }}" class="text-xs font-extrabold text-teal-800 transition hover:text-teal-600">Verify your email to download</a>
                                     @endif
                                 </td>
                             </tr>

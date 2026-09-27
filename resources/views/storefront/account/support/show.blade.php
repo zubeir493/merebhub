@@ -3,7 +3,7 @@
 @section('account-content')
     <header class="account-page-header flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-            <a href="{{ route('account.support.index') }}" class="text-sm font-bold text-teal-800 transition hover:text-teal-600">← All support requests</a>
+            <a href="{{ route('account.support.index') }}" class="text-sm font-bold text-teal-800 transition hover:text-teal-600">← All support conversations</a>
             <h1 class="mt-3 text-3xl font-extrabold tracking-[-0.035em]">{{ $ticket->subject }}</h1>
             <p class="mt-2 font-mono text-xs text-zinc-500">{{ $ticket->public_id }} · {{ str($ticket->status->value)->replace('_', ' ')->title() }}</p>
         </div>
@@ -41,7 +41,7 @@
     </section>
 
     <section class="account-form-surface mt-8">
-        <h2 class="text-xl font-extrabold">Reply to support</h2>
+        <h2 class="text-xl font-extrabold">Continue the conversation</h2>
         <form method="POST" action="{{ route('account.support.reply', $ticket) }}" enctype="multipart/form-data" class="mt-5 grid gap-4">
             @csrf
             <div>

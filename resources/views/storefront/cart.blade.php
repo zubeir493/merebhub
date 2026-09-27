@@ -3,7 +3,7 @@
 @section('content')
     <div class="mx-auto max-w-6xl px-5 py-12 lg:px-8">
         <div class="flex items-end justify-between gap-6 border-b border-zinc-200 pb-6">
-            <h1 class="text-5xl font-extrabold leading-none tracking-[-0.05em]">Your cart</h1>
+            <h1 class="text-5xl font-extrabold leading-none tracking-[-0.05em]">Your selection</h1>
             <span data-cart-header-count class="text-sm font-semibold text-zinc-500">{{ $items->sum('quantity') }} {{ Str::plural('item', $items->sum('quantity')) }}</span>
         </div>
 
@@ -15,9 +15,9 @@
 
         <section data-cart-empty class="{{ $items->isEmpty() ? '' : 'hidden' }} py-20 text-center">
             <span class="mx-auto grid size-14 place-items-center rounded-full bg-zinc-100"><x-heroicon-o-shopping-cart class="size-7 text-zinc-500" /></span>
-            <h2 class="mt-5 text-xl font-extrabold">Your cart is empty</h2>
+            <h2 class="mt-5 text-xl font-extrabold">Your selection is empty</h2>
             <p class="mt-2 text-sm text-zinc-500">Explore the catalog and add software when you are ready.</p>
-            <a href="{{ route('store.index') }}" class="btn-primary mt-6">Browse software catalog</a>
+            <a href="{{ route('store.index') }}" class="btn-primary mt-6">Explore the catalog</a>
         </section>
 
         <div data-cart-content class="{{ $items->isEmpty() ? 'hidden' : '' }} mt-8 grid gap-10 lg:grid-cols-[1fr_360px]">
@@ -82,7 +82,7 @@
                             <input
                                 type="text"
                                 name="coupon_code"
-                                placeholder="Discount code"
+                                placeholder="Have a discount code?"
                                 class="block w-full rounded-lg border border-zinc-300 px-3.5 py-3 text-sm font-semibold uppercase placeholder:normal-case placeholder:font-normal placeholder:text-zinc-400 focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
                                 required
                                 autocomplete="off"
@@ -101,7 +101,7 @@
                 </div>
 
                 <button type="button" data-share-cart="{{ route('cart.share') }}" class="mt-5 flex min-h-11 w-full items-center justify-center gap-2 rounded-md border border-zinc-300 px-4 py-3 text-sm font-extrabold text-teal-900 transition hover:border-teal-400 hover:bg-teal-50">
-                    <x-heroicon-o-share class="size-4" /> Share cart
+                    <x-heroicon-o-share class="size-4" /> Share this selection
                 </button>
                 <p class="mt-2 hidden text-center text-xs font-semibold text-emerald-700" data-share-cart-status role="status"></p>
 
@@ -115,7 +115,7 @@
                         <x-heroicon-o-lock-closed class="size-4" /> Checkout
                     </a>
                 @endauth
-                <p class="mt-4 text-center text-xs leading-5 text-zinc-500">Instant digital delivery with secure payment processing.</p>
+                <p class="mt-4 text-center text-xs leading-5 text-zinc-500">Digital delivery, secure payment, and one account for every purchase.</p>
             </aside>
         </div>
     </div>

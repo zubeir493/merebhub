@@ -12,10 +12,10 @@ beforeEach(function () {
 test('store collection routes render', function (string $route, string $heading) {
     $this->get(route($route))->assertSuccessful()->assertSee($heading);
 })->with([
-    ['store.index', 'Software worth using.'],
-    ['store.newarrivals', 'Fresh tools, thoughtfully made.'],
-    ['store.bestsellers', 'What customers keep choosing.'],
-    ['store.deals', 'Good tools, better prices.'],
+    ['store.index', 'Find software that fits.'],
+    ['store.newarrivals', 'Meet the newest tools.'],
+    ['store.bestsellers', 'The tools people return to.'],
+    ['store.deals', 'More value from every purchase.'],
 ]);
 
 test('store search filters Lunar attribute data', function () {
@@ -32,7 +32,7 @@ test('store search filters Lunar attribute data', function () {
 test('catalog uses the global search and asynchronous filter controls', function () {
     $this->get(route('store.index'))
         ->assertSuccessful()
-        ->assertSee('Search software, makers, categories')
+        ->assertSee('Find software, makers, or categories')
         ->assertSee('data-catalog-filter-form', false)
         ->assertSee('data-catalog-sort-form', false)
         ->assertDontSee('desktop-catalog-search', false)
@@ -66,7 +66,7 @@ test('unified catalog keeps matching developers in search results', function () 
 
     $this->get(route('store.index', ['q' => 'Soko']))
         ->assertSuccessful()
-        ->assertSee('Developers matching “Soko”')
+        ->assertSee('Makers matching “Soko”')
         ->assertSee($author->name);
 });
 

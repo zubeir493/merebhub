@@ -93,7 +93,7 @@ test('adding a product to the cart returns JSON without redirecting', function (
     ])
         ->assertSuccessful()
         ->assertJson([
-            'message' => 'Added to your cart.',
+            'message' => 'Added to your selection.',
             'cart_count' => 1,
         ])
         ->assertJsonPath('items.0.name', $product->name)
@@ -134,7 +134,7 @@ test('cart line quantity can be updated asynchronously via json and accepts mode
     $this->patchJson(route('cart.update', $line->id), ['quantity' => 3])
         ->assertSuccessful()
         ->assertJson([
-            'message' => 'Cart updated.',
+            'message' => 'Your selection was updated.',
             'cart_count' => 3,
         ]);
 
@@ -154,7 +154,7 @@ test('cart line can be removed asynchronously via json', function (): void {
     $this->deleteJson(route('cart.destroy', $line->id))
         ->assertSuccessful()
         ->assertJson([
-            'message' => 'Item removed from your cart.',
+            'message' => 'Item removed from your selection.',
             'cart_count' => 0,
         ]);
 
@@ -168,10 +168,10 @@ test('product variants render as visual radio choices with configurable presenta
 
     $this->get(route('products.show', $product))
         ->assertSuccessful()
-        ->assertSee('Choose an option')
+        ->assertSee('Choose your license')
         ->assertSee('type="radio"', false)
         ->assertDontSee('<select', false)
-        ->assertSee('Digital license');
+        ->assertSee('Digital license delivered to your account');
 
     $variant->update(['presentation_image' => 'images/marketplace/ledgerly.webp']);
 

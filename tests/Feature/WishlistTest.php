@@ -15,7 +15,7 @@ test('wishlist requires authentication and is available from the product page', 
     $this->post(route('wishlist.store', $product))->assertRedirect(route('login'));
     $this->get(route('products.show', $product))
         ->assertSuccessful()
-        ->assertSee('Sign in to save to wishlist');
+        ->assertSee('Sign in to save this software');
 });
 
 test('wishlist items persist per account and cannot be removed by another account', function (): void {

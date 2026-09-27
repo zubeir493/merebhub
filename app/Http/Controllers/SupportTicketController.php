@@ -44,7 +44,7 @@ class SupportTicketController extends Controller
         $ticket = $createTicket->handle($request->user(), $data);
 
         return redirect()->route('account.support.show', $ticket)
-            ->with('status', 'Your support request has been created.');
+            ->with('status', 'Your support request is open. We’ll reply from your account.');
     }
 
     public function show(Request $request, string $supportTicket): View
@@ -73,7 +73,7 @@ class SupportTicketController extends Controller
             files: $data['attachments'] ?? [],
         );
 
-        return back()->with('status', 'Your reply has been sent.');
+        return back()->with('status', 'Your reply is on its way to the support team.');
     }
 
     public function downloadAttachment(

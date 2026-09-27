@@ -3,16 +3,16 @@
 @section('content')
     <section data-public-page-header class="public-page-header">
         <div class="mx-auto max-w-[1400px] px-5 py-14 sm:py-16 lg:px-8 lg:py-20">
-            <p class="text-xs font-extrabold uppercase tracking-[0.18em] text-teal-700">Developer documentation</p>
+            <p class="text-xs font-extrabold uppercase tracking-[0.18em] text-teal-700">For makers</p>
             <div class="mt-5 grid gap-8 lg:grid-cols-12 lg:items-end">
                 <div class="lg:col-span-7">
                     <h1 class="public-page-title max-w-[11ch]">Build once. Sell with confidence.</h1>
                 </div>
                 <div class="lg:col-span-5 lg:pb-1">
-                    <p class="public-lede">The practical path from a first application to a tested, licensed product on MerebHub.</p>
+                    <p class="public-lede">A practical path from first application to tested listing, licensing, and support on MerebHub.</p>
                     <div class="mt-7 flex flex-wrap gap-3">
-                        <a href="#apply" class="btn-dark group">Start an application <x-heroicon-o-arrow-down class="size-4 transition-transform group-hover:translate-y-0.5" /></a>
-                        <a href="{{ route('developers.index') }}" class="editorial-link">Back to developers <x-heroicon-o-arrow-left class="size-4" /></a>
+                        <a href="#apply" class="btn-dark group">Apply to list your software <x-heroicon-o-arrow-down class="size-4 transition-transform group-hover:translate-y-0.5" /></a>
+                        <a href="{{ route('developers.index') }}" class="editorial-link">Back to makers <x-heroicon-o-arrow-left class="size-4" /></a>
                     </div>
                 </div>
             </div>

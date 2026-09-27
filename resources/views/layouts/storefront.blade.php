@@ -7,7 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ isset($title) ? $title . ' · ' : '' }}{{ config('app.name', 'MerebHub') }}</title>
     <meta name="description"
-        content="{{ $metaDescription ?? 'Curated Ethiopian software with secure checkout and automatic license delivery.' }}">
+        content="{{ $metaDescription ?? 'A trusted marketplace for useful software from Ethiopian makers, with secure ETB checkout and simple license delivery.' }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
@@ -16,7 +16,7 @@
     @php
         $publicNavigation = [
             ['label' => 'Store', 'route' => 'store.index', 'active' => request()->routeIs('store.*')],
-            ['label' => 'Developers', 'route' => 'developers.index', 'active' => request()->routeIs('developers.*')],
+            ['label' => 'Makers', 'route' => 'developers.index', 'active' => request()->routeIs('developers.*')],
             ['label' => 'Contact', 'route' => 'contact.index', 'active' => request()->routeIs('contact.*')],
         ];
     @endphp
@@ -47,7 +47,7 @@
                 </button>
                 <input id="search-input-desktop" name="q" value="{{ request('q') }}"
                     aria-label="Search software, makers, or categories"
-                    placeholder="Search software, makers, categories"
+                    placeholder="Find software, makers, or categories"
                     class="h-10 w-full rounded-md border border-zinc-300 bg-zinc-50 pl-11 pr-12 text-sm outline-none transition focus:border-teal-600 focus:bg-white focus:ring-4 focus:ring-teal-500/10">
                 <span id="search-shortcut-desktop" role="button" tabindex="0" aria-label="Focus search (shortcut)"
                     class="absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer select-none rounded-sm bg-zinc-100 px-2 py-1 text-xs text-zinc-600">Ctrl+K</span>
@@ -81,7 +81,7 @@
                             </div>
                             <a href="{{ route('account.purchases') }}"
                                 class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-key
-                                    class="size-4" /> Purchased Licenses</a>
+                                    class="size-4" /> Purchases & licenses</a>
                             <a href="{{ route('account.downloads') }}"
                                 class="flex items-center gap-3 px-4 py-3 text-sm font-bold hover:bg-zinc-50"><x-heroicon-o-arrow-down-tray
                                     class="size-4" /> Downloads</a>
@@ -118,7 +118,7 @@
             class="fixed right-4 top-[4.75rem] z-50 w-80 sm:w-96 overflow-hidden rounded-lg border border-zinc-200 bg-white shadow-xl origin-top-right translate-y-2 scale-[.98] opacity-0 transition-[opacity,transform] duration-150 ease-out sm:right-6">
             <div class="flex items-center justify-between border-b border-zinc-100 px-4 py-3">
                 <div class="flex items-center gap-2">
-                    <h2 class="text-sm font-extrabold text-zinc-950">Your Cart</h2>
+                    <h2 class="text-sm font-extrabold text-zinc-950">Your selection</h2>
                     <span data-mini-cart-count-label class="text-xs font-semibold text-zinc-500"></span>
                 </div>
                 <button type="button" data-mini-cart-close
@@ -208,7 +208,7 @@
                 </button>
                 <input id="search-input-mobile" name="q" value="{{ request('q') }}"
                     aria-label="Search software, makers, or categories"
-                    placeholder="Search software, makers, categories"
+                    placeholder="Find software, makers, or categories"
                     class="h-11 w-full rounded-lg border border-zinc-300 pl-11 pr-12 text-sm">
                 <span id="search-shortcut-mobile" role="button" tabindex="0" aria-label="Focus search (shortcut)"
                     class="absolute bottom-2 right-2.5 cursor-pointer select-none rounded-md bg-zinc-100 px-2 py-1 text-xs text-zinc-600">Ctrl+K</span>
@@ -242,20 +242,17 @@
                     </div>
                     <p
                         class="mt-8 max-w-[15ch] text-5xl font-extrabold leading-[.92] tracking-[-0.05em] text-white sm:text-6xl">
-                        Ready to level up your toolkit?</p>
+                        Find the tool that moves your work forward.</p>
                 </div>
                 <div class="lg:justify-self-end">
-                    <p class="max-w-lg text-sm leading-7 text-zinc-400">Explore standout independent software crafted by
-                        local makers. Simple ETB checkout, verified publishers, and every license organized in one tidy
-                        spot.</p>
+                    <p class="max-w-lg text-sm leading-7 text-zinc-400">Explore useful software from Ethiopian makers. Compare clearly, pay in ETB, and keep every license and download in one place.</p>
                     <div class="mt-7 flex flex-wrap gap-3">
                         <a href="{{ route('store.index') }}"
                             class="group inline-flex items-center gap-2 rounded-lg bg-teal-300 px-4 py-3 text-sm font-extrabold text-teal-950 transition hover:bg-teal-200">Browse
                             marketplace <x-heroicon-o-arrow-up-right
                                 class="size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" /></a>
                         <a href="{{ route('developers.index') }}"
-                            class="inline-flex items-center gap-2 rounded-lg border border-white/15 px-4 py-3 text-sm font-extrabold text-white transition hover:border-teal-300/60 hover:text-teal-200">For
-                            developers</a>
+                            class="inline-flex items-center gap-2 rounded-lg border border-white/15 px-4 py-3 text-sm font-extrabold text-white transition hover:border-teal-300/60 hover:text-teal-200">For makers</a>
                     </div>
                 </div>
             </div>
@@ -270,7 +267,6 @@
                 <div>
                     <strong class="text-sm text-white">Discover</strong>
                     <div class="mt-4 grid gap-3 text-sm text-zinc-400">
-                        <a href="{{ route('store.index') }}" class="transition hover:text-white">Browse all</a>
                         <a href="{{ route('store.newarrivals') }}" class="transition hover:text-white">New arrivals</a>
                         <a href="{{ route('store.bestsellers') }}" class="transition hover:text-white">Best sellers</a>
                         <a href="{{ route('store.deals') }}" class="transition hover:text-white">Deals</a>

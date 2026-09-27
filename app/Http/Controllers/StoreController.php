@@ -50,10 +50,10 @@ class StoreController extends Controller
         $category = $filters['category'] ?? '';
         $platform = $filters['platform'] ?? '';
         [$heading, $description, $defaultSort, $routeName] = match ($collection) {
-            'newarrivals' => ['Fresh tools, thoughtfully made.', 'The newest releases from Ethiopian software makers.', 'newest', 'store.newarrivals'],
-            'bestsellers' => ['What customers keep choosing.', 'The tools earning a place in more workflows.', 'popular', 'store.bestsellers'],
-            'deals' => ['Good tools, better prices.', 'Current offers from across the marketplace.', 'popular', 'store.deals'],
-            default => ['Software worth using.', 'Independent tools from Ethiopian makers, all in one place.', 'popular', 'store.index'],
+            'newarrivals' => ['Meet the newest tools.', 'Fresh releases from Ethiopian makers, ready for your next workflow.', 'newest', 'store.newarrivals'],
+            'bestsellers' => ['The tools people return to.', 'Explore the software earning a place in more Ethiopian workflows.', 'popular', 'store.bestsellers'],
+            'deals' => ['More value from every purchase.', 'Limited offers on useful software from across the marketplace.', 'popular', 'store.deals'],
+            default => ['Find software that fits.', 'Independent tools from Ethiopian makers, gathered in one trusted marketplace.', 'popular', 'store.index'],
         };
         $sort = $filters['sort'] ?? $defaultSort;
         $base = Product::published()

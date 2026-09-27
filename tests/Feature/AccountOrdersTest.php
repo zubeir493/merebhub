@@ -52,7 +52,7 @@ test('customers can view completed orders', function () {
         ->assertSee('ETB')
         ->assertSee('data-account-route-select', false)
         ->assertSee('data-account-content', false)
-        ->assertSee('Previous orders');
+        ->assertSee('Order history');
 
     expect($order->lines()->firstOrFail()->option)
         ->toBe($product->variants->firstOrFail()->variant_name);

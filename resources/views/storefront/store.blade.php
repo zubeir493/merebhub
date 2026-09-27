@@ -42,7 +42,7 @@
                 />
             </details>
             @if ($hasActiveFilters)
-                <a href="{{ route($routeName) }}" data-catalog-reset class="ml-2 mt-2.5 grid size-9 shrink-0 place-items-center rounded-lg text-zinc-500 transition hover:bg-white hover:text-teal-700 focus-visible:ring-4 focus-visible:ring-teal-500/10" aria-label="Reset catalog filters" title="Reset filters">
+                <a href="{{ route($routeName) }}" data-catalog-reset class="ml-2 mt-2.5 grid size-9 shrink-0 place-items-center rounded-lg text-zinc-500 transition hover:bg-white hover:text-teal-700 focus-visible:ring-4 focus-visible:ring-teal-500/10" aria-label="Reset catalog filters" title="Clear filters">
                     <x-heroicon-o-arrow-path class="size-4.5" />
                 </a>
             @endif
@@ -107,8 +107,8 @@
                     @empty
                         <section class="col-span-full border-y border-zinc-200 px-6 py-20 text-center">
                             <x-heroicon-o-magnifying-glass class="mx-auto size-7 text-teal-700" />
-                            <h3 class="mt-6 text-2xl font-extrabold text-zinc-950">Nothing matched that combination.</h3>
-                            <p class="mx-auto mt-3 max-w-md text-sm leading-6 text-zinc-500">Try a broader search, choose fewer filters, or return to the full catalog.</p>
+                            <h3 class="mt-6 text-2xl font-extrabold text-zinc-950">No exact match yet.</h3>
+                            <p class="mx-auto mt-3 max-w-md text-sm leading-6 text-zinc-500">Try a broader search, remove a filter, or browse the full catalog.</p>
                             <a href="{{ route($routeName) }}" class="btn-dark mt-7">Reset filters</a>
                         </section>
                     @endforelse
@@ -119,8 +119,8 @@
                 @if ($authors->isNotEmpty())
                     <section class="mt-16">
                         <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                            <h2 class="max-w-xl text-4xl font-extrabold tracking-[-0.04em] text-zinc-950">Developers matching “{{ $search }}”</h2>
-                            <a href="{{ route('vendors.index', ['q' => $search]) }}" class="group inline-flex items-center gap-2 text-sm font-extrabold text-teal-700">See all developers <x-heroicon-o-arrow-right class="size-4 transition-transform group-hover:translate-x-1" /></a>
+                            <h2 class="max-w-xl text-4xl font-extrabold tracking-[-0.04em] text-zinc-950">Makers matching “{{ $search }}”</h2>
+                            <a href="{{ route('vendors.index', ['q' => $search]) }}" class="group inline-flex items-center gap-2 text-sm font-extrabold text-teal-700">See all makers <x-heroicon-o-arrow-right class="size-4 transition-transform group-hover:translate-x-1" /></a>
                         </div>
                         <div class="mt-7 grid border-t border-zinc-200 sm:grid-cols-2">
                             @foreach ($authors as $author)

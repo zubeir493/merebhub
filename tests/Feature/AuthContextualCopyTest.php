@@ -10,13 +10,13 @@ test('login and register pages display contextual copy when forwarded from wishl
     $loginResponse = $this->get(route('login', ['intent' => 'wishlist']));
 
     $loginResponse->assertOk()
-        ->assertSee('Sign in to add items to your wishlist')
+        ->assertSee('Sign in to save this software')
         ->assertSee(route('register', ['intent' => 'wishlist']));
 
     $registerResponse = $this->get(route('register', ['intent' => 'wishlist']));
 
     $registerResponse->assertOk()
-        ->assertSee('Create an account to add items to your wishlist')
+        ->assertSee('Create an account to save this software')
         ->assertSee(route('login', ['intent' => 'wishlist']));
 });
 
@@ -24,14 +24,14 @@ test('login and register pages display contextual copy when forwarded from check
     $loginResponse = $this->get(route('login', ['intent' => 'checkout']));
 
     $loginResponse->assertOk()
-        ->assertSee('Sign in to complete your checkout')
-        ->assertSee('You need to sign in to complete your checkout and access your purchased software licenses.')
+        ->assertSee('Sign in to finish your purchase')
+        ->assertSee('Sign in to complete payment and access the software you purchase here.')
         ->assertSee(route('register', ['intent' => 'checkout']));
 
     $registerResponse = $this->get(route('register', ['intent' => 'checkout']));
 
     $registerResponse->assertOk()
-        ->assertSee('Create an account to complete your checkout')
+        ->assertSee('Create an account and finish your purchase')
         ->assertSee(route('login', ['intent' => 'checkout']));
 });
 
@@ -44,7 +44,7 @@ test('product page links guest wishlist button directly to login with wishlist i
             'intent' => 'wishlist',
             'redirect' => route('products.show', $product),
         ]))
-        ->assertSee('Sign in to add items to your wishlist');
+        ->assertSee('Sign in to save this software');
 });
 
 test('cart page links guest checkout button directly to login with checkout intent', function (): void {
@@ -70,5 +70,5 @@ test('unauthenticated access to checkout route preserves checkout intent on logi
 
     $this->followRedirects($response)
         ->assertOk()
-        ->assertSee('Sign in to complete your checkout');
+        ->assertSee('Sign in to finish your purchase');
 });

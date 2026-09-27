@@ -13,8 +13,8 @@ class ContactController extends Controller
     public function index(): View
     {
         return view('storefront.contact', [
-            'title' => 'Contact',
-            'metaDescription' => 'Contact the MerebHub team about the marketplace, partnerships, purchases, or anything else.',
+            'title' => 'Talk to MerebHub',
+            'metaDescription' => 'Get help with a MerebHub purchase, ask about the marketplace, or start a partnership conversation.',
         ]);
     }
 
@@ -29,6 +29,6 @@ class ContactController extends Controller
 
         return redirect()
             ->to(route('contact.index').'#contact-form')
-            ->with('status', 'Message sent. Thanks for reaching out.');
+            ->with('status', 'Your message is on its way. We’ll get back to you by email.');
     }
 }

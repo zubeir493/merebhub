@@ -16,9 +16,9 @@ test('published product details show the gallery and description and reviews tab
     $this->get(route('products.show', $product))
         ->assertSee('data-product-gallery', false)
         ->assertSee('data-product-tabs', false)
-        ->assertSee('About this software')
-        ->assertSee('Customer reviews')
-        ->assertSee('Sign in to write a review');
+        ->assertSee('What you will get')
+        ->assertSee('What customers say')
+        ->assertSee('Sign in to share a review');
 });
 
 test('an authenticated customer can publish and update one product review', function (): void {
@@ -44,7 +44,7 @@ test('an authenticated customer can publish and update one product review', func
 
     $response
         ->assertRedirect(route('products.show', $product).'#product-reviews')
-        ->assertSessionHas('status', 'Your review has been published.');
+        ->assertSessionHas('status', 'Your review is live. Thanks for helping other shoppers choose.');
 
     $review = ProductReview::query()->firstOrFail();
 

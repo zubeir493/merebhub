@@ -44,10 +44,10 @@
         <section class="mt-10">
             <div class="flex flex-col gap-4 border-b border-zinc-200 pb-5 lg:flex-row lg:items-end lg:justify-between">
                 <div>
-                    <h2 class="text-4xl font-extrabold tracking-[-0.04em] text-zinc-950">Software by {{ $author->name }}</h2>
+                    <h2 class="text-4xl font-extrabold tracking-[-0.04em] text-zinc-950">Software from {{ $author->name }}</h2>
                 </div>
                 <form method="GET" class="grid w-full gap-2 sm:grid-cols-2 lg:w-auto lg:grid-cols-[13rem_11rem_10rem_auto]">
-                    <input name="q" value="{{ $search }}" placeholder="Search this vendor" class="form-input w-full">
+                    <input name="q" value="{{ $search }}" placeholder="Search this maker" class="form-input w-full">
                     <select name="category" class="form-input w-full" aria-label="Category">
                         <option value="">All categories</option>
                         @foreach ($categories as $item)<option value="{{ $item }}" @selected($category === $item)>{{ $item }}</option>@endforeach
@@ -68,7 +68,7 @@
                 @empty
                     <div class="col-span-full border-y border-zinc-200 py-16 text-center">
                         <x-heroicon-o-cube class="mx-auto size-9 text-zinc-400" />
-                        <h3 class="mt-4 font-extrabold text-zinc-900">No published software yet</h3>
+                        <h3 class="mt-4 font-extrabold text-zinc-900">This maker has no published software yet</h3>
                     </div>
                 @endforelse
             </div>

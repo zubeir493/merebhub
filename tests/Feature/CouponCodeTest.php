@@ -149,7 +149,7 @@ test('applying an invalid coupon code returns error', function (): void {
         ->post(route('cart.coupon.apply'), [
             'coupon_code' => 'NONEXISTENT',
         ])
-        ->assertSessionHasErrors(['coupon_code' => 'Invalid discount code.']);
+        ->assertSessionHasErrors(['coupon_code' => 'That discount code isn’t valid.']);
 });
 
 test('applying an expired coupon returns error', function (): void {

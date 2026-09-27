@@ -2,8 +2,8 @@
     @if ($orders->isEmpty())
         <div class="account-empty-state border-0">
             <x-heroicon-o-receipt-percent class="mx-auto size-12 text-zinc-400" />
-            <h2 class="mt-4 text-lg font-semibold">No previous orders</h2>
-            <p class="mt-2 text-sm text-zinc-600">Start browsing and purchase some software.</p>
+            <h2 class="mt-4 text-lg font-semibold">Your order history will appear here</h2>
+            <p class="mt-2 text-sm text-zinc-600">Browse the catalog and your completed purchases will appear here.</p>
         </div>
     @else
         <div class="account-table-wrap overflow-x-auto">
@@ -28,7 +28,7 @@
                             <td data-label="Amount" class="px-6 py-4 text-sm font-semibold text-zinc-900">{{ $order->format('total') }}</td>
                             <td data-label="Date" class="px-6 py-4 text-sm text-zinc-500">{{ $order->placed_at->format('M j, Y') }}</td>
                             <td data-label="Invoice" class="px-6 py-4">
-                                <a href="{{ route('account.invoices.show', ['invoiceOrder' => $order->public_id]) }}" class="text-sm font-bold text-teal-800 transition hover:text-teal-600">View invoice</a>
+                                <a href="{{ route('account.invoices.show', ['invoiceOrder' => $order->public_id]) }}" class="text-sm font-bold text-teal-800 transition hover:text-teal-600">Open invoice</a>
                             </td>
                         </tr>
                     @endforeach

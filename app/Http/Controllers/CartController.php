@@ -62,7 +62,7 @@ class CartController extends Controller
         $lines = $cart?->lines ?? collect();
 
         if ($lines->isEmpty()) {
-            return response()->json(['message' => 'Add an item before sharing your cart.'], 422);
+            return response()->json(['message' => 'Add a product before sharing your selection.'], 422);
         }
 
         $code = $lines->map(function (CartLine $item): string {
@@ -88,17 +88,17 @@ class CartController extends Controller
         $decoded = base64_decode(strtr($encoded, '-_', '+/'), true);
 
         if (! is_string($decoded)) {
-            return redirect()->route('cart.index')->withErrors(['cart' => 'This shared cart link is invalid.']);
+            return redirect()->route('cart.index')->withErrors(['cart' => 'This shared selection link is no longer valid.']);
         }
 
         try {
             $items = json_decode($decoded, true, 512, JSON_THROW_ON_ERROR);
         } catch (\JsonException) {
-            return redirect()->route('cart.index')->withErrors(['cart' => 'This shared cart link is invalid.']);
+            return redirect()->route('cart.index')->withErrors(['cart' => 'This shared selection link is no longer valid.']);
         }
 
         if (! is_array($items)) {
-            return redirect()->route('cart.index')->withErrors(['cart' => 'This shared cart link is invalid.']);
+            return redirect()->route('cart.index')->withErrors(['cart' => 'This shared selection link is no longer valid.']);
         }
 
         $tokens = [];
@@ -120,7 +120,7 @@ class CartController extends Controller
         ));
 
         if (empty($tokens)) {
-            return redirect()->route('cart.index')->withErrors(['cart' => 'This shared cart link is invalid.']);
+            return redirect()->route('cart.index')->withErrors(['cart' => 'This shared selection link is no longer valid.']);
         }
 
         $tokenInts = array_map('intval', $tokens);
@@ -170,12 +170,12 @@ class CartController extends Controller
         }
 
         if ($addedQuantity === 0) {
-            return redirect()->route('cart.index')->withErrors(['cart' => 'We could not add the shared cart items.']);
+            return redirect()->route('cart.index')->withErrors(['cart' => 'We couldn’t add the shared selection to your cart.']);
         }
 
         $itemLabel = $addedQuantity === 1 ? 'item' : 'items';
 
-        return redirect()->route('cart.index')->with('status', $addedQuantity.' shared '.$itemLabel.' added to your cart.');
+        return redirect()->route('cart.index')->with('status', $addedQuantity.' '.$itemLabel.' added to your selection.');
     }
 
     public function store(Request $request, string $slug): RedirectResponse|JsonResponse
@@ -205,7 +205,7 @@ class CartController extends Controller
             return back()->withErrors(['cart' => $exception->getMessage()]);
         }
 
-        $message = 'Added to your cart.';
+        $message = 'Added to your selection.';
 
         if ($request->expectsJson()) {
             return response()->json([
@@ -228,10 +228,10 @@ class CartController extends Controller
 
         if (! $cart || $cart->lines->isEmpty()) {
             if ($request->expectsJson()) {
-                return response()->json(['message' => 'Your cart is empty.'], 422);
+                return response()->json(['message' => 'Your selection is empty.'], 422);
             }
 
-            return back()->withErrors(['coupon_code' => 'Your cart is empty.']);
+            return back()->withErrors(['coupon_code' => 'Your selection is empty.']);
         }
 
         /** @var Coupon|null $coupon */
@@ -239,10 +239,10 @@ class CartController extends Controller
 
         if (! $coupon) {
             if ($request->expectsJson()) {
-                return response()->json(['message' => 'Invalid discount code.'], 422);
+                return response()->json(['message' => 'That discount code isn’t valid.'], 422);
             }
 
-            return back()->withErrors(['coupon_code' => 'Invalid discount code.']);
+            return back()->withErrors(['coupon_code' => 'That discount code isn’t valid.']);
         }
 
         if ($coupon->starts_at && $coupon->starts_at->isFuture()) {
@@ -413,12 +413,12 @@ class CartController extends Controller
 
         if ($request->expectsJson()) {
             return response()->json([
-                'message' => 'Cart updated.',
+                'message' => 'Your selection was updated.',
                 ...$this->miniCartPayload($cart),
             ]);
         }
 
-        return back()->with('status', 'Cart updated.');
+        return back()->with('status', 'Your selection was updated.');
     }
 
     public function destroy(Request $request, CartLine|int $cartLine): RedirectResponse|JsonResponse
@@ -430,11 +430,11 @@ class CartController extends Controller
 
         if ($request->expectsJson()) {
             return response()->json([
-                'message' => 'Item removed from your cart.',
+                'message' => 'Item removed from your selection.',
                 ...$this->miniCartPayload($cart),
             ]);
         }
 
-        return back()->with('status', 'Item removed from your cart.');
+        return back()->with('status', 'Item removed from your selection.');
     }
 }

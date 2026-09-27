@@ -2,8 +2,8 @@
 
 @section('account-content')
     <header class="account-page-header">
-        <h1 class="account-page-title">Account settings</h1>
-        <p class="account-page-description">Manage your profile, email, and password.</p>
+        <h1 class="account-page-title">Profile & settings</h1>
+        <p class="account-page-description">Update your profile, email, and password in one place.</p>
     </header>
 
     <form method="POST" action="{{ route('account.settings.update') }}" class="account-form-surface">
@@ -36,21 +36,21 @@
                 </div>
                 <div class="grid gap-4 sm:grid-cols-2">
                     <div>
-                        <label for="current_password" class="form-label">Current Password</label>
+                        <label for="current_password" class="form-label">Current password</label>
                         <input type="password" id="current_password" name="current_password" class="form-input" autocomplete="current-password">
                         @error('current_password')
                             <p class="form-error">{{ $message }}</p>
                         @enderror
                     </div>
                     <div>
-                        <label for="password" class="form-label">New Password</label>
+                        <label for="password" class="form-label">New password</label>
                         <input type="password" id="password" name="password" class="form-input" autocomplete="new-password">
                         @error('password')
                             <p class="form-error">{{ $message }}</p>
                         @enderror
                     </div>
                     <div class="sm:col-span-2">
-                        <label for="password_confirmation" class="form-label">Confirm New Password</label>
+                        <label for="password_confirmation" class="form-label">Confirm new password</label>
                         <input type="password" id="password_confirmation" name="password_confirmation" class="form-input" autocomplete="new-password">
                     </div>
                 </div>
@@ -59,7 +59,7 @@
             <div>
                 <button type="submit" class="btn-dark">
                     <x-heroicon-o-check-circle class="size-4" aria-hidden="true" />
-                    Save Changes
+                    Save profile changes
                 </button>
             </div>
         </div>

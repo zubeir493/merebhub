@@ -4,16 +4,16 @@
     <div class="account-page-header flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
         <header>
             <h1 class="account-page-title">Software licenses</h1>
-            <p class="account-page-description">Manage your purchased licenses, download license files, and keep track of active machines.</p>
+            <p class="account-page-description">Reveal license keys, download files, and keep track of the devices using your software.</p>
         </header>
-        <button type="button" data-offline-open data-kgm-offline-open class="btn-primary">Offline activation</button>
+        <button type="button" data-offline-open data-kgm-offline-open class="btn-primary">Activate offline</button>
     </div>
 
     @if ($purchases->isEmpty())
         <section class="account-empty-state">
-            <h2 class="text-xl font-extrabold text-zinc-950">No licenses yet</h2>
-            <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-zinc-600">Purchase software from the shop to get your first license.</p>
-            <a href="{{ route('store.index') }}" class="btn-primary mt-6">Browse software</a>
+            <h2 class="text-xl font-extrabold text-zinc-950">Your licenses will appear here</h2>
+            <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-zinc-600">Buy software from the catalog and your license will appear here when payment is complete.</p>
+            <a href="{{ route('store.index') }}" class="btn-primary mt-6">Browse the catalog</a>
         </section>
     @else
         <div class="account-table-shell account-table-wrap">
@@ -99,7 +99,7 @@
         <div class="w-full max-w-lg rounded-md bg-white p-6 shadow-[0_24px_70px_oklch(0_0_0/0.22)] sm:p-7">
             <div class="flex items-start justify-between gap-4">
                 <div>
-                    <h2 id="kgm-offline-title" class="text-xl font-extrabold text-zinc-950">Offline .lic activation</h2>
+                    <h2 id="kgm-offline-title" class="text-xl font-extrabold text-zinc-950">Offline activation</h2>
                 </div>
                 <button type="button" data-offline-close data-kgm-offline-close class="grid size-9 place-items-center rounded-lg text-zinc-400 transition hover:bg-zinc-100 hover:text-zinc-700" aria-label="Close offline activation">×</button>
             </div>
@@ -113,7 +113,7 @@
                 @enderror
                 <div class="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
                     <button type="button" data-offline-close data-kgm-offline-close class="inline-flex items-center justify-center rounded-lg px-4 py-2.5 text-sm font-extrabold text-zinc-600 transition hover:bg-zinc-100">Cancel</button>
-                    <button type="submit" class="btn-dark">Generate .lic file</button>
+                    <button type="submit" class="btn-dark">Create .lic file</button>
                 </div>
             </form>
         </div>

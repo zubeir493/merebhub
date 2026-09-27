@@ -14,9 +14,9 @@ test('the existing storefront renders Lunar catalog products', function () {
     $this->get(route('home'))
         ->assertSuccessful()
         ->assertSee($product->name)
-        ->assertSee("Software you'll actually love using.", false)
-        ->assertSee('Popular right now')
-        ->assertSee('Homegrown software with serious superpowers.')
+        ->assertSee('Software that earns its place in your day.', false)
+        ->assertSee('Popular with shoppers')
+        ->assertSee('Useful software, made closer to home.')
         ->assertSee(route('store.index'));
 });
 
@@ -34,7 +34,7 @@ test('a Lunar product detail page renders its price and publisher', function () 
         ->assertSuccessful()
         ->assertSee($product->name)
         ->assertSee($product->author->name)
-        ->assertSee('Secure checkout by Chapa');
+        ->assertSee('Secure ETB checkout by Chapa');
 });
 
 test('new products receive readable storefront slugs', function (): void {

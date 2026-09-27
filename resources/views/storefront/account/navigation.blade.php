@@ -3,13 +3,13 @@
         <li>
             <a href="{{ route('account.settings') }}" class="{{ request()->routeIs('account.settings') ? 'bg-teal-50 text-teal-700' : 'text-zinc-700 hover:bg-zinc-50 hover:text-teal-700' }} flex items-center gap-3 rounded-md px-4 py-4 text-sm font-semibold transition-all" aria-current="{{ request()->routeIs('account.settings') ? 'page' : 'false' }}">
                 <x-heroicon-o-user-circle class="size-5 shrink-0" aria-hidden="true" />
-                <span>Account settings</span>
+                <span>Profile & settings</span>
             </a>
         </li>
         <li>
             <a href="{{ route('account.orders') }}" class="{{ request()->routeIs('account.orders') ? 'bg-teal-50 text-teal-700' : 'text-zinc-700 hover:bg-zinc-50 hover:text-teal-700' }} flex items-center gap-3 rounded-md px-4 py-4 text-sm font-semibold transition-all" aria-current="{{ request()->routeIs('account.orders') ? 'page' : 'false' }}">
                 <x-heroicon-o-gift class="size-5 shrink-0" aria-hidden="true" />
-                <span>Previous orders</span>
+                <span>Order history</span>
             </a>
         </li>
         <li>
@@ -45,7 +45,7 @@
         <li>
             <a href="{{ route('account.support.index') }}" class="{{ request()->routeIs('account.support.*') ? 'bg-teal-50 text-teal-700' : 'text-zinc-700 hover:bg-zinc-50 hover:text-teal-700' }} flex items-center gap-3 rounded-md px-4 py-4 text-sm font-semibold transition-all" aria-current="{{ request()->routeIs('account.support.*') ? 'page' : 'false' }}">
                 <x-heroicon-o-chat-bubble-left-right class="size-5 shrink-0" aria-hidden="true" />
-                <span>Support requests</span>
+                <span>Support & help</span>
             </a>
         </li>
         <li>

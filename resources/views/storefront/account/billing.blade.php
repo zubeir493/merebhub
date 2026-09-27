@@ -3,7 +3,7 @@
 @section('account-content')
     <header class="account-page-header">
         <h1 class="account-page-title">Billing details</h1>
-        <p class="account-page-description">Save the billing details used to prefill your next checkout. Completed orders keep their own billing snapshot.</p>
+        <p class="account-page-description">Save billing details for faster checkout. Each completed order keeps the details used at purchase time.</p>
     </header>
 
     <form method="POST" action="{{ route('account.billing.update') }}" class="account-form-surface grid gap-6 sm:grid-cols-2">

@@ -3,14 +3,14 @@
 @section('content')
     @php
         $accountSections = [
-            ['label' => 'Account settings', 'route' => 'account.settings', 'active' => request()->routeIs('account.settings')],
-            ['label' => 'Previous orders', 'route' => 'account.orders', 'active' => request()->routeIs('account.orders')],
-            ['label' => 'Purchases & licenses', 'route' => 'account.purchases', 'active' => request()->routeIs('account.purchases')],
+            ['label' => 'Profile & settings', 'route' => 'account.settings', 'active' => request()->routeIs('account.settings')],
+            ['label' => 'Order history', 'route' => 'account.orders', 'active' => request()->routeIs('account.orders')],
+            ['label' => 'Licenses & purchases', 'route' => 'account.purchases', 'active' => request()->routeIs('account.purchases')],
             ['label' => 'Downloads', 'route' => 'account.downloads', 'active' => request()->routeIs('account.downloads')],
             ['label' => 'Wishlist', 'route' => 'account.wishlist', 'active' => request()->routeIs('account.wishlist')],
             ['label' => 'Invoices', 'route' => 'account.invoices.index', 'active' => request()->routeIs('account.invoices.*')],
             ['label' => 'Security & sessions', 'route' => 'account.security', 'active' => request()->routeIs('account.security*')],
-            ['label' => 'Support requests', 'route' => 'account.support.index', 'active' => request()->routeIs('account.support.*')],
+            ['label' => 'Support & help', 'route' => 'account.support.index', 'active' => request()->routeIs('account.support.*')],
         ];
     @endphp
 

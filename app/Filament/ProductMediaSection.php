@@ -21,7 +21,7 @@ class ProductMediaSection
                             ->helperText('Add up to eight screenshots or product images. Drag to reorder; the first image becomes the cover.')
                             ->collection(config('lunar.media.collection'))
                             ->disk((string) config('marketplace.public_media_disk', 'public'))
-                            ->visibility('public')
+                            ->visibility('private')
                             ->multiple()
                             ->appendFiles()
                             ->reorderable()

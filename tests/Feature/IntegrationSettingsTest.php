@@ -104,6 +104,7 @@ test('an administrator can save Chapa and Keygen settings from the admin panel',
         ->and(config('filesystems.disks.s3_private.bucket'))->toBe('merebhub-downloads')
         ->and(config('filesystems.disks.s3.region'))->toBe('eu-central-003')
         ->and(config('filesystems.disks.s3.endpoint'))->toBe('https://s3.eu-central-003.backblazeb2.com')
+        ->and(config('filesystems.disks.s3.visibility'))->toBe('private')
         ->and(data_get(config('filesystems.disks.s3'), 'http.verify'))->toBeTrue()
         ->and(config('marketplace.public_media_disk'))->toBe('s3')
         ->and(config('marketplace.private_files_disk'))->toBe('s3_private')

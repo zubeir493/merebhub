@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Support\PublicMediaUrl;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Lunar\Core\Models\Brand;
 
@@ -103,6 +103,9 @@ class Author extends Brand
             return asset(ltrim($path, '/'));
         }
 
-        return Storage::disk((string) config('marketplace.public_media_disk', 'public'))->url($path);
+        return PublicMediaUrl::forPath(
+            (string) config('marketplace.public_media_disk', 'public'),
+            $path,
+        );
     }
 }

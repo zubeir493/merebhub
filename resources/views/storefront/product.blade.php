@@ -19,7 +19,7 @@
                 <div class="relative aspect-[16/10] overflow-hidden rounded-sm bg-zinc-100 ring-1 ring-zinc-200">
                     @forelse ($galleryMedia as $media)
                         <div data-gallery-slide @if (! $loop->first) hidden @endif aria-hidden="{{ $loop->first ? 'false' : 'true' }}" class="absolute inset-0">
-                            <img src="{{ $media->getUrl() }}" alt="{{ $product->name }} screenshot {{ $loop->iteration }}" class="h-full w-full object-cover">
+                            <img src="{{ \App\Support\PublicMediaUrl::forMedia($media) }}" alt="{{ $product->name }} screenshot {{ $loop->iteration }}" class="h-full w-full object-cover">
                         </div>
                     @empty
                         @if ($product->coverUrl())
@@ -48,7 +48,7 @@
                     <div class="mt-3 flex gap-2 overflow-x-auto pb-1" role="group" aria-label="Product gallery thumbnails">
                         @foreach ($galleryMedia as $media)
                             <button type="button" data-gallery-thumb aria-pressed="{{ $loop->first ? 'true' : 'false' }}" class="h-16 shrink-0 overflow-hidden rounded-lg border-2 {{ $loop->first ? 'border-teal-500 ring-2 ring-teal-500/20' : 'border-transparent' }} bg-zinc-100 transition hover:border-teal-400 focus:outline-none focus:ring-4 focus:ring-teal-500/15" aria-label="Show product image {{ $loop->iteration }}">
-                                <img src="{{ $media->getUrl() }}" alt="" class="h-full w-full object-cover">
+                                <img src="{{ \App\Support\PublicMediaUrl::forMedia($media) }}" alt="" class="h-full w-full object-cover">
                             </button>
                         @endforeach
                     </div>

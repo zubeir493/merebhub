@@ -75,7 +75,7 @@ class S3StorageConfigurator
                 ...$sharedConfiguration,
                 'bucket' => $publicBucket,
                 'url' => $publicUrl,
-                'visibility' => 'public',
+                'visibility' => 'private',
             ],
             'filesystems.disks.s3_private' => [
                 ...config('filesystems.disks.s3_private', []),

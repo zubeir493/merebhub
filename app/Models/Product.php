@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Domain\Catalog\Enums\ProductPublicationState;
+use App\Support\PublicMediaUrl;
 use Database\Factories\ProductFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -10,7 +11,6 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 use Lunar\Core\Facades\StorefrontSession;
@@ -219,10 +219,10 @@ class Product extends \Lunar\Core\Models\Product
 
     public function coverUrl(): ?string
     {
-        $mediaUrl = $this->getFirstMediaUrl(config('lunar.media.collection'));
+        $media = $this->getFirstMedia(config('lunar.media.collection'));
 
-        if ($mediaUrl !== '') {
-            return $mediaUrl;
+        if ($media !== null) {
+            return PublicMediaUrl::forMedia($media);
         }
 
         $path = (string) $this->attr('cover_url');
@@ -239,7 +239,10 @@ class Product extends \Lunar\Core\Models\Product
             return asset(ltrim($path, '/'));
         }
 
-        return Storage::disk((string) config('marketplace.public_media_disk', 'public'))->url($path);
+        return PublicMediaUrl::forPath(
+            (string) config('marketplace.public_media_disk', 'public'),
+            $path,
+        );
     }
 
     public function variantPresentationImage(ProductVariant $variant): ?string
@@ -258,7 +261,10 @@ class Product extends \Lunar\Core\Models\Product
             return asset(ltrim($path, '/'));
         }
 
-        return Storage::disk((string) config('marketplace.public_media_disk', 'public'))->url($path);
+        return PublicMediaUrl::forPath(
+            (string) config('marketplace.public_media_disk', 'public'),
+            $path,
+        );
     }
 
     public function variantDisplayName(ProductVariant $variant): string

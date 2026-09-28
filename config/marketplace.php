@@ -16,6 +16,8 @@ return [
 
     'private_files_disk' => env('MARKETPLACE_PRIVATE_FILES_DISK', 'private'),
 
+    'public_media_url_expiry_minutes' => 30,
+
     'object_storage' => [
         'enabled' => env('MARKETPLACE_S3_ENABLED', false),
         'fallback_disks' => [

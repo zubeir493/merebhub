@@ -121,7 +121,7 @@
                                                 <span class="block truncate text-sm font-extrabold text-zinc-900">{{ $optionLabel }}</span>
                                                 <span class="mt-1 block text-xs font-semibold text-zinc-500">Digital license delivered to your account</span>
                                             </span>
-                                            <strong class="shrink-0 text-sm font-extrabold text-zinc-950">{{ number_format((float) ($variant->prices->first()?->price ?? 0) / 100, 2) }} ETB</strong>
+                                            <strong class="shrink-0 text-sm font-extrabold text-zinc-950">{{ number_format((float) ($variant->prices->first()?->price ?? 0) / 100, 2) }} Br</strong>
                                         </span>
                                     </label>
                                 @endforeach
@@ -134,7 +134,7 @@
                             available right now.</div>
                     @endif
                     <p class="mt-3 flex items-center justify-center gap-2 text-center text-xs font-semibold text-zinc-500">
-                        <x-heroicon-o-shield-check class="size-4 shrink-0" />Secure ETB checkout by Chapa
+                        <x-heroicon-o-shield-check class="size-4 shrink-0" />Secure Br checkout by Chapa
                     </p>
                 </div>
             </div>

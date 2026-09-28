@@ -49,7 +49,7 @@ test('customers can view completed orders', function () {
     $this->get(route('account.orders'))
         ->assertSuccessful()
         ->assertSee('Paid')
-        ->assertSee('ETB')
+        ->assertSee('Br')
         ->assertSee('data-account-route-select', false)
         ->assertSee('data-account-content', false)
         ->assertSee('Order history');

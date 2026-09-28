@@ -116,7 +116,7 @@ trait InteractsWithMerchantSales
     {
         return sprintf(
             '%s %s',
-            $currency ?? $this->merchantCurrencyCode(),
+            str($currency ?? $this->merchantCurrencyCode())->replace('ETB', 'Br'),
             number_format($amount / 100, 2),
         );
     }

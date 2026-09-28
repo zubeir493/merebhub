@@ -58,11 +58,11 @@
         </div>
 
         <dl class="ml-auto mt-8 grid max-w-sm gap-3 text-sm">
-            <div class="flex justify-between gap-6"><dt class="text-zinc-600">Subtotal</dt><dd>{{ number_format($invoice->subtotal / $invoice->currency_factor, $invoice->currency_decimal_places, '.', ',') }} {{ $invoice->currency_code }}</dd></div>
-            <div class="flex justify-between gap-6"><dt class="text-zinc-600">Discounts</dt><dd>−{{ number_format($invoice->discount_total / $invoice->currency_factor, $invoice->currency_decimal_places, '.', ',') }} {{ $invoice->currency_code }}</dd></div>
-            <div class="flex justify-between gap-6"><dt class="text-zinc-600">Tax</dt><dd>{{ number_format($invoice->tax_total / $invoice->currency_factor, $invoice->currency_decimal_places, '.', ',') }} {{ $invoice->currency_code }}</dd></div>
-            <div class="flex justify-between gap-6"><dt class="text-zinc-600">Shipping</dt><dd>{{ number_format($invoice->shipping_total / $invoice->currency_factor, $invoice->currency_decimal_places, '.', ',') }} {{ $invoice->currency_code }}</dd></div>
-            <div class="flex justify-between gap-6 border-t border-zinc-200 pt-3 text-base font-extrabold"><dt>Total</dt><dd>{{ number_format($invoice->total / $invoice->currency_factor, $invoice->currency_decimal_places, '.', ',') }} {{ $invoice->currency_code }}</dd></div>
+            <div class="flex justify-between gap-6"><dt class="text-zinc-600">Subtotal</dt><dd>{{ number_format($invoice->subtotal / $invoice->currency_factor, $invoice->currency_decimal_places, '.', ',') }} {{ $invoice->currency_code === 'ETB' ? 'Br' : $invoice->currency_code }}</dd></div>
+            <div class="flex justify-between gap-6"><dt class="text-zinc-600">Discounts</dt><dd>−{{ number_format($invoice->discount_total / $invoice->currency_factor, $invoice->currency_decimal_places, '.', ',') }} {{ $invoice->currency_code === 'ETB' ? 'Br' : $invoice->currency_code }}</dd></div>
+            <div class="flex justify-between gap-6"><dt class="text-zinc-600">Tax</dt><dd>{{ number_format($invoice->tax_total / $invoice->currency_factor, $invoice->currency_decimal_places, '.', ',') }} {{ $invoice->currency_code === 'ETB' ? 'Br' : $invoice->currency_code }}</dd></div>
+            <div class="flex justify-between gap-6"><dt class="text-zinc-600">Shipping</dt><dd>{{ number_format($invoice->shipping_total / $invoice->currency_factor, $invoice->currency_decimal_places, '.', ',') }} {{ $invoice->currency_code === 'ETB' ? 'Br' : $invoice->currency_code }}</dd></div>
+            <div class="flex justify-between gap-6 border-t border-zinc-200 pt-3 text-base font-extrabold"><dt>Total</dt><dd>{{ number_format($invoice->total / $invoice->currency_factor, $invoice->currency_decimal_places, '.', ',') }} {{ $invoice->currency_code === 'ETB' ? 'Br' : $invoice->currency_code }}</dd></div>
         </dl>
     </article>
 @endsection

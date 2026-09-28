@@ -25,7 +25,7 @@ class OrdersTable
                     ->label('Your sales')
                     ->formatStateUsing(fn (mixed $state, Order $record): string => sprintf(
                         '%s %s',
-                        $record->currency_code,
+                        str($record->currency_code)->replace('ETB', 'Br'),
                         number_format((float) $state / 100, 2),
                     ))
                     ->sortable(),

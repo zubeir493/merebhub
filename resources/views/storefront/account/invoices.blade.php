@@ -33,7 +33,7 @@
                                 </td>
                                 <td data-label="Order" class="px-5 py-4 font-mono text-sm">{{ $invoice->order->reference }}</td>
                                 <td data-label="Payment" class="px-5 py-4 text-sm">{{ str($invoice->payment_status)->replace('_', ' ')->title() }}</td>
-                                <td data-label="Total" class="px-5 py-4 text-sm font-bold">{{ number_format($invoice->total / $invoice->currency_factor, $invoice->currency_decimal_places, '.', ',') }} {{ $invoice->currency_code }}</td>
+                                <td data-label="Total" class="px-5 py-4 text-sm font-bold">{{ number_format($invoice->total / $invoice->currency_factor, $invoice->currency_decimal_places, '.', ',') }} {{ $invoice->currency_code === 'ETB' ? 'Br' : $invoice->currency_code }}</td>
                                 <td data-label="Issued" class="px-5 py-4 text-sm text-zinc-600">{{ $invoice->issued_at->format('M j, Y') }}</td>
                             </tr>
                         @endforeach

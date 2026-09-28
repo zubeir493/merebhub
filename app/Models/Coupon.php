@@ -69,7 +69,7 @@ class Coupon extends Discount
             return "{$val}% Off";
         }
 
-        return number_format($this->discountValue(), 2, '.', ',').' ETB Off';
+        return number_format($this->discountValue(), 2, '.', ',').' Br Off';
     }
 
     public function minimumSpend(): ?float
@@ -83,7 +83,7 @@ class Coupon extends Discount
     {
         $spend = $this->minimumSpend();
 
-        return $spend !== null ? number_format($spend, 2, '.', ',').' ETB' : null;
+        return $spend !== null ? number_format($spend, 2, '.', ',').' Br' : null;
     }
 
     public function getUsageDisplayAttribute(): string

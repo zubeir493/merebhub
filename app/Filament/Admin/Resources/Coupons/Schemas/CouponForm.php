@@ -52,15 +52,15 @@ class CouponForm
                             ->label('Discount type')
                             ->options([
                                 'percentage' => 'Percentage discount (%)',
-                                'fixed_amount' => 'Fixed amount discount (ETB)',
+                                'fixed_amount' => 'Fixed amount discount (Br)',
                             ])
                             ->default('percentage')
                             ->required()
                             ->live(),
                         TextInput::make('discount_value')
-                            ->label(fn (callable $get): string => $get('discount_type') === 'fixed_amount' ? 'Discount amount (ETB)' : 'Discount percentage (%)')
+                            ->label(fn (callable $get): string => $get('discount_type') === 'fixed_amount' ? 'Discount amount (Br)' : 'Discount percentage (%)')
                             ->numeric()
-                            ->prefix(fn (callable $get): ?string => $get('discount_type') === 'fixed_amount' ? 'ETB' : null)
+                            ->prefix(fn (callable $get): ?string => $get('discount_type') === 'fixed_amount' ? 'Br' : null)
                             ->suffix(fn (callable $get): ?string => $get('discount_type') === 'percentage' ? '%' : null)
                             ->minValue(0.01)
                             ->maxValue(fn (callable $get): ?float => $get('discount_type') === 'percentage' ? 100 : null)
@@ -75,9 +75,9 @@ class CouponForm
                     ->columns(3)
                     ->schema([
                         TextInput::make('minimum_spend')
-                            ->label('Minimum spend (ETB)')
+                            ->label('Minimum spend (Br)')
                             ->numeric()
-                            ->prefix('ETB')
+                            ->prefix('Br')
                             ->nullable()
                             ->helperText('Minimum cart subtotal required to use code. Leave blank for no minimum.'),
                         TextInput::make('max_uses')

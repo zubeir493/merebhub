@@ -28,7 +28,7 @@
                         <a href="{{ route('products.show', $item->product) }}" class="text-lg font-extrabold text-zinc-950 hover:text-teal-700">{{ $item->product->name }}</a>
                         <p class="mt-2 line-clamp-2 text-sm leading-6 text-zinc-600">{{ $item->product->short_description }}</p>
                         <div class="mt-5 flex items-center justify-between gap-3">
-                            <strong class="text-sm text-zinc-950">{{ number_format((float) $item->product->price) }} ETB</strong>
+                            <strong class="text-sm text-zinc-950">{{ number_format((float) $item->product->price) }} Br</strong>
                             <form method="POST" action="{{ route('wishlist.destroy', $item) }}">
                                 @csrf
                                 @method('DELETE')

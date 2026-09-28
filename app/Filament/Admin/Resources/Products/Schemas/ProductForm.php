@@ -56,13 +56,13 @@ class ProductForm
                             ->label('Starting price')
                             ->numeric()
                             ->minValue(0)
-                            ->prefix('ETB')
+                            ->prefix('Br')
                             ->helperText('Used by a variant when its price is left blank.'),
                         TextInput::make('default_compare_at_price')
                             ->label('Compare-at price')
                             ->numeric()
                             ->minValue(0)
-                            ->prefix('ETB'),
+                            ->prefix('Br'),
                         Select::make('product_type_id')
                             ->label('Product type')
                             ->relationship('productType', 'name')
@@ -232,13 +232,13 @@ class ProductForm
                                     ->label('Price')
                                     ->numeric()
                                     ->minValue(0)
-                                    ->prefix('ETB')
+                                    ->prefix('Br')
                                     ->helperText('Leave blank to use the starting price above.'),
                                 TextInput::make('compare_at_price')
                                     ->label('Compare-at price')
                                     ->numeric()
                                     ->minValue(0)
-                                    ->prefix('ETB'),
+                                    ->prefix('Br'),
                                 Select::make('tax_class_id')
                                     ->label('Tax class')
                                     ->options(fn (): array => self::taxClassOptions())

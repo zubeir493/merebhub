@@ -27,7 +27,7 @@
                 {{ $product->category }}
             </p>
         </div>
-        <strong class="shrink-0 text-sm text-zinc-950 tabular-nums">{{ number_format((float) $product->price) }} ETB</strong>
+        <strong class="shrink-0 text-sm text-zinc-950 tabular-nums">{{ number_format((float) $product->price) }} Br</strong>
     </div>
     <div class="mt-1.5 flex items-center gap-1 text-xs text-zinc-500">
         <x-heroicon-s-star class="size-3.5 text-amber-400" />

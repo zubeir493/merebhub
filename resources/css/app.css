@@ -154,6 +154,40 @@
         will-change: transform;
     }
 
+    [data-home-local-build] [data-home-pattern-base],
+    [data-home-local-build] [data-home-pattern-spotlight] {
+        background-repeat: repeat;
+        background-position: center;
+        background-size: min(50vw, 24rem) min(50vw, 24rem);
+    }
+
+    [data-home-local-build] [data-home-pattern-base] {
+        opacity: .012;
+        filter: saturate(.7) brightness(.4);
+    }
+
+    [data-home-local-build] [data-home-pattern-spotlight] {
+        opacity: 0;
+        -webkit-mask-image: radial-gradient(circle 6.5rem at var(--home-pattern-x, 50%) var(--home-pattern-y, 50%), #000 0%, #000 52%, transparent 100%);
+        mask-image: radial-gradient(circle 6.5rem at var(--home-pattern-x, 50%) var(--home-pattern-y, 50%), #000 0%, #000 52%, transparent 100%);
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-size: 100% 100%;
+        mask-size: 100% 100%;
+        transition: opacity 240ms ease-out;
+    }
+
+    [data-home-local-build][data-home-pattern-active='true'] [data-home-pattern-spotlight] {
+        opacity: 1;
+    }
+
+}
+
+@media (min-width: 1024px) {
+    [data-home-local-build] [data-home-pattern-base],
+    [data-home-local-build] [data-home-pattern-spotlight] {
+        background-size: min(52vw, 50rem) min(52vw, 50rem);
+    }
 }
 
 @keyframes home-exhibition-image {
@@ -203,6 +237,10 @@
     [data-exhibition-trigger][data-progressing='true'] [data-exhibition-progress] {
         animation: none !important;
         transform: scaleX(1);
+    }
+
+    [data-home-local-build] [data-home-pattern-spotlight] {
+        transition: none;
     }
 
 }

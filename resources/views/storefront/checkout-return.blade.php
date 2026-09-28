@@ -234,7 +234,7 @@
                         </div>
                         <div class="flex items-center justify-between text-zinc-600">
                             <span>Payment gateway</span>
-                            <span class="font-semibold text-zinc-900">Chapa (ETB)</span>
+                            <span class="font-semibold text-zinc-900">Chapa (Br)</span>
                         </div>
                     </div>
 

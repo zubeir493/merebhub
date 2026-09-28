@@ -47,13 +47,13 @@ class ProductWizardForm
                             ->label('Starting price')
                             ->numeric()
                             ->minValue(0)
-                            ->prefix('ETB')
+                            ->prefix('Br')
                             ->helperText('Used when a variant price is left blank.'),
                         TextInput::make('default_compare_at_price')
                             ->label('Compare-at price')
                             ->numeric()
                             ->minValue(0)
-                            ->prefix('ETB'),
+                            ->prefix('Br'),
                         Select::make('product_type_id')
                             ->label('Product type')
                             ->relationship('productType', 'name')

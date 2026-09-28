@@ -7,7 +7,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ isset($title) ? $title . ' · ' : '' }}{{ config('app.name', 'MerebHub') }}</title>
     <meta name="description"
-        content="{{ $metaDescription ?? 'A trusted marketplace for useful software from Ethiopian makers, with secure ETB checkout and simple license delivery.' }}">
+        content="{{ $metaDescription ?? 'A trusted marketplace for useful software from Ethiopian makers, with secure Br checkout and simple license delivery.' }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
 </head>
@@ -245,7 +245,7 @@
                         Find the tool that moves your work forward.</p>
                 </div>
                 <div class="lg:justify-self-end">
-                    <p class="max-w-lg text-sm leading-7 text-zinc-400">Explore useful software from Ethiopian makers. Compare clearly, pay in ETB, and keep every license and download in one place.</p>
+                    <p class="max-w-lg text-sm leading-7 text-zinc-400">Explore useful software from Ethiopian makers. Compare clearly, pay in Br, and keep every license and download in one place.</p>
                     <div class="mt-7 flex flex-wrap gap-3">
                         <a href="{{ route('store.index') }}"
                             class="group inline-flex items-center gap-2 rounded-lg bg-teal-300 px-4 py-3 text-sm font-extrabold text-teal-950 transition hover:bg-teal-200">Browse
@@ -262,7 +262,7 @@
                     <p class="text-sm leading-7 text-zinc-400">Find practical tools from local makers and teams building
                         for work that happens here.</p>
                     <span class="mt-6 inline-flex items-center gap-2 text-xs font-bold text-zinc-500"><span
-                            class="size-1.5 rounded-full bg-teal-300"></span> Independent software · ETB checkout</span>
+                            class="size-1.5 rounded-full bg-teal-300"></span> Independent software · Br checkout</span>
                 </div>
                 <div>
                     <strong class="text-sm text-white">Discover</strong>

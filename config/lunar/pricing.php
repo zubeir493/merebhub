@@ -1,6 +1,6 @@
 <?php
 
-use Lunar\Core\Pricing\DefaultPriceFormatter;
+use App\Pricing\BrPriceFormatter;
 
 return [
 
@@ -22,7 +22,7 @@ return [
     | Specify which class to use when formatting price data types
     |
     */
-    'formatter' => DefaultPriceFormatter::class,
+    'formatter' => BrPriceFormatter::class,
 
     /*
     |--------------------------------------------------------------------------

@@ -22,7 +22,7 @@
 
             <div class="mt-12 grid border-y border-zinc-200 sm:grid-cols-3">
                 <div class="flex items-center gap-3 py-4 sm:pr-5"><x-heroicon-o-shield-check class="size-5 shrink-0 text-teal-700" /><span class="text-xs font-bold text-zinc-600">Makers you can understand</span></div>
-                <div class="flex items-center gap-3 border-t border-zinc-200 py-4 sm:border-l sm:border-t-0 sm:px-5"><x-heroicon-o-banknotes class="size-5 shrink-0 text-teal-700" /><span class="text-xs font-bold text-zinc-600">Clear ETB pricing</span></div>
+                <div class="flex items-center gap-3 border-t border-zinc-200 py-4 sm:border-l sm:border-t-0 sm:px-5"><x-heroicon-o-banknotes class="size-5 shrink-0 text-teal-700" /><span class="text-xs font-bold text-zinc-600">Clear Br pricing</span></div>
                 <div class="flex items-center gap-3 border-t border-zinc-200 py-4 sm:border-l sm:border-t-0 sm:pl-5"><x-heroicon-o-key class="size-5 shrink-0 text-teal-700" /><span class="text-xs font-bold text-zinc-600">Every purchase in one account</span></div>
             </div>
         </div>
@@ -62,7 +62,7 @@
                                     <span class="absolute inset-x-0 bottom-0 flex items-end justify-between gap-5 bg-gradient-to-t from-zinc-950/90 via-zinc-950/35 to-transparent px-5 pb-5 pt-28 text-white sm:px-8 sm:pb-8">
                                         <span>
                                             <span class="block text-2xl font-extrabold tracking-[-0.025em] sm:text-3xl">{{ $product->name }}</span>
-                                            <span class="mt-2 block text-xs font-bold text-zinc-300">{{ number_format($product->displayRating(), 1) }} rating · {{ number_format((float) $product->price) }} ETB</span>
+                                            <span class="mt-2 block text-xs font-bold text-zinc-300">{{ number_format($product->displayRating(), 1) }} rating · {{ number_format((float) $product->price) }} Br</span>
                                         </span>
                                         <span class="grid size-11 shrink-0 place-items-center rounded-full bg-teal-300 text-teal-950 transition-transform hover:rotate-12"><x-heroicon-o-arrow-up-right class="size-5" /></span>
                                     </span>
@@ -94,7 +94,7 @@
                             <span class="min-w-0 flex-1">
                                 <strong class="block truncate text-sm text-zinc-950 transition group-hover:text-teal-700">{{ $product->name }}</strong>
                                 <span class="mt-1 block truncate text-xs font-medium text-zinc-500">{{ $product->author?->name ?? 'Independent maker' }} · {{ $product->category }}</span>
-                                <span class="mt-2 flex items-center gap-3 text-xs font-bold text-zinc-600"><span class="flex items-center gap-1"><x-heroicon-s-star class="size-3.5 text-amber-400" /> {{ number_format($product->displayRating(), 1) }}</span><span>{{ number_format((float) $product->price) }} ETB</span></span>
+                                <span class="mt-2 flex items-center gap-3 text-xs font-bold text-zinc-600"><span class="flex items-center gap-1"><x-heroicon-s-star class="size-3.5 text-amber-400" /> {{ number_format($product->displayRating(), 1) }}</span><span>{{ number_format((float) $product->price) }} Br</span></span>
                             </span>
                             <x-heroicon-o-arrow-up-right class="size-4 shrink-0 text-zinc-300 transition group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-teal-600" />
                         </a>
@@ -105,29 +105,25 @@
     @endif
 
     <section data-home-local-build class="relative isolate overflow-hidden bg-zinc-950 py-24 text-white sm:py-28 lg:py-32">
-        <svg aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10 h-full w-full text-white/10" viewBox="0 0 1440 720" preserveAspectRatio="xMidYMid slice" fill="none">
-            <path d="M-120 610C238 492 416 681 716 514C1008 351 1114 92 1560 142" stroke="currentColor" stroke-width="1" vector-effect="non-scaling-stroke" />
-            <path d="M-80 676C230 548 469 728 760 558C1043 393 1208 224 1518 230" stroke="currentColor" stroke-width="1" vector-effect="non-scaling-stroke" />
-            <path d="M720 -80C802 188 1014 263 1520 250" stroke="currentColor" stroke-width="1" vector-effect="non-scaling-stroke" />
-            <circle cx="1158" cy="204" r="164" stroke="currentColor" stroke-width="1" vector-effect="non-scaling-stroke" />
-            <circle cx="1158" cy="204" r="246" stroke="currentColor" stroke-width="1" vector-effect="non-scaling-stroke" />
-        </svg>
-        <svg aria-hidden="true" class="pointer-events-none absolute -right-20 top-8 -z-10 size-[32rem] text-teal-300/15" viewBox="0 0 500 500" fill="none">
-            <path d="M26 322L177 76L276 245L474 164" stroke="currentColor" stroke-width="1.2" vector-effect="non-scaling-stroke" />
-            <path d="M62 402L224 138L320 301L456 245" stroke="currentColor" stroke-width="1.2" vector-effect="non-scaling-stroke" />
-        </svg>
+        <div
+            aria-hidden="true"
+            class="pointer-events-none absolute inset-0 z-0 overflow-hidden"
+        >
+            <div data-home-pattern-base class="absolute inset-0 bg-center bg-repeat" style="background-image: url('{{ asset('images/marketplace/home-pattern.svg') }}')"></div>
+            <div data-home-pattern-spotlight class="absolute inset-0 bg-center bg-repeat" style="background-image: url('{{ asset('images/marketplace/home-pattern.svg') }}')"></div>
+        </div>
 
-        <div class="mx-auto max-w-[1400px] px-5 lg:px-8">
+        <div class="relative z-10 mx-auto max-w-[1400px] px-5 lg:px-8">
             <div class="grid gap-10 lg:grid-cols-12 lg:items-end">
                 <p class="max-w-[14ch] text-[clamp(3.25rem,7vw,5.75rem)] font-extrabold leading-[.88] tracking-[-0.04em] text-balance lg:col-span-7">
                     Useful software, made closer to home.
                 </p>
-                <p class="max-w-lg text-base leading-8 text-zinc-300 lg:col-span-5 lg:justify-self-end">MerebHub makes it easier to find and buy software from Ethiopian makers. Pay in ETB, receive your license, and get back to the work that matters.</p>
+                <p class="max-w-lg text-base leading-8 text-zinc-300 lg:col-span-5 lg:justify-self-end">MerebHub makes it easier to find and buy software from Ethiopian makers. Pay in Br, receive your license, and get back to the work that matters.</p>
             </div>
 
             <div class="mt-16 grid border-y border-white/15 sm:grid-cols-3">
                 <div class="py-6 sm:pr-7"><x-heroicon-o-shield-check class="size-5 text-teal-300" /><strong class="mt-4 block text-sm">Reviewed publishers</strong><p class="mt-2 text-xs leading-6 text-zinc-400">See who made each tool before you choose.</p></div>
-                <div class="border-t border-white/15 py-6 sm:border-l sm:border-t-0 sm:px-7"><x-heroicon-o-banknotes class="size-5 text-teal-300" /><strong class="mt-4 block text-sm">ETB checkout</strong><p class="mt-2 text-xs leading-6 text-zinc-400">Know what you will pay in ETB before checkout.</p></div>
+                <div class="border-t border-white/15 py-6 sm:border-l sm:border-t-0 sm:px-7"><x-heroicon-o-banknotes class="size-5 text-teal-300" /><strong class="mt-4 block text-sm">Br checkout</strong><p class="mt-2 text-xs leading-6 text-zinc-400">Know what you will pay in Br before checkout.</p></div>
                 <div class="border-t border-white/15 py-6 sm:border-l sm:border-t-0 sm:pl-7"><x-heroicon-o-key class="size-5 text-teal-300" /><strong class="mt-4 block text-sm">One account</strong><p class="mt-2 text-xs leading-6 text-zinc-400">Keep receipts, keys, downloads, and help in one account.</p></div>
             </div>
         </div>

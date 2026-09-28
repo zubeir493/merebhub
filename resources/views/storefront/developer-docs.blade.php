@@ -95,7 +95,7 @@
                         </div>
                         <div class="grid gap-2 py-5 sm:grid-cols-[11rem_minmax(0,1fr)]">
                             <dt class="text-sm font-extrabold text-zinc-950">Commercial model</dt>
-                            <dd class="text-sm leading-7 text-zinc-600">Price in ETB, one-time or recurring billing, trial or grace period, and whether a customer can renew or upgrade.</dd>
+                            <dd class="text-sm leading-7 text-zinc-600">Price in Br, one-time or recurring billing, trial or grace period, and whether a customer can renew or upgrade.</dd>
                         </div>
                         <div class="grid gap-2 py-5 sm:grid-cols-[11rem_minmax(0,1fr)]">
                             <dt class="text-sm font-extrabold text-zinc-950">Activation model</dt>

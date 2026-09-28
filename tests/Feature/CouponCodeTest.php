@@ -405,8 +405,8 @@ test('mini cart endpoint returns valid json for empty cart without errors', func
         ->assertJson([
             'cart_count' => 0,
             'items' => [],
-            'total' => '0.00 ETB',
-            'subtotal' => '0.00 ETB',
+            'total' => '0.00 Br',
+            'subtotal' => '0.00 Br',
             'discount_total' => null,
             'coupon_code' => null,
         ]);

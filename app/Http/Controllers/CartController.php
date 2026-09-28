@@ -288,7 +288,8 @@ class CartController extends Controller
         $minSpendInCents = $coupon->data['min_prices'][$currencyCode] ?? null;
         if ($minSpendInCents !== null && $cart->subTotal->value < $minSpendInCents) {
             $formattedMin = number_format($minSpendInCents / 100, 2, '.', ',');
-            $msg = "A minimum spend of {$formattedMin} {$currencyCode} is required to use this coupon.";
+            $displayCurrency = $currencyCode === 'ETB' ? 'Br' : $currencyCode;
+            $msg = "A minimum spend of {$formattedMin} {$displayCurrency} is required to use this coupon.";
             if ($request->expectsJson()) {
                 return response()->json(['message' => $msg], 422);
             }
@@ -359,8 +360,8 @@ class CartController extends Controller
             return [
                 'cart_count' => 0,
                 'items' => [],
-                'total' => '0.00 ETB',
-                'subtotal' => '0.00 ETB',
+                'total' => '0.00 Br',
+                'subtotal' => '0.00 Br',
                 'discount_total' => null,
                 'coupon_code' => null,
             ];
@@ -396,8 +397,8 @@ class CartController extends Controller
                     'unit_price' => $item->unitPrice->format(),
                 ];
             })->values()->all(),
-            'total' => $cart->total?->format() ?? '0.00 ETB',
-            'subtotal' => $cart->subTotal?->format() ?? $cart->total?->format() ?? '0.00 ETB',
+            'total' => $cart->total?->format() ?? '0.00 Br',
+            'subtotal' => $cart->subTotal?->format() ?? $cart->total?->format() ?? '0.00 Br',
             'discount_total' => $discountValue > 0 ? $cart->discountTotal?->format() : null,
             'coupon_code' => $cart->coupon_code,
         ];

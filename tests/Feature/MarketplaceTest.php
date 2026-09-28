@@ -34,7 +34,7 @@ test('a Lunar product detail page renders its price and publisher', function () 
         ->assertSuccessful()
         ->assertSee($product->name)
         ->assertSee($product->author->name)
-        ->assertSee('Secure ETB checkout by Chapa');
+        ->assertSee('Secure Br checkout by Chapa');
 });
 
 test('new products receive readable storefront slugs', function (): void {

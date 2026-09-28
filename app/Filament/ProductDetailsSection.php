@@ -136,12 +136,12 @@ class ProductDetailsSection
                             ->label('Price')
                             ->numeric()
                             ->minValue(0)
-                            ->suffix('ETB'),
+                            ->suffix('Br'),
                         TextInput::make('compare_at_price')
                             ->label('Compare-at price')
                             ->numeric()
                             ->minValue(0)
-                            ->suffix('ETB'),
+                            ->suffix('Br'),
                         Select::make('tax_class_id')
                             ->label('Tax class')
                             ->options(fn (): array => self::taxClassOptions())

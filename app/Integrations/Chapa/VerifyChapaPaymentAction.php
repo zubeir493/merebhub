@@ -3,6 +3,7 @@
 namespace App\Integrations\Chapa;
 
 use App\Domain\Billing\Actions\EnsureInvoiceSnapshotAction;
+use App\Notifications\OrderConfirmationNotification;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\DB;
 use Lunar\Core\Models\Order;
@@ -73,6 +74,12 @@ class VerifyChapaPaymentAction
                     'meta' => $meta,
                     'placed_at' => $lockedOrder->placed_at ?? now(),
                 ])->save();
+
+                if ($lockedOrder->user !== null) {
+                    $lockedOrder->user->notify(
+                        (new OrderConfirmationNotification((int) $lockedOrder->getKey()))->afterCommit(),
+                    );
+                }
             }
 
             return $lockedOrder->refresh();

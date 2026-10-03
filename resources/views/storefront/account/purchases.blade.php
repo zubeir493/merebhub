@@ -36,6 +36,7 @@
                                 $expiresAt = data_get($purchase->meta, 'expires_at');
                                 $expiryLabel = filled($expiresAt) ? 'Expires '.\Illuminate\Support\Carbon::parse($expiresAt)->format('M j, Y') : 'Perpetual license';
                                 $downloadAssets = $purchase->product?->downloadableAssets ?? collect();
+                                $usage = $deviceUsage[$purchase->getKey()] ?? null;
                             @endphp
                             <tr class="kgm-license-card align-middle transition-colors hover:bg-zinc-50" data-kgm-reveal-context data-order-id="{{ $purchase->order?->getKey() }}" data-license-index="{{ $purchase->getKey() }}">
                                 <td data-label="Product" class="px-5 py-4">
@@ -65,8 +66,13 @@
                                     </span>
                                 </td>
                                 <td data-label="Devices" class="px-5 py-4">
-                                    <span class="font-extrabold tabular-nums text-zinc-900">{{ (int) data_get($purchase->meta, 'machines_used', 0) }} / {{ (int) data_get($purchase->meta, 'max_machines', 3) }}</span>
-                                    <span class="mt-1 block text-xs text-zinc-500">active</span>
+                                    @if ($usage)
+                                        <span class="font-extrabold tabular-nums text-zinc-900">{{ $usage['used'] }} / {{ $usage['limit'] ?? 'Unlimited' }}</span>
+                                        <span class="mt-1 block text-xs text-zinc-500">active</span>
+                                    @else
+                                        <span class="font-extrabold tabular-nums text-zinc-500" aria-label="Device usage unavailable">—</span>
+                                        <span class="mt-1 block text-xs text-zinc-500">unavailable</span>
+                                    @endif
                                 </td>
                                 <td data-label="" class="px-5 py-4 text-right">
                                     <div class="flex flex-wrap justify-end gap-x-3 gap-y-2">

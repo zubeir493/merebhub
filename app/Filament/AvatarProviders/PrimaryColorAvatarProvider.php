@@ -9,6 +9,16 @@ use Illuminate\Database\Eloquent\Model;
 
 class PrimaryColorAvatarProvider implements AvatarProvider
 {
+    public static function generateGravatarUrl(string $email, ?int $size = null): string
+    {
+        $hash = md5(strtolower(trim($email)));
+
+        return 'https://www.gravatar.com/avatar/'.$hash.'?'.http_build_query(array_filter([
+            'd' => 'mp',
+            's' => $size,
+        ]));
+    }
+
     public function get(Model|Authenticatable $record): string
     {
         $initials = str(Filament::getNameForDefaultAvatar($record))

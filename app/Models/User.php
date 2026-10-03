@@ -4,10 +4,10 @@ namespace App\Models;
 
 use App\Domain\Merchants\Enums\MerchantMembershipStatus;
 use App\Domain\Merchants\Enums\MerchantStatus;
+use App\Notifications\VerifyEmailNotification;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
-use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -97,16 +97,16 @@ class User extends Authenticatable implements FilamentUser, LunarUserInterface, 
         ];
     }
 
-    public function sendEmailVerificationNotification(): void
+    public function sendEmailVerificationNotification(?string $redirect = null): void
     {
         if ($this->shouldLogEmailVerificationLink()) {
-            logger()->info('Email verification link (copy this URL): '.$this->emailVerificationUrl());
+            logger()->info('Email verification link (copy this URL): '.$this->emailVerificationUrl($redirect));
         }
 
-        $this->notify(new VerifyEmail);
+        $this->notify(new VerifyEmailNotification($redirect));
     }
 
-    public function emailVerificationUrl(): string
+    public function emailVerificationUrl(?string $redirect = null): string
     {
         return URL::temporarySignedRoute(
             'verification.verify',
@@ -114,6 +114,7 @@ class User extends Authenticatable implements FilamentUser, LunarUserInterface, 
             [
                 'id' => $this->getKey(),
                 'hash' => sha1($this->getEmailForVerification()),
+                ...array_filter(['redirect' => $redirect]),
             ],
         );
     }

@@ -7,6 +7,7 @@
         @php
             $authParams = array_filter(array_merge(request()->query(), [
                 'intent' => $intent ?? request('intent'),
+                'redirect' => $redirect ?? request('redirect'),
             ]));
         @endphp
         <form method="POST" action="{{ route('login', $authParams) }}" class="mt-8">

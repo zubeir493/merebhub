@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\User;
-use Illuminate\Auth\Notifications\VerifyEmail;
+use App\Notifications\VerifyEmailNotification;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\URL;
 
@@ -20,8 +20,38 @@ test('registration sends a verification notification and redirects to the notice
 
     $user = User::query()->where('email', 'new-buyer@example.com')->firstOrFail();
 
-    Notification::assertSentTo($user, VerifyEmail::class);
+    Notification::assertSentTo($user, VerifyEmailNotification::class);
     expect($user->hasVerifiedEmail())->toBeFalse();
+});
+
+test('registration returns the customer to the requested local destination', function (): void {
+    Notification::fake();
+    $destination = route('account.wishlist');
+
+    $this->get(route('login', ['intent' => 'wishlist', 'redirect' => $destination]))
+        ->assertSee(route('register', ['intent' => 'wishlist', 'redirect' => $destination]));
+
+    $response = $this->post(route('register', ['intent' => 'wishlist', 'redirect' => $destination]), [
+        'name' => 'Wishlist Buyer',
+        'email' => 'wishlist-buyer@example.com',
+        'password' => 'strong-password',
+        'password_confirmation' => 'strong-password',
+    ]);
+
+    $response->assertRedirect($destination);
+});
+
+test('registration ignores external redirect destinations', function (): void {
+    Notification::fake();
+
+    $response = $this->post(route('register', ['redirect' => 'https://example.com/account']), [
+        'name' => 'Safe Buyer',
+        'email' => 'safe-buyer@example.com',
+        'password' => 'strong-password',
+        'password_confirmation' => 'strong-password',
+    ]);
+
+    $response->assertRedirect(route('verification.notice'));
 });
 
 test('a valid signed verification link marks the email as verified', function () {
@@ -44,6 +74,28 @@ test('a valid signed verification link marks the email as verified', function ()
         ->assertSessionHas('status', 'Email verified.');
 
     expect($user->fresh()->hasVerifiedEmail())->toBeTrue();
+});
+
+test('email verification returns the customer to the original local destination', function (): void {
+    $user = User::factory()->unverified()->create([
+        'email' => 'verify-destination@example.com',
+    ]);
+    $destination = route('account.wishlist');
+
+    $url = URL::temporarySignedRoute(
+        'verification.verify',
+        now()->addMinutes(60),
+        [
+            'id' => $user->getKey(),
+            'hash' => sha1($user->getEmailForVerification()),
+            'redirect' => $destination,
+        ],
+    );
+
+    $this->actingAs($user)
+        ->get($url)
+        ->assertRedirect($destination)
+        ->assertSessionHas('status', 'Email verified.');
 });
 
 test('an html-encoded verification signature is rejected with 403', function () {
@@ -102,5 +154,5 @@ test('updating account email resets verification and triggers verification notif
     expect($user->email)->toBe('new-email@example.com')
         ->and($user->hasVerifiedEmail())->toBeFalse();
 
-    Notification::assertSentTo($user, VerifyEmail::class);
+    Notification::assertSentTo($user, VerifyEmailNotification::class);
 });

@@ -20,11 +20,14 @@ class AuthController extends Controller
     public function loginForm(Request $request): View
     {
         $content = $this->resolveAuthContent($request, isRegister: false);
+        $redirect = $this->safeRedirect($request->query('redirect'))
+            ?? $this->safeRedirect($request->session()->get('url.intended'));
 
         return view('auth.login', [
             'title' => $content['title'],
             'subtitle' => $content['subtitle'],
             'intent' => $content['intent'],
+            'redirect' => $redirect,
         ]);
     }
 
@@ -38,22 +41,24 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        $redirect = $request->query('redirect');
-        if ($redirect && (Str::startsWith($redirect, '/') || Str::startsWith($redirect, (string) config('app.url')))) {
+        if ($redirect = $this->resolveRedirect($request)) {
             return redirect()->to($redirect);
         }
 
-        return redirect()->intended(route('account.orders'));
+        return redirect()->route('account.orders');
     }
 
     public function registerForm(Request $request): View
     {
         $content = $this->resolveAuthContent($request, isRegister: true);
+        $redirect = $this->safeRedirect($request->query('redirect'))
+            ?? $this->safeRedirect($request->session()->get('url.intended'));
 
         return view('auth.register', [
             'title' => $content['title'],
             'subtitle' => $content['subtitle'],
             'intent' => $content['intent'],
+            'redirect' => $redirect,
         ]);
     }
 
@@ -129,10 +134,44 @@ class AuthController extends Controller
             'last_name' => $name->contains(' ') ? $name->afterLast(' ')->toString() : '',
         ]);
         $customer->users()->attach($user);
-        $user->sendEmailVerificationNotification();
+        $redirect = $this->resolveRedirect($request);
+        $user->sendEmailVerificationNotification($redirect);
         Auth::login($user);
 
+        if ($redirect) {
+            return redirect()->to($redirect);
+        }
+
         return redirect()->route('verification.notice');
+    }
+
+    private function resolveRedirect(Request $request): ?string
+    {
+        foreach ([$request->query('redirect'), $request->session()->pull('url.intended')] as $candidate) {
+            if ($redirect = $this->safeRedirect($candidate)) {
+                return $redirect;
+            }
+        }
+
+        return null;
+    }
+
+    private function safeRedirect(mixed $redirect): ?string
+    {
+        if (! is_string($redirect) || blank($redirect)) {
+            return null;
+        }
+
+        if (Str::startsWith($redirect, '/') && ! Str::startsWith($redirect, '//')) {
+            return $redirect;
+        }
+
+        $redirectHost = parse_url($redirect, PHP_URL_HOST);
+        $applicationHost = parse_url((string) config('app.url'), PHP_URL_HOST);
+
+        return is_string($redirectHost) && is_string($applicationHost) && $redirectHost === $applicationHost
+            ? $redirect
+            : null;
     }
 
     public function logout(Request $request): RedirectResponse

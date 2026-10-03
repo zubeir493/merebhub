@@ -159,6 +159,14 @@ class KeygenClient
     }
 
     /**
+     * @return array<string, mixed>
+     */
+    public function license(string $licenseId): array
+    {
+        return $this->decode($this->request()->get('/licenses/'.rawurlencode($licenseId)));
+    }
+
+    /**
      * @param  array<string, mixed>  $attributes
      * @return array<string, mixed>
      */

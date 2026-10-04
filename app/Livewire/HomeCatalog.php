@@ -45,19 +45,23 @@ class HomeCatalog extends Component
         $catalog = Product::published()
             ->withPublishedReviewSummary()
             ->with(['author.defaultUrl', 'defaultUrl', 'media', 'variants.prices.currency', 'variants.prices.priceable']);
+        $allProducts = $catalog->get();
+        $hasFilters = $this->search !== '' || $this->category !== '' || $this->platform !== '';
         $base = (clone $catalog)
             ->when($this->search !== '', fn (Builder $query) => $query->search($this->search))
             ->when($this->category !== '', fn (Builder $query) => $query->catalogAttributeContains('attribute_data', $this->category))
             ->when($this->platform !== '', fn (Builder $query) => $query->catalogAttributeContains('attribute_data', str_replace('-', ' ', $this->platform)));
-        $featuredProducts = (clone $catalog)
+        $featuredProducts = $allProducts
             ->where('is_featured', true)
-            ->latest()
+            ->sortByDesc('created_at')
             ->take(4)
-            ->get();
-        $allProducts = $catalog->get();
+            ->values();
+        $products = $hasFilters
+            ? $base->latest()->take(12)->get()
+            : $allProducts->sortByDesc('created_at')->take(12)->values();
 
         return view('livewire.home-catalog', [
-            'products' => $base->latest()->take(12)->get(),
+            'products' => $products,
             'featured' => $featuredProducts,
             'deals' => $allProducts->filter(fn (Product $product): bool => $product->compare_at_price !== null)->take(5),
             'topProducts' => $allProducts->sortByDesc(fn (Product $product): float => $product->displayRating())->take(9),

@@ -3,6 +3,7 @@
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Support\Str;
+use Lunar\Core\Models\Cart;
 
 beforeEach(function () {
     $this->seed();
@@ -44,6 +45,14 @@ test('new products receive readable storefront slugs', function (): void {
 
     expect($product->fresh()->defaultUrl?->slug)->toBe('a-new-windows-utility')
         ->and($product->fresh()->getRouteKey())->toBe(Str::slug('A New Windows Utility'));
+});
+
+test('public storefront pages do not create empty carts', function (): void {
+    $cartCount = Cart::query()->count();
+
+    $this->get(route('home'))->assertSuccessful();
+
+    expect(Cart::query()->count())->toBe($cartCount);
 });
 
 test('staff and merchant panel entry points require authentication', function () {

@@ -134,6 +134,8 @@ class AppServiceProvider extends ServiceProvider
             LunarProductResource::class,
         ])->withoutInventoryControls();
 
+        LunarPanel::forceTwoFactorAuth();
+
         foreach (LunarPanel::getActiveResources() as $resource) {
             $resource::navigationGroup(null);
 
@@ -290,6 +292,9 @@ class AppServiceProvider extends ServiceProvider
             ->by(Str::lower($request->string('email')).'|'.$request->ip()));
 
         RateLimiter::for('public-form', fn (Request $request) => Limit::perMinute(10)->by($request->ip()));
+
+        RateLimiter::for('password-reset', fn (Request $request) => Limit::perMinute(5)
+            ->by(Str::lower((string) $request->input('email')).'|'.$request->ip()));
 
         RateLimiter::for('credential-reveal', fn (Request $request) => Limit::perMinute(6)
             ->by($request->user()->getAuthIdentifier().'|'.$request->ip()));

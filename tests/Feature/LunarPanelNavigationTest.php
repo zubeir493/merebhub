@@ -16,6 +16,7 @@ use Lunar\Filament\Models\Staff as FilamentStaff;
 
 beforeEach(function (): void {
     $staff = Staff::factory()->create(['admin' => true]);
+    $staff->saveAppAuthenticationSecret('JBSWY3DPEHPK3PXP');
 
     Filament::setCurrentPanel(Filament::getPanel('lunar'));
     Filament::bootCurrentPanel();
@@ -81,6 +82,7 @@ test('the package staff model can open custom admin resources without policy typ
         'email' => 'package-staff@example.test',
         'password' => 'password',
         'admin' => true,
+        'app_authentication_secret' => 'JBSWY3DPEHPK3PXP',
     ]);
 
     $this->actingAs($staff, 'staff')
@@ -113,6 +115,7 @@ test('the admin dashboard uses a gap-free widget layout and shows the staff name
         'email' => 'admin-dashboard-name@example.test',
         'password' => 'password',
         'admin' => true,
+        'app_authentication_secret' => 'JBSWY3DPEHPK3PXP',
     ]);
 
     $this->actingAs($staff, 'staff')

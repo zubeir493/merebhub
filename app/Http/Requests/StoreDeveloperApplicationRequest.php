@@ -30,6 +30,7 @@ class StoreDeveloperApplicationRequest extends FormRequest
             'product_stage' => ['required', Rule::in(['live', 'beta', 'in_development'])],
             'summary' => ['required', 'string', 'max:1500'],
             'audience' => ['nullable', 'string', 'max:500'],
+            '_website' => [Rule::excludeIf(fn (): bool => blank($this->input('_website'))), 'prohibited'],
         ];
     }
 

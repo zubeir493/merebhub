@@ -26,6 +26,7 @@ class StoreContactMessageRequest extends FormRequest
             'topic' => ['required', Rule::in(['marketplace', 'partnership', 'purchase', 'other'])],
             'subject' => ['required', 'string', 'max:160'],
             'message' => ['required', 'string', 'max:5000'],
+            '_website' => [Rule::excludeIf(fn (): bool => blank($this->input('_website'))), 'prohibited'],
         ];
     }
 

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Notification;
 test('admin staff can triage tickets and add private internal notes', function (): void {
     Notification::fake();
     $staff = Staff::factory()->create(['admin' => true]);
+    $staff->saveAppAuthenticationSecret('JBSWY3DPEHPK3PXP');
     $assignee = Staff::factory()->create(['admin' => true]);
     $customer = User::factory()->create();
     $ticket = SupportTicket::factory()->create([
@@ -70,6 +71,7 @@ test('only admin staff can use the support workspace', function (): void {
 test('staff replies notify customers without including private ticket content', function (): void {
     Notification::fake();
     $staff = Staff::factory()->create(['admin' => true]);
+    $staff->saveAppAuthenticationSecret('JBSWY3DPEHPK3PXP');
     $customer = User::factory()->create();
     $ticket = SupportTicket::factory()->create(['user_id' => $customer->getKey()]);
 

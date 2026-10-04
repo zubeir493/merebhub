@@ -190,7 +190,7 @@ class AuthController extends Controller
 
     public function sendResetLink(Request $request): RedirectResponse
     {
-        $validated = $request->validate(['email' => ['required', 'email']]);
+        $validated = $request->validate(['email' => ['required', 'email'], '_website' => ['prohibited']]);
         Password::sendResetLink($validated);
 
         return back()->with('status', 'If an account uses that email, we’ve sent a secure password reset link.');
@@ -207,6 +207,7 @@ class AuthController extends Controller
             'token' => ['required'],
             'email' => ['required', 'email'],
             'password' => ['required', 'confirmed', 'min:8'],
+            '_website' => ['prohibited'],
         ]);
 
         $status = Password::reset($validated, function (User $user, string $password): void {

@@ -29,6 +29,8 @@ Route::get('/health', [HealthController::class, 'shallow'])->name('health');
 Route::middleware('auth')->get('/health/deep', [HealthController::class, 'deep'])->name('health.deep');
 Route::get('/app-shell', fn () => Inertia::render('PlatformShell'))->name('app-shell');
 Route::get('/search', [StoreController::class, 'search'])->name('search');
+Route::view('/terms', 'legal.terms')->name('legal.terms');
+Route::view('/privacy', 'legal.privacy')->name('legal.privacy');
 Route::controller(DeveloperController::class)->group(function (): void {
     Route::get('/developers', 'index')->name('developers.index');
     Route::get('/developers/docs', 'docs')->name('developers.docs');
@@ -70,9 +72,13 @@ Route::middleware('guest')->group(function (): void {
     Route::get('/register', [AuthController::class, 'registerForm'])->name('register');
     Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:public-form');
     Route::get('/forgot-password', [AuthController::class, 'forgotPasswordForm'])->name('password.request');
-    Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email');
+    Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])
+        ->middleware('throttle:password-reset')
+        ->name('password.email');
     Route::get('/reset-password/{token}', [AuthController::class, 'resetPasswordForm'])->name('password.reset');
-    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
+    Route::post('/reset-password', [AuthController::class, 'resetPassword'])
+        ->middleware('throttle:password-reset')
+        ->name('password.update');
 });
 
 Route::middleware('auth')->group(function (): void {

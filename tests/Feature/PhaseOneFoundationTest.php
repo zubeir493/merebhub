@@ -9,7 +9,6 @@ use App\Models\User;
 use Filament\Facades\Filament;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
-use Lunar\Filament\Models\Staff as FilamentStaff;
 
 test('public health endpoint returns a correlation id', function () {
     $response = $this->getJson(route('health'));
@@ -97,13 +96,14 @@ test('panel access is separated by account type', function () {
 });
 
 test('authenticated staff can reach the admin dashboard', function () {
-    $staff = FilamentStaff::query()->create([
+    $staff = Staff::query()->forceCreate([
         'first_name' => 'Test',
         'last_name' => 'Staff',
         'email' => 'test-staff@example.test',
         'admin' => true,
         'password' => 'password',
         'email_verified_at' => now(),
+        'app_authentication_secret' => 'JBSWY3DPEHPK3PXP',
     ]);
 
     $this->actingAs($staff, 'staff');

@@ -69,6 +69,7 @@
                     <textarea id="contact-message" name="message" rows="7" maxlength="5000" class="form-input" required>{{ old('message') }}</textarea>
                     @error('message')<p class="form-error">{{ $message }}</p>@enderror
                 </div>
+                <x-honeypot />
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <p class="max-w-sm text-xs leading-5 text-zinc-500">We’ll use your email only to respond to this message.</p>
                     <button type="submit" class="btn-dark shrink-0">Send your message <x-heroicon-o-paper-airplane class="size-4" /></button>

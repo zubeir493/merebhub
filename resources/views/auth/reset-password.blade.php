@@ -9,6 +9,7 @@
             <label class="form-label">Email</label><input name="email" type="email" value="{{ old('email', $email) }}" class="form-input" required>
             <label class="form-label mt-5">New password</label><input name="password" type="password" class="form-input" required>@error('password')<p class="form-error">{{ $message }}</p>@enderror
             <label class="form-label mt-5">Confirm password</label><input name="password_confirmation" type="password" class="form-input" required>
+            <x-honeypot />
             <button class="btn-primary mt-6 w-full">Save new password</button>
         </form>
     </div>

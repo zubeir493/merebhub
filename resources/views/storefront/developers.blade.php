@@ -134,6 +134,7 @@
                         <textarea id="product-audience" name="audience" rows="3" maxlength="500" class="form-input">{{ old('audience') }}</textarea>
                         @error('audience')<p class="form-error">{{ $message }}</p>@enderror
                     </div>
+                    <x-honeypot />
                     <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <p class="max-w-md text-xs leading-5 text-zinc-500">Submitting this form does not guarantee publication. It gives us what we need to start a review.</p>
                         <button type="submit" class="btn-primary shrink-0">Submit application <x-heroicon-o-arrow-right class="size-4" /></button>

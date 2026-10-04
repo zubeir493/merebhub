@@ -7,6 +7,7 @@
         <form method="POST" action="{{ route('password.email') }}" class="mt-8">
             @csrf
             <label class="form-label">Email</label><input name="email" type="email" value="{{ old('email') }}" class="form-input" required autofocus>@error('email')<p class="form-error">{{ $message }}</p>@enderror
+            <x-honeypot />
             <button class="btn-primary mt-6 w-full">Email me a reset link</button>
         </form>
     </div>

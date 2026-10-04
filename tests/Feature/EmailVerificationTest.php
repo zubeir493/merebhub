@@ -13,6 +13,7 @@ test('registration sends a verification notification and redirects to the notice
         'email' => 'new-buyer@example.com',
         'password' => 'strong-password',
         'password_confirmation' => 'strong-password',
+        'terms' => true,
     ]);
 
     $response->assertRedirect(route('verification.notice'));
@@ -36,6 +37,7 @@ test('registration returns the customer to the requested local destination', fun
         'email' => 'wishlist-buyer@example.com',
         'password' => 'strong-password',
         'password_confirmation' => 'strong-password',
+        'terms' => true,
     ]);
 
     $response->assertRedirect($destination);
@@ -49,6 +51,7 @@ test('registration ignores external redirect destinations', function (): void {
         'email' => 'safe-buyer@example.com',
         'password' => 'strong-password',
         'password_confirmation' => 'strong-password',
+        'terms' => true,
     ]);
 
     $response->assertRedirect(route('verification.notice'));

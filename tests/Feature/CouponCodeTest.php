@@ -24,6 +24,7 @@ test('admin panel registers the coupon resource', function (): void {
 
 test('admin can access the coupons resource in admin panel', function (): void {
     $staff = Staff::factory()->create(['admin' => true]);
+    $staff->saveAppAuthenticationSecret('JBSWY3DPEHPK3PXP');
 
     Filament::setCurrentPanel(Filament::getPanel('lunar'));
     Filament::bootCurrentPanel();
@@ -39,6 +40,7 @@ test('admin can access the coupons resource in admin panel', function (): void {
 
 test('staff can create a coupon via the Filament form', function (): void {
     $staff = Staff::factory()->create(['admin' => true]);
+    $staff->saveAppAuthenticationSecret('JBSWY3DPEHPK3PXP');
 
     Filament::setCurrentPanel(Filament::getPanel('lunar'));
     Filament::bootCurrentPanel();

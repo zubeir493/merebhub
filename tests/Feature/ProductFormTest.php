@@ -28,6 +28,7 @@ test('staff can create a product with scalar translated form values', function (
         'email' => 'catalog-create@example.test',
         'password' => 'password',
         'admin' => true,
+        'app_authentication_secret' => 'JBSWY3DPEHPK3PXP',
     ]);
     $productType = ProductType::factory()->create();
 
@@ -76,6 +77,7 @@ test('staff can attach downloadable files to the configured private disk', funct
         'email' => 'catalog-download@example.test',
         'password' => 'password',
         'admin' => true,
+        'app_authentication_secret' => 'JBSWY3DPEHPK3PXP',
     ]);
     $productType = ProductType::factory()->create();
 
@@ -114,6 +116,7 @@ test('staff can update a product whose translated values are hydrated as locale 
         'email' => 'catalog-edit@example.test',
         'password' => 'password',
         'admin' => true,
+        'app_authentication_secret' => 'JBSWY3DPEHPK3PXP',
     ]);
     Category::query()->create(['name' => 'Software']);
     $product = Product::factory()->create([
@@ -145,6 +148,7 @@ test('Filament product edit URLs use numeric records while storefront URLs use s
         'email' => 'catalog-route@example.test',
         'password' => 'password',
         'admin' => true,
+        'app_authentication_secret' => 'JBSWY3DPEHPK3PXP',
     ]);
     $product = Product::factory()->create([
         'name' => collect(['en' => 'Windows 11']),

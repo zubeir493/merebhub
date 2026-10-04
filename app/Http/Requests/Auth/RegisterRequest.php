@@ -19,6 +19,8 @@ class RegisterRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users')],
             'password' => ['required', 'confirmed', Password::defaults()],
+            'terms' => ['accepted'],
+            '_website' => [Rule::excludeIf(fn (): bool => blank($this->input('_website'))), 'prohibited'],
         ];
     }
 }
